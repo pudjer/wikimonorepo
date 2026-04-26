@@ -1,11 +1,10 @@
-import { AppError, LinksCycleError } from "../common/domainErrors";
-import { Link, UniqueLinkCollection } from "../common/entity";
+import type { NodeRelations } from "backend/src/domain/articleDAG/entity"
+import { AppError, LinksCycleError } from "backend/src/domain/common/domainErrors"
+import { UniqueLinkCollection } from "backend/src/domain/common/entity"
 
 export class InappropriateLinkError extends AppError {}
 export class NoNodeInGraphError extends AppError {}
 
-type ChildToParent<Node, LinkName> = Link<Node, LinkName, Node>
-export type NodeRelations<Node, LinkName> = UniqueLinkCollection<ChildToParent<Node, LinkName>>
 type NodeSet<Node> = Set<Node>
 type Layers<Node> = Array<NodeSet<Node>>
 type LinkedNodes<Node> = Map<Node, NodeSet<Node>>

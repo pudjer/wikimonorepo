@@ -1,5 +1,5 @@
-import { LearnProgressStage } from "../interactionUserArticle/learnProgress/entity";
-import { NonNegativeIntegerVO } from "../utils/valueObjects";
+import { NonNegativeIntegerVO } from "backend/src/domain/utils/valueObjects"
+import { LearnProgressStage } from "../../api"
 
 
 export type GetRelated<T extends IHasStage> = () => ReadonlySet<LearningStats<T>>

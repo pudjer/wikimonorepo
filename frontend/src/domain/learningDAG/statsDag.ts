@@ -1,6 +1,6 @@
-import { Link, UniqueLinkCollection } from "../common/entity";
-import { IHasStage, LearningStats } from "./stats";
+import { Link, UniqueLinkCollection } from "backend/src/domain/common/entity";
 import { DAG, NoNodeInGraphError } from "../DAG/entity";
+import { type IHasStage, LearningStats } from "./stats";
 
 
 type ChildToParent<Node> = Link<Node, unknown, Node>
