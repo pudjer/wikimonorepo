@@ -7,6 +7,7 @@ import { LEARN_PROGRESS_REPOSITORY_TOKEN } from "../../../tokens";
 
 export interface ILearnProgressService{
     update(stage: LearnProgressStage, articleId: ArticleId, userId: UserId): Promise<LearnProgress>
+    getByUserId(userId: UserId): Promise<LearnProgress[]>
 }
 @Injectable()
 export class LearnProgressService implements ILearnProgressService{
@@ -19,7 +20,7 @@ export class LearnProgressService implements ILearnProgressService{
         return this.learnProgressRepository.update(learned);
     }
     
-    async getViews(userId: UserId): Promise<LearnProgress[]> {
+    async getByUserId(userId: UserId): Promise<LearnProgress[]> {
         return this.learnProgressRepository.findByUserId(userId);
     }
 }

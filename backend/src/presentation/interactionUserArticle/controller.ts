@@ -12,7 +12,7 @@ import {
 import { ArticleIdValidator } from "../../domain/article/props/articleId";
 import { UserId, UserIdValidator } from "../../domain/user/props/userId";
 import { UserIdParam } from "../common/auth/paramDecorators";
-import { InteractionResultDto, UpdateLearnProgressDto } from "./DTO";
+import { InteractionResultDto, LearnProgressDto, LikeDto, UpdateLearnProgressDto, ViewDto } from "./DTO";
 import { ARTICLE_ID_VALIDATOR_TOKEN, LEARN_PROGRESS_SERVICE_TOKEN, LIKE_SERVICE_TOKEN, TOTAL_INTERACTION_SERVICE_TOKEN, USER_ID_VALIDATOR_TOKEN, VIEW_SERVICE_TOKEN } from "../../tokens";
 import { ILearnProgressService } from "../../application/interactionUserArticle/learnProgress/service";
 import { ILikeService } from "../../application/interactionUserArticle/like/service";
@@ -134,6 +134,46 @@ export class InteractionUserArticleController {
       learnProgressStage: total.learnProgressStage,
       lastInteraction: total.lastInteraction ? total.lastInteraction.toISOString() : null,
     };
+  }
+
+  @ApiOperation({ summary: 'Get all likes by user' })
+  @ApiBadRequestResponse({ description: 'Invalid input' })
+  @ApiResponse({ status: 200, type: [LikeDto] })
+  @Get('likes')
+  async getLikes(@UserIdParam() userId: UserId): Promise<LikeDto[]> {
+    const likes = await this.likeService.getByUserId(userId);
+    return likes.map(like => ({
+      articleId: like.articleId as string,
+      userId: like.userId as string,
+      timestamp: like.timestamp.toISOString(),
+    }));
+  }
+
+  @ApiOperation({ summary: 'Get all views by user' })
+  @ApiBadRequestResponse({ description: 'Invalid input' })
+  @ApiResponse({ status: 200, type: [ViewDto] })
+  @Get('views')
+  async getViews(@UserIdParam() userId: UserId): Promise<ViewDto[]> {
+    const views = await this.viewService.getByUserId(userId);
+    return views.map(view => ({
+      articleId: view.articleId as string,
+      userId: view.userId as string,
+      timestamp: view.timestamp.toISOString(),
+    }));
+  }
+
+  @ApiOperation({ summary: 'Get all learn progress by user' })
+  @ApiBadRequestResponse({ description: 'Invalid input' })
+  @ApiResponse({ status: 200, type: [LearnProgressDto] })
+  @Get('learnProgress')
+  async getLearnProgress(@UserIdParam() userId: UserId): Promise<LearnProgressDto[]> {
+    const progresses = await this.learnProgressService.getByUserId(userId);
+    return progresses.map(progress => ({
+      articleId: progress.articleId as string,
+      userId: progress.userId as string,
+      learnProgressStage: progress.learnProgressStage,
+      updatedAt: progress.updatedAt.toISOString(),
+    }));
   }
 }
 

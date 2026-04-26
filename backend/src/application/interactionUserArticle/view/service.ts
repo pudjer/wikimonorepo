@@ -9,6 +9,7 @@ import { VIEW_REPOSITORY_TOKEN } from "../../../tokens";
 export interface IViewService{
     viewArticle(articleId: ArticleId, userId: UserId): Promise<View>
     removeView(articleId: ArticleId, userId: UserId): Promise<true>
+    getByUserId(userId: UserId): Promise<View[]>
 }
 @Injectable()
 export class ViewService implements IViewService{
@@ -22,7 +23,7 @@ export class ViewService implements IViewService{
     async removeView(articleId: ArticleId, userId: UserId): Promise<true> {
         return await this.viewRepository.delete(articleId, userId)
     }
-    async getViews(userId: UserId): Promise<View[]> {
+    async getByUserId(userId: UserId): Promise<View[]> {
         return await this.viewRepository.findByUserId(userId)
     }
 }

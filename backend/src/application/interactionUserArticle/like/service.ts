@@ -8,6 +8,7 @@ import { LIKE_REPOSITORY_TOKEN } from "../../../tokens";
 export interface ILikeService{
     likeArticle(articleId: ArticleId, userId: UserId): Promise<Like>
     removeLike(articleId: ArticleId, userId: UserId): Promise<true>
+    getByUserId(userId: UserId): Promise<Like[]>
 }
 @Injectable()
 export class LikeService implements ILikeService{
@@ -21,7 +22,7 @@ export class LikeService implements ILikeService{
     async removeLike(articleId: ArticleId, userId: UserId): Promise<true> {
         return await this.likeRepository.delete(articleId, userId)
     }
-    async getLikes(userId: UserId): Promise<Like[]> {
+    async getByUserId(userId: UserId): Promise<Like[]> {
         return await this.likeRepository.findByUserId(userId)
     }
 }
