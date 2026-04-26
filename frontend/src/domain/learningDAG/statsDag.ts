@@ -11,8 +11,8 @@ export class StatsBuilder<T extends IHasStage> {
     private statsSet: Set<LearningStats<T>> = new Set();
     private readonly statsMap: Map<T, LearningStats<T>> = new Map();
     constructor(
-        private nodes: ReadonlySet<T>,
-        private links: NodeRelations<T>
+        public readonly nodes: ReadonlySet<T>,
+        public readonly links: NodeRelations<T>
     ){}
 
     public build(): DAG<LearningStats<T>> {
