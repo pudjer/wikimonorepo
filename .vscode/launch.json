@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "msedge",
+        "request": "launch",
+        "name": "Vite + Edge (auto start)",
+        "url": "http://localhost:5173",
+        "webRoot": "${workspaceFolder}/frontend",
+        "preLaunchTask": "pnpm:dev"
+      }
+    ]
+  }
