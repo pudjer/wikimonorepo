@@ -13,7 +13,7 @@ export class UserUpdateInputDtoAdmin {
   @IsString()
   password?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ enum: RoleName })
   @IsOptional()
   @IsEnum(RoleName)
   role?: RoleName;
@@ -29,6 +29,7 @@ export class UserRegisterInputDtoAdmin {
   @IsString()
   password: string;
 
+  @ApiPropertyOptional({ enum: RoleName })
   @ApiProperty()
   @IsEnum(RoleName)
   role: RoleName;

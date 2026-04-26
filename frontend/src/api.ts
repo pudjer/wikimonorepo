@@ -2,200 +2,112 @@ import axios from "axios";
 import type { AxiosInstance, AxiosResponse } from "axios";
 import { API_BASE_URL } from "./config";
 
-// ===================== Enums =====================
+import type {
+  ArticleResultDTO,
+  ArticleIdCollectionResultDTO,
+  CreateArticleDto,
+  UpdateArticleDto,
+} from "backend/src/presentation/article/common/DTO";
 
-export enum RoleName {
-  Base = "base",
-  Admin = "admin",
+export type {
+  ArticleResultDTO,
+  ArticleIdCollectionResultDTO,
+  CreateArticleDto,
+  UpdateArticleDto,
 }
 
-export enum Order {
-  ASC = "ASC",
-  DESC = "DESC",
+
+
+import type { Success } from "backend/src/presentation/common/DTO";
+
+export type { Success }
+
+import type { ArticleDAGResultDTO } from "backend/src/presentation/articleDAG/DTO";
+
+export type { ArticleDAGResultDTO }
+
+import type {
+  ArticleStatisticResultDTO,
+  GetByIdsDto,
+  ArticleStatisticCollectionResultDTO,
+  OrderDto,
+} from "backend/src/presentation/articleStatistic/DTO";
+
+export type {
+  ArticleStatisticResultDTO,
+  GetByIdsDto,
+  ArticleStatisticCollectionResultDTO,
+  OrderDto,
 }
 
-export enum OrderingProp {
-  views = "views",
-  likes = "likes",
-  learners = "learners",
-  masters = "masters",
-  dagPoints = "dagPoints",
+import type {
+  SearchArticlesQueryDto,
+  SearchInArticlesQueryDto,
+  SearchArticlesResultDto,
+} from "backend/src/presentation/search/DTO";
+
+export type {
+  SearchArticlesQueryDto,
+  SearchInArticlesQueryDto,
+  SearchArticlesResultDto,
 }
 
-export enum LearnProgressStage {
-  Learning = "learning",
-  Mastered = "mastered",
-  Unknown = "unknown",
+import type {
+  UpdateLearnProgressDto,
+  InteractionResultDto,
+} from "backend/src/presentation/interactionUserArticle/DTO";
+
+export type {
+  UpdateLearnProgressDto,
+  InteractionResultDto,
 }
 
-// ===================== Common DTOs =====================
+import type {
+  UserOutputDtoPublic,
+  UserRegisterInputDtoPublic,
+} from "backend/src/presentation/user/public/DTO";
 
-export interface Success {
-  success: boolean;
+export type {
+  UserOutputDtoPublic,
+  UserRegisterInputDtoPublic,
 }
 
-// ===================== Article DTOs =====================
+import type { RegisterOutputDto } from "backend/src/presentation/user/DTO";
 
-export interface ArticleReferenceDto {
-  name: string;
-  parent: string;
+export type { RegisterOutputDto }
+
+import type {
+  UserOutputDtoPrivate,
+  UpdateInputDtoPrivate,
+} from "backend/src/presentation/user/private/DTO";
+
+export type {
+  UserOutputDtoPrivate,
+  UpdateInputDtoPrivate,
 }
 
-export interface CreateArticleDto {
-  title: string;
-  content: string;
-  links: ArticleReferenceDto[];
+import type {
+  UserOutputDtoAdmin,
+  UserUpdateInputDtoAdmin,
+  UserRegisterInputDtoAdmin,
+} from "backend/src/presentation/user/admin/DTO";
+
+export type {
+  UserOutputDtoAdmin,
+  UserUpdateInputDtoAdmin,
+  UserRegisterInputDtoAdmin,
 }
 
-export interface UpdateArticleDto {
-  title?: string;
-  content?: string;
-  links?: ArticleReferenceDto[];
-}
+import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO";
 
-export interface ArticleResultDTO {
-  id: string;
-  authorId: string;
-  title: string;
-  content: string;
-  links: ArticleReferenceDto[];
-  createdAt: string;
-  updatedAt: string;
-}
+export type { SessionDto, LoginDto }
 
-export interface ArticleIdCollectionResultDTO {
-  ids: string[];
-}
-
-// ===================== ArticleDAG DTOs =====================
-
-export interface ArticleLinkDTO {
-  child: string;
-  parent: string;
-  name: string;
-}
-
-export interface ArticleDAGResultDTO {
-  nodes: string[];
-  links: ReadonlyArray<ArticleLinkDTO>;
-}
-
-// ===================== ArticleStatistic DTOs =====================
-
-export interface GetByIdsDto {
-  ids: string[];
-}
-
-export interface OrderDto {
-  order: Order;
-  orderingProp: OrderingProp;
-}
-
-export interface ArticleStatisticResultDTO {
-  articleId: string;
-  views: number;
-  likes: number;
-  learners: number;
-  masters: number;
-  dagPoints: number;
-}
-
-export interface ArticleStatisticCollectionResultDTO {
-  statistics: ArticleStatisticResultDTO[];
-}
-
-// ===================== Search DTOs =====================
-
-export interface SearchArticlesQueryDto {
-  query: string;
-  page?: number;
-  size?: number;
-}
-
-export interface SearchInArticlesQueryDto extends SearchArticlesQueryDto {
-  articleIds: string[];
-}
-
-export interface ArticleSearchResultDto {
-  id: string;
-  title: string;
-  contentSnippet: string;
-  authorId: string;
-  relevanceScore: number;
-}
-
-export interface SearchArticlesResultDto {
-  results: ArticleSearchResultDto[];
-}
-
-// ===================== InteractionUserArticle DTOs =====================
-
-export interface UpdateLearnProgressDto {
-  stage: LearnProgressStage;
-}
-
-export interface InteractionResultDto {
-  isViewed: boolean;
-  isLiked: boolean;
-  learnProgressStage: LearnProgressStage;
-  lastInteraction: string | null;
-}
-
-// ===================== User DTOs =====================
-
-export interface UserOutputDtoPublic {
-  id: string;
-  username: string;
-}
-
-export interface UserRegisterInputDtoPublic {
-  username: string;
-  password: string;
-}
-
-export interface UpdateInputDtoPrivate {
-  username?: string;
-  password?: string;
-}
-
-export interface UserOutputDtoPrivate {
-  id: string;
-  username: string;
-}
-
-export interface UserUpdateInputDtoAdmin {
-  username?: string;
-  password?: string;
-  role?: RoleName;
-}
-
-export interface UserRegisterInputDtoAdmin {
-  username: string;
-  password: string;
-  role: RoleName;
-}
-
-export interface UserOutputDtoAdmin {
-  id: string;
-  username: string;
-  role: RoleName;
-}
-
-export interface RegisterOutputDto {
-  id: string;
-  username: string;
-}
-
-// ===================== Session DTOs =====================
-
-export interface LoginDto {
-  username: string;
-  password: string;
-}
-
-export interface SessionDto {
-  sessionId: string;
-}
+import { Order, OrderingProp } from "backend/src/domain/articleStatistic/entity";
+export { Order, OrderingProp }
+import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
+export { LearnProgressStage }
+import { RoleName } from "backend/src/domain/user/roles";
+export { RoleName }
 
 // ===================== API Client =====================
 
