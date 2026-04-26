@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Structured Wiki with Neo4j and Elasticsearch",
-  "main": "dist/index.js",
+  "main": "dist/main/index.js",
   "scripts": {
     "build": "tsc",
     "start": "node dist/main/index.js",

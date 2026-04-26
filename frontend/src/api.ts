@@ -98,6 +98,12 @@ export type {
   UserRegisterInputDtoAdmin,
 }
 
+import type { ArticleReferenceDto } from "backend/src/presentation/article/common/DTO";
+export type { ArticleReferenceDto }
+
+import type { ArticleSearchResultDto } from "backend/src/presentation/search/DTO";
+export type { ArticleSearchResultDto }
+
 import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO";
 
 export type { SessionDto, LoginDto }
