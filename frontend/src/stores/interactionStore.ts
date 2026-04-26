@@ -1,10 +1,13 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { InteractionResultDto, LearnProgressStage } from "../api";
+import type { InteractionResultDto, LearnProgressStage, LikeDto, ViewDto, LearnProgressDto } from "../api";
 import { api } from "../api";
 import type { UiStore } from "./uiStore";
 
 export class InteractionStore {
   interactions = new Map<string, InteractionResultDto>();
+  likes: LikeDto[] = [];
+  views: ViewDto[] = [];
+  learnProgress: LearnProgressDto[] = [];
   isLoading = false;
   ui: UiStore;
 
@@ -21,6 +24,39 @@ export class InteractionStore {
       });
     } catch (e: unknown) {
       // silently fail for interactions
+      console.error(e);
+    }
+  }
+
+  async fetchLikes() {
+    try {
+      const data = await api.privateInteractionUserArticle.getLikes();
+      runInAction(() => {
+        this.likes = data;
+      });
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }
+
+  async fetchViews() {
+    try {
+      const data = await api.privateInteractionUserArticle.getViews();
+      runInAction(() => {
+        this.views = data;
+      });
+    } catch (e: unknown) {
+      console.error(e);
+    }
+  }
+
+  async fetchLearnProgress() {
+    try {
+      const data = await api.privateInteractionUserArticle.getLearnProgress();
+      runInAction(() => {
+        this.learnProgress = data;
+      });
+    } catch (e: unknown) {
       console.error(e);
     }
   }
@@ -80,4 +116,3 @@ export class InteractionStore {
     }
   }
 }
-

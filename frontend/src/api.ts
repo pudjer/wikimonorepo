@@ -55,11 +55,17 @@ export type {
 import type {
   UpdateLearnProgressDto,
   InteractionResultDto,
+  LikeDto,
+  ViewDto,
+  LearnProgressDto,
 } from "backend/src/presentation/interactionUserArticle/DTO";
 
 export type {
   UpdateLearnProgressDto,
   InteractionResultDto,
+  LikeDto,
+  ViewDto,
+  LearnProgressDto,
 }
 
 import type {
@@ -247,6 +253,15 @@ export class ApiClient {
 
     getTotal: (articleId: string): Promise<InteractionResultDto> =>
       this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
+
+    getLikes: (): Promise<LikeDto[]> =>
+      this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
+
+    getViews: (): Promise<ViewDto[]> =>
+      this.get<ViewDto[]>("/private/interactionUserArticle/views"),
+
+    getLearnProgress: (): Promise<LearnProgressDto[]> =>
+      this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
   };
 
   // -------- Public User --------

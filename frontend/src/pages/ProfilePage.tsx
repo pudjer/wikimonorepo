@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useNavigate, useParams } from "react-router-dom";
-import { Typography, Box, TextField, Button, Paper, Divider } from "@mui/material";
+import { Typography, Box, TextField, Button, Paper, Divider, List, ListItem, ListItemText } from "@mui/material";
 import { PageSpinner } from "../components/common/PageSpinner";
 import { PageTitle } from "../components/common/PageTitle";
 import { ArticleList } from "../components/search/ArticleList";
 import { useStores } from "../hooks/useStores";
 
 export const ProfilePage = observer(function ProfilePage() {
-  const { authStore, articleStore, userStore } = useStores();
+  const { authStore, articleStore, userStore, interactionStore } = useStores();
   const navigate = useNavigate();
   const params = useParams<{ userId?: string }>();
   const isOwnProfile = !params.userId || params.userId === authStore.user?.id;
@@ -30,6 +30,14 @@ export const ProfilePage = observer(function ProfilePage() {
       articleStore.fetchByAuthorId(userId);
     }
   }, [profileUser?.id]);
+
+  useEffect(() => {
+    if (isOwnProfile) {
+      interactionStore.fetchLikes();
+      interactionStore.fetchViews();
+      interactionStore.fetchLearnProgress();
+    }
+  }, [isOwnProfile]);
 
   useEffect(() => {
     if (authStore.user) {
@@ -94,6 +102,48 @@ export const ProfilePage = observer(function ProfilePage() {
         Articles
       </Typography>
       <ArticleList articleIds={articleStore.authorArticleIds} />
+
+      {isOwnProfile && (
+        <>
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            Liked Articles
+          </Typography>
+          <ArticleList
+            articleIds={interactionStore.likes.map((l) => l.articleId)}
+            emptyMessage="No liked articles yet."
+          />
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            Viewed Articles
+          </Typography>
+          <ArticleList
+            articleIds={interactionStore.views.map((v) => v.articleId)}
+            emptyMessage="No viewed articles yet."
+          />
+
+          <Typography variant="h6" gutterBottom sx={{ mt: 3 }}>
+            Learning Progress
+          </Typography>
+          {interactionStore.learnProgress.length === 0 ? (
+            <Typography color="text.secondary">No learning progress yet.</Typography>
+          ) : (
+            <List>
+              {interactionStore.learnProgress.map((lp) => (
+                <ListItem
+                  key={lp.articleId}
+                  onClick={() => navigate(`/article/${lp.articleId}`)}
+                  sx={{ cursor: "pointer" }}
+                >
+                  <ListItemText
+                    primary={lp.articleId}
+                    secondary={`Stage: ${lp.learnProgressStage}`}
+                  />
+                </ListItem>
+              ))}
+            </List>
+          )}
+        </>
+      )}
     </Box>
   );
 });
