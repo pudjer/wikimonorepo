@@ -7,17 +7,13 @@ type ChildToParent<Node> = Link<Node, unknown, Node>
 type NodeRelations<Node> = UniqueLinkCollection<ChildToParent<Node>>
 
 export class StatsBuilder<T extends IHasStage> {
-    private dag: DAG<LearningStats<T>> | null = null
-    private statsSet: Set<LearningStats<T>> = new Set();
+    public readonly dag: DAG<LearningStats<T>>
+    public readonly statsSet: Set<LearningStats<T>> = new Set();
     private readonly statsMap: Map<T, LearningStats<T>> = new Map();
     constructor(
         public readonly nodes: ReadonlySet<T>,
         public readonly links: NodeRelations<T>
-    ){}
-
-    public build(): DAG<LearningStats<T>> {
-        const nodes = this.nodes;
-        const links = this.links;
+    ){
         for(const node of nodes){
             const stats = new LearningStats(
                 node, 
@@ -38,7 +34,6 @@ export class StatsBuilder<T extends IHasStage> {
         for(const [_, stats] of this.statsMap){
             stats.init()
         }
-        return this.dag
     }
 
     private getStats(node: T): LearningStats<T> {

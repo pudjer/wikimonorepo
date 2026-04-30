@@ -26,3 +26,5 @@ async function init() {
 
 init();
 
+import {resolver} from "./stores/apigg.ts";
+console.log(resolver);

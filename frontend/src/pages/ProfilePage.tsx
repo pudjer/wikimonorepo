@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import { useNavigate, useParams } from "react-router-dom";
 import { Typography, Box, TextField, Button, Paper, Divider, List, ListItem, ListItemText } from "@mui/material";
 import { PageSpinner } from "../components/common/PageSpinner";
 import { PageTitle } from "../components/common/PageTitle";
 import { ArticleList } from "../components/search/ArticleList";
+import { LearningDagStats } from "../components/learning/LearningDagStats";
 import { useStores } from "../hooks/useStores";
+import { StatsBuilder } from "../domain/learningDAG/statsDag";
+import { Link, UniqueLinkCollection } from "backend/src/domain/common/entity";
+import type { LearnProgressDto } from "../api";
 
 export const ProfilePage = observer(function ProfilePage() {
-  const { authStore, articleStore, userStore, interactionStore } = useStores();
+  const { authStore, articleStore, userStore, interactionStore, dagStore } = useStores();
   const navigate = useNavigate();
   const params = useParams<{ userId?: string }>();
   const isOwnProfile = !params.userId || params.userId === authStore.user?.id;
@@ -44,6 +48,36 @@ export const ProfilePage = observer(function ProfilePage() {
       setUsername(authStore.user.username);
     }
   }, [authStore.user?.username]);
+
+  useEffect(() => {
+    if (isOwnProfile && interactionStore.learnProgress.length > 0) {
+      const articleIds = interactionStore.learnProgress.map((lp) => lp.articleId);
+      dagStore.fetchDag(articleIds);
+    }
+  }, [isOwnProfile, interactionStore.learnProgress]);
+
+  const statsBuilder = useMemo<StatsBuilder<LearnProgressDto>>(() => {
+    if (!dagStore.dag || interactionStore.learnProgress.length === 0) return null;
+
+    const progressMap = new Map<string, LearnProgressDto>();
+    for (const lp of interactionStore.learnProgress) {
+      progressMap.set(lp.articleId, lp);
+    }
+
+    const nodes = new Set<LearnProgressDto>(interactionStore.learnProgress);
+
+    const rawLinks = dagStore.dag.links
+      .map((link) => {
+        const child = progressMap.get(link.child);
+        const parent = progressMap.get(link.parent);
+        return new Link<LearnProgressDto, string, LearnProgressDto>(child, link.name, parent);
+      })
+
+    const links = new UniqueLinkCollection(rawLinks);
+
+    const builder = new StatsBuilder(nodes, links);
+    return builder;
+  }, [dagStore.dag, interactionStore.learnProgress]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -141,6 +175,9 @@ export const ProfilePage = observer(function ProfilePage() {
                 </ListItem>
               ))}
             </List>
+          )}
+          {statsBuilder && (
+            <LearningDagStats statsBuilder={statsBuilder}/>
           )}
         </>
       )}

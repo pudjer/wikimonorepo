@@ -8,6 +8,37 @@
         "url": "http://localhost:5173",
         "webRoot": "${workspaceFolder}/frontend",
         "preLaunchTask": "pnpm:dev"
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Vitest Tests",
+        "runtimeExecutable": "npx",
+        "runtimeArgs": [
+          "vitest",
+          "--inspect-brk",
+          "--pool=forks",      // важно, чтобы отладчик цеплялся
+          "--no-file-parallelism",
+          "${relativeFile}"    // запускает текущий открытый тест
+        ],
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen",
+        "smartStep": true,
+        "skipFiles": ["<node_internals>/**"]
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug All Vitest Tests",
+        "runtimeExecutable": "npx",
+        "runtimeArgs": [
+          "vitest",
+          "--inspect-brk",
+          "--pool=forks",
+          "--no-file-parallelism"
+        ],
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
       }
     ]
   }
