@@ -2,7 +2,7 @@ import { ObservableProxy, type Callback, type ObjectsProperty } from "../observa
 import { DeduplicatorPromisifier } from "./scheduler";
 import { Wrapper } from "./wrapper";
 
-type ClearWatchers = () => void
+export type ClearWatchers = () => void
 export type ClientFunction = (dispose: ClearWatchers) => void
 
 type Wrapped = () => void

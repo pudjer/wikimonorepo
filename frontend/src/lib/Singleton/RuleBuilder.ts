@@ -35,18 +35,6 @@ export class RuleBuilder<T extends object> {
     });
   }
 
-  delegatingRule(params: {
-    matchKey: (key: string) => boolean;
-    allocate: (key: string) => T;
-    toParentKey: (key: string) => string;
-  }): this {
-    return this.add({
-      matchKey: params.matchKey,
-      allocate: params.allocate,
-      toParentKey: params.toParentKey,
-    });
-  }
-
   // ---------- упрощённые методы ----------
   buildRuleSimple<C extends T>(
     matchPatternsSum: string[],
@@ -66,35 +54,4 @@ export class RuleBuilder<T extends object> {
     });
   }
 
-  delegatingRuleSimple<C extends T>(
-    matchPatternsSum: string[],
-    Ctor: new (...args: unknown[]) => C,
-    options?: {
-      allocate?: (key: string) => C;
-      clear?: (target: C) => void;
-    }
-  ): this {
-    const regex = new RegExp(`^${matchPatternsSum.join("/")}$`);
-    
-    // Преобразуем суффикс в RegExp, если передана строка
-    const suffixRegex = new RegExp(`${"/"+matchPatternsSum[matchPatternsSum.length - 1]}$`)  // экранируем и добавляем $
-  
-    const toParentKey = (key: string) => {
-      // Проверяем, совпадает ли суффиксный паттерн с концом строки
-      const match = key.match(suffixRegex);
-      if (match && match.index! + match[0].length === key.length) {
-        return key.slice(0, -match[0].length);
-      }
-      return key;
-    };
-  
-    // Вспомогательная функция для экранирования спецсимволов в строке
-    
-    const allocate = options?.allocate ?? (() => this.defaultAllocate(Ctor));
-    return this.delegatingRule({
-      matchKey: (key) => regex.test(key),
-      allocate: allocate as (key: string) => T,
-      toParentKey,
-    });
-  }
 }

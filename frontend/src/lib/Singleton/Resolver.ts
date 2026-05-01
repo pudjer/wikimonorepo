@@ -12,20 +12,13 @@ export type BuildRule<T extends object> = BaseRule<T> & {
     target: T,
     key: string,
     resolve: ResolverFn<object>,
-    allocateChild: AllocateChild<object>
   ): Promise<void>;
 };
 
-export type DelegatingRule<T> = BaseRule<T> & {
-  toParentKey(key: string): string;
-};
 
 export type ResolverFn<T extends object> = (key: string) => Promise<T>;
-export type AllocateChild<T extends object> = (key: string) => Promise<T>;
 
-export type ResolveRule<T extends object = object> =
-  | BuildRule<T>
-  | DelegatingRule<T>;
+export type ResolveRule<T extends object = object> = BuildRule<T>
 
 export interface IResolver {
   refreshOutside: <T extends object>(key: string) => Promise<T>;
@@ -33,14 +26,6 @@ export interface IResolver {
   resolveOutside: <T extends object>(key: string) => Promise<T>;
 }
 
-// ========== Type guards ==========
-function isBuildRule(rule: ResolveRule): rule is BuildRule<object> {
-  return "update" in rule;
-}
-
-function isDelegatingRule(rule: ResolveRule): rule is DelegatingRule<object> {
-  return "toParentKey" in rule;
-}
 
 // ========== Контекст одного внешнего вызова ==========
 class ResolveContext {
@@ -56,31 +41,17 @@ class ResolveContext {
       throw new Error(`No rule found for key: ${key}`);
     }
 
-    // Делегирующее правило
-    if (isDelegatingRule(rule)) {
-      const parentKey = rule.toParentKey(key);
-      // Сначала разрешаем родителя (рекурсия с тем же hydrate)
-      await this.resolve(parentKey);
-      // Затем возвращаем дочерний объект (создаём, если ещё нет)
-      return this.getOrCreate(key, rule);
-    }
+    const target = this.getOrCreate(key, rule);
+    // Запускаем гидратацию: при необходимости очищаем и строим заново
+    await this.hydrate(target, key, async (t: T, k: string) => {
+      await rule.update(
+        t,
+        k,
+        this.resolve.bind(this),      // тот же контекст разрешения
+      );
+    });
+    return target;
 
-    // Строящее правило
-    if (isBuildRule(rule)) {
-      const target = this.getOrCreate(key, rule);
-      // Запускаем гидратацию: при необходимости очищаем и строим заново
-      await this.hydrate(target, key, async (t: T, k: string) => {
-        await rule.update(
-          t,
-          k,
-          this.resolve.bind(this),      // тот же контекст разрешения
-          this.allocProperty.bind(this) // тот же контекст для выделения свойств
-        );
-      });
-      return target;
-    }
-
-    throw new Error("Invalid rule");
   }
 
   // Вспомогательный метод: достать из кэша или создать через правило
@@ -91,17 +62,6 @@ class ResolveContext {
       this.allocator.set(key, obj);
     }
     return obj;
-  }
-
-  // Метод для AllocProperty: используется внутри rule.build
-  private async allocProperty<T extends object>(key: string): Promise<T> {
-    const rule = this.findRule<T>(key);
-    if (!rule || !isDelegatingRule(rule)) {
-      throw new Error(`No delegating rule found for key: ${key}`);
-    }
-    const obj = this.getOrCreate(key, rule);
-    // Гидратируем объект (например, чтобы подтянуть данные из родителя)
-    return this.hydrate(obj, undefined, async () => {}) as T
   }
 
   private findRule<T extends object>(key: string): ResolveRule<T> | undefined {
