@@ -28,7 +28,7 @@ export type ResolveRule<T extends object = object> =
   | DelegatingRule<T>;
 
 export interface IResolver {
-  refresh: <T extends object>(key: string) => Promise<T>;
+  refreshOutside: <T extends object>(key: string) => Promise<T>;
   addRule: (rule: ResolveRule) => void;
   resolveOutside: <T extends object>(key: string) => Promise<T>;
 }
@@ -122,7 +122,7 @@ export class Resolver implements IResolver {
     this.rules.push(rule);
   }
 
-  async refresh<T extends object>(key: string) {
+  async refreshOutside<T extends object>(key: string) {
     const target = this.allocator.get<T>(key);
     if (target) {
       this.hydrator.invalidate(target);

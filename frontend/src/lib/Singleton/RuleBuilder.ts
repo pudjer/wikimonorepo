@@ -1,10 +1,10 @@
 import { ResolveRule, BuildRule } from "./Resolver";
 
-export function defaultAllocate<T>(Ctor: new (...args: unknown[]) => T): T {
+export function Allocate<T>(Ctor: new (...args: unknown[]) => T): T {
   return Object.create(Ctor.prototype);
 }
 
-export function defaultClear(target: object): void {
+export function Clear(target: object): void {
   for (const key in target) {
     if (Object.prototype.hasOwnProperty.call(target, key)) {
       delete target[key];
@@ -14,7 +14,10 @@ export function defaultClear(target: object): void {
 
 export class RuleBuilder<T extends object> {
   public rules: ResolveRule<T>[] = [];
-
+  constructor(
+    public defaultAllocate: (Ctor: new (...args: unknown[]) => T) => T = Allocate,
+    public defaultClear: (target: T) => void = Clear
+  ){}
   add(rule: ResolveRule<T>): this {
     this.rules.push(rule);
     return this;
@@ -46,7 +49,7 @@ export class RuleBuilder<T extends object> {
 
   // ---------- упрощённые методы ----------
   buildRuleSimple<C extends T>(
-    matchPattern: string,
+    matchPatternsSum: string[],
     Ctor: new (...args: unknown[]) => C,
     build: BuildRule<C>["update"],
     options?: {
@@ -54,8 +57,8 @@ export class RuleBuilder<T extends object> {
       clear?: (target: C) => void;
     }
   ): this {
-    const regex = new RegExp(`^${matchPattern}$`);
-    const allocate = options?.allocate ?? (() => defaultAllocate(Ctor));
+    const regex = new RegExp(`^${matchPatternsSum.join("/")}$`);
+    const allocate = options?.allocate ?? (() => this.defaultAllocate(Ctor));
     return this.buildRule({
       matchKey: (key) => regex.test(key),
       allocate: allocate as (key: string) => T,
@@ -64,20 +67,17 @@ export class RuleBuilder<T extends object> {
   }
 
   delegatingRuleSimple<C extends T>(
-    matchPattern: string,
+    matchPatternsSum: string[],
     Ctor: new (...args: unknown[]) => C,
-    suffixPattern: string | RegExp,  // теперь может быть строкой или RegExp
     options?: {
       allocate?: (key: string) => C;
       clear?: (target: C) => void;
     }
   ): this {
-    const regex = new RegExp(`^${matchPattern}$`);
+    const regex = new RegExp(`^${matchPatternsSum.join("/")}$`);
     
     // Преобразуем суффикс в RegExp, если передана строка
-    const suffixRegex = typeof suffixPattern === 'string'
-      ? new RegExp(`${escapeRegex(suffixPattern)}$`)  // экранируем и добавляем $
-      : suffixPattern;
+    const suffixRegex = new RegExp(`${"/"+matchPatternsSum[matchPatternsSum.length - 1]}$`)  // экранируем и добавляем $
   
     const toParentKey = (key: string) => {
       // Проверяем, совпадает ли суффиксный паттерн с концом строки
@@ -89,11 +89,8 @@ export class RuleBuilder<T extends object> {
     };
   
     // Вспомогательная функция для экранирования спецсимволов в строке
-    function escapeRegex(str: string): string {
-      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
     
-    const allocate = options?.allocate ?? (() => defaultAllocate(Ctor));
+    const allocate = options?.allocate ?? (() => this.defaultAllocate(Ctor));
     return this.delegatingRule({
       matchKey: (key) => regex.test(key),
       allocate: allocate as (key: string) => T,

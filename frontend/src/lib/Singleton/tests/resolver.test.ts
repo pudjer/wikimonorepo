@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Hydrator, HydratorImpl } from './Hydrator';
-import { IResolver, Resolver, type BuildRule, type DelegatingRule } from './Resolver';
-import { IdentityStore, IdentityStoreImpl } from './Singleton';
+import { Hydrator, HydratorImpl } from '../Hydrator';
+import { IResolver, Resolver, type BuildRule, type DelegatingRule } from '../Resolver';
+import { IdentityStore, IdentityStoreImpl } from '../Singleton';
 
 
 describe('Resolver', () => {
@@ -58,7 +58,7 @@ describe('Resolver', () => {
       expect(obj.id).toBe('new');
 
       // invalidate должен вызвать clear для этого объекта
-      resolver.refresh('user');
+      resolver.refreshOutside('user');
       
       const obj2 = await resolver.resolveOutside<{ id: string }>('user');
 
@@ -80,7 +80,7 @@ describe('Resolver', () => {
       const first = await resolver.resolveOutside<{ value: number }>('counter');
       expect(first.value).toBe(1);
 
-      resolver.refresh('counter');
+      resolver.refreshOutside('counter');
       // clear вызван для старого объекта
 
       const second = await resolver.resolveOutside<{ value: number }>('counter');
@@ -219,7 +219,7 @@ describe('Resolver', () => {
       expect(user1.profile.version).toBe(1);
 
       // инвалидируем только profile
-      resolver.refresh('profile');
+      resolver.refreshOutside('profile');
   
 
       // повторный resolve user должен подтянуть новый profile

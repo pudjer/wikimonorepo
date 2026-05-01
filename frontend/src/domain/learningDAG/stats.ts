@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NonNegativeIntegerVO } from "backend/src/domain/utils/valueObjects"
 import { LearnProgressStage } from "../../api"
 

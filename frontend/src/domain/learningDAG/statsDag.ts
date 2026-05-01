@@ -31,7 +31,7 @@ export class StatsBuilder<T extends IHasStage> {
             statsLinks.add(statsLink)
         }
         this.dag = new DAG(this.statsSet, new UniqueLinkCollection(statsLinks));
-        for(const [_, stats] of this.statsMap){
+        for(const stats of this.statsMap.values()){
             stats.init()
         }
     }

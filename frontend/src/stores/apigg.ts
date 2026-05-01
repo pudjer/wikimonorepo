@@ -1,96 +1,83 @@
-// Доменные модели (все поля обёрнуты)
-
 import api from "../api";
+import { Autorun } from "../lib/observableProxy/autorun/autorun";
 import { HydratorImpl } from "../lib/Singleton/Hydrator";
 import { ResolverFn, Resolver, AllocateChild } from "../lib/Singleton/Resolver";
 import { RuleBuilder } from "../lib/Singleton/RuleBuilder";
 import { IdentityStoreImpl } from "../lib/Singleton/Singleton";
 
-// ------------------------------------------------------------------
-// Модели
-// ------------------------------------------------------------------
-export class Title {
-  constructor(public value: string) {}
-}
-
-export class Content {
-  constructor(public value: string) {}
-}
-
-export class Username {
-  constructor(public value: string) {}
-}
-
-export class ArticleLinkName {
-  constructor(public value: string) {}
-}
-
-export class ArticleParentRef {
-  constructor(public value: string) {}
+export class StringValue {
+  value: string;
 }
 
 export class ArticleLink {
-  name!: ArticleLinkName;
-  parent!: ArticleParentRef;
+  name: StringValue;
+  parent: StringValue;
 }
 
-export class ArticleLinks extends Array<ArticleLink> {}
-
 export class Author {
-  id!: string;
-  username!: Username;
+  id: string;
+  username: StringValue;
 }
 
 export class Article {
-  id!: string;
-  title!: Title;
-  content!: Content;
-  author!: Author;
-  links!: ArticleLinks
+  id: string;
+  title: StringValue;
+  content: StringValue;
+  author: Author;
+  links: ArticleLink[];
+}
+
+export class ArticleStatisticResultDTO {
+  article: Article;
+  views: number;
+  likes: number;
+  learners: number;
+  masters: number;
+  dagPoints: number;
 }
 
 
-// Кэши
-// ------------------------------------------------------------------
-// Построение правил
-// ------------------------------------------------------------------
-const builder = new RuleBuilder<object>();
+const autorun = new Autorun()
+const builder = new RuleBuilder<object>(c => autorun.registerObject(Object.create(c.prototype)));
 
-// ----- Статья -----------------------------------------------------
+
+const UUIDPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+const IndexPattern = "[0-9]+";
+const UserPattern = "user";
+const ArticlePattern = "article";
+
+
+
 builder.buildRuleSimple(
-  "^article:[0-9a-f-]+$",
+  [ArticlePattern, UUIDPattern],
   Article,
-  async (article, key, resolve: ResolverFn<Author>, allocProperty: AllocateChild<Title & Content & ArticleLink & ArticleLinks>) => {
-    const articleId = key.split(":")[1];
+  async (article, key, resolve: ResolverFn<Author>, allocProperty: AllocateChild<StringValue & ArticleLink & []>) => {
+    const segments = key.split('/');
+    const articleId = segments[1];
     const data = await api.publicArticles.getById(articleId);
 
     article.id = data.id;
 
-    // простые обёртки через allocProperty (для единообразия)
-    article.title = await allocProperty(`${key}.title`);
+    article.title = await allocProperty(`${key}/title`);
     article.title.value = data.title;
 
-    article.content = await allocProperty(`${key}.content`);
+    article.content = await allocProperty(`${key}/content`);
     article.content.value = data.content;
 
-    // автор разрешается через Resolver (поддерживает циклические ссылки)
-    article.author = await resolve(`user:${data.authorId}`);
+    article.author = await resolve(`${UserPattern}/${data.authorId}`);
 
-    // заполняем массив ссылок
-    article.links = await allocProperty(`${key}.links`);
+    article.links = await allocProperty(`${key}/links`);
     article.links.length = 0;
 
     for (let i = 0; i < data.links.length; i++) {
       const linkDto = data.links[i];
-      const linkKey = `${key}.links[${i}]`;
+      const linkKey = `${key}/links/${i}`;
 
-      // создаём объект ArticleLink через Resolver
       const link = await allocProperty(linkKey);
 
-      // создаём подобъекты вручную (через new), так как для них нет DTO в контексте
-      link.name = await allocProperty(`${linkKey}.name`);
+      link.name = await allocProperty(`${linkKey}/name`);
       link.name.value = linkDto.name;
-      link.parent = await allocProperty(`${linkKey}.parent`);
+      link.parent = await allocProperty(`${linkKey}/parent`);
       link.parent.value = linkDto.parent;
 
       article.links.push(link);
@@ -98,71 +85,65 @@ builder.buildRuleSimple(
   }
 );
 
-// делегирующие правила для примитивных полей статьи
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.title$",
-  Title,
-  ".title"
+  [ArticlePattern, UUIDPattern, "title"],
+  StringValue,
 );
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.content$",
-  Content,
-  ".content"
+  [ArticlePattern, UUIDPattern, "content"],
+  StringValue,
 );
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.links$",
-  ArticleLinks,
-  ".links" 
-)
-// правило для создания пустого ArticleLink (без заполнения полей)
+  [ArticlePattern, UUIDPattern, "links"],
+  Array,
+);
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.links\\[\\d+\\]$",
+  [ArticlePattern, UUIDPattern, "links", IndexPattern],
   ArticleLink,
-  /\[\d+\]$/ // ничего не делаем – поля заполнятся выше
 );
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.links\\[\\d+\\].name$",
-  ArticleLinkName,
-  ".name"
+  [ArticlePattern, UUIDPattern, "links", IndexPattern, "name"],
+  StringValue,
 );
 builder.delegatingRuleSimple(
-  "^article:[0-9a-f-]+\\.links\\[\\d+\\].parent$",
-  ArticleParentRef,
-  ".parent"
-)
-// ----- Пользователь (Author) ------------------------------------
+  [ArticlePattern, UUIDPattern, "links", IndexPattern, "parent"],
+  StringValue,
+);
+
 builder.buildRuleSimple(
-  "^user:[0-9a-f-]+$",
+  [UserPattern, UUIDPattern],
   Author,
-  async (author, key, resolve, allocProperty: AllocateChild<Username>) => {
-    const userId = key.split(":")[1];
+  async (author, key, resolve, allocProperty: AllocateChild<StringValue>) => {
+    const segments = key.split('/');
+    const userId = segments[1];
     const data = await api.publicUser.get(userId);
 
     author.id = data.id;
 
-    author.username = await allocProperty(`${key}.username`);
+    author.username = await allocProperty(`${key}/username`);
     author.username.value = data.username;
   }
 );
 
 builder.delegatingRuleSimple(
-  "^user:[0-9a-f-]+\\.username$",
-  Username,
-  ".username"
+  [UserPattern, UUIDPattern, "username"],
+  StringValue,
 );
 
-// ------------------------------------------------------------------
-// Инициализация Resolver (синглтон)
-// ------------------------------------------------------------------
 const resolver = new Resolver(new IdentityStoreImpl(), new HydratorImpl());
-
 builder.rules.forEach((rule) => resolver.addRule(rule));
 
-// Экспорт для использования в других модулях
 export { resolver };
 
+(async () => {
+  const articleLink = await resolver.resolveOutside<ArticleLink>(
+    "article/357c25ed-5e75-4245-9e20-a87d14129f00/links/0"
+  );
+  console.log(articleLink);
 
-const article = await resolver.resolveOutside<Article>("article:357c25ed-5e75-4245-9e20-a87d14129f00");
-console.log(article.author.username.value);          
-console.log(article.links[0].name.value);           
-console.log(article.links[0].parent.value);           // parent первой ссылки
+  autorun.autorun(() => {
+    console.log("value:", articleLink.name.value);
+  });
+
+  articleLink.name.value = "Новое имя ссылки";
+})();

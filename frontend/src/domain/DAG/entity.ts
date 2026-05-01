@@ -197,7 +197,7 @@ export class DAG<Node> implements IDAG<Node> {
         return layers
     }
     getSubGraph(articleIds: ReadonlySet<Node>): DAG<Node> {
-        let subNodeIds: NodeSet<Node> = this.getSubNodes(articleIds);
+        const subNodeIds: NodeSet<Node> = this.getSubNodes(articleIds);
         
         const subLinks = this.links.values.filter(link =>
             subNodeIds.has(link.child) && subNodeIds.has(link.parent)
