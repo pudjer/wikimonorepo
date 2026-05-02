@@ -11,12 +11,12 @@ export type BuildRule<T extends object> = BaseRule<T> & {
   update(
     target: T,
     key: string,
-    resolve: ResolverFn<object>,
+    resolve: ResolverFn,
   ): Promise<void>;
 };
 
 
-export type ResolverFn<T extends object> = (key: string) => Promise<T>;
+export type ResolverFn = <T extends object>(key: string) => Promise<T>;
 
 export type ResolveRule<T extends object = object> = BuildRule<T>
 

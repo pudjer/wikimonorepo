@@ -6,13 +6,15 @@ import CssBaseline from "@mui/material/CssBaseline";
 import "./index.css";
 import App from "./App.tsx";
 import { theme } from "./theme.ts";
+
+
 async function init() {
   createRoot(document.getElementById("root")!).render(
     <StrictMode>
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-            <App />
+            <App/>
         </ThemeProvider>
       </BrowserRouter>
     </StrictMode>
@@ -21,5 +23,5 @@ async function init() {
 
 init();
 
-import {resolver} from "./stores/apigg.ts";
-console.log(resolver);
+
+

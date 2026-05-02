@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
   ObservableProxy,
@@ -8,8 +9,8 @@ import {
 } from '../observableProxy'
 
 describe('ObservableProxy', () => {
-  let onRead: Callback<any>
-  let onChange: Callback<any>
+  let onRead: Callback<object>
+  let onChange: Callback<object>
 
   beforeEach(() => {
     onRead = vi.fn()

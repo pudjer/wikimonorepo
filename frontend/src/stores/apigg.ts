@@ -1,7 +1,8 @@
 import api from "../api";
 import { Autorun } from "../lib/observableProxy/autorun/autorun";
+import { getObserverHoc } from "../lib/reactObserver/observer";
 import { HydratorImpl } from "../lib/Singleton/Hydrator";
-import { ResolverFn, Resolver } from "../lib/Singleton/Resolver";
+import { Resolver } from "../lib/Singleton/Resolver";
 import { RuleBuilder } from "../lib/Singleton/RuleBuilder";
 import { IdentityStoreImpl } from "../lib/Singleton/Singleton";
 
@@ -37,16 +38,20 @@ autorun.autorun((dispose) => {dispose()})()//dispose
 const builder = new RuleBuilder<object>(c => autorun.registerObject(Object.create(c.prototype)));
 
 
-const UUIDPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-const UserPattern = "user";
-const ArticlePattern = "article";
+export const UUIDPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+export const UserPattern = "user";
+export const ArticlePattern = "article";
+
+export function CompileString(strArr: string[]): string {
+  return strArr.join("/");
+}
 
 
 
 builder.buildRuleSimple(
-  [ArticlePattern, UUIDPattern],
+  CompileString([ArticlePattern, UUIDPattern]),
   Article,
-  async (article, key, resolve: ResolverFn<Author>) => {
+  async (article, key, resolve) => {
     const segments = key.split('/');
     const articleId = segments[1];
     const data = await api.publicArticles.getById(articleId);
@@ -58,13 +63,13 @@ builder.buildRuleSimple(
     article.createdAt = new Date(data.createdAt);
     article.updatedAt = new Date(data.updatedAt);
 
-    article.author = await resolve(`${UserPattern}/${data.authorId}`);
+    article.author = await resolve(CompileString([UserPattern, data.authorId]));
   }
 );
 
 
 builder.buildRuleSimple(
-  [UserPattern, UUIDPattern],
+  CompileString([UserPattern, UUIDPattern]),
   Author,
   async (author, key) => {
     const segments = key.split('/');
@@ -79,7 +84,7 @@ builder.buildRuleSimple(
 
 
 builder.buildRuleSimple(
-  ["me"],
+  CompileString(["me"]),
   Author,
   async (me) => {
     const data = await api.privateUser.get();
@@ -91,4 +96,13 @@ builder.buildRuleSimple(
 
 const resolver = new Resolver(new IdentityStoreImpl(), new HydratorImpl());
 builder.rules.forEach((rule) => resolver.addRule(rule));
-export { resolver };
+
+(async () => {
+  const art = await resolver.resolveOutside<Article>(CompileString([ArticlePattern, "5e3f9fdd-3728-427e-add8-ecc506eb652a"]));
+  console.log(art);
+})();
+
+
+
+const observer = getObserverHoc(autorun);
+export { resolver, autorun, observer };

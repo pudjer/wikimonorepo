@@ -1,20 +1,20 @@
 type SomeFunc = (...args: unknown[]) => unknown
 export class Wrapper{
-    private currentFunction: SomeFunc | undefined
+    private reaction: SomeFunc | undefined
 
-    public getCurrentFunction(): SomeFunc | undefined {
-        return this.currentFunction
+    public getCurrentReaction(): SomeFunc | undefined {
+        return this.reaction
     }
 
-    public wrap<T extends SomeFunc>(func: T): T {
+    public wrap<T extends SomeFunc>(func: T, reaction?: () => void): T {
         const wrapped = ((...args: Parameters<T>): ReturnType<T> => {
-            const prev = this.currentFunction
-            this.currentFunction = wrapped
+            const prev = this.reaction
+            this.reaction = reaction ?? wrapped
     
             try {
                 return func(...args) as ReturnType<T>
             } finally {
-                this.currentFunction = prev
+                this.reaction = prev
             }
         }) as T
     

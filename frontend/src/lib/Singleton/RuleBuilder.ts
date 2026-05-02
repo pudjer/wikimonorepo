@@ -37,7 +37,7 @@ export class RuleBuilder<T extends object> {
 
   // ---------- упрощённые методы ----------
   buildRuleSimple<C extends T>(
-    matchPatternsSum: string[],
+    matchPattern: string,
     Ctor: new (...args: unknown[]) => C,
     build: BuildRule<C>["update"],
     options?: {
@@ -45,7 +45,7 @@ export class RuleBuilder<T extends object> {
       clear?: (target: C) => void;
     }
   ): this {
-    const regex = new RegExp(`^${matchPatternsSum.join("/")}$`);
+    const regex = new RegExp(`^${matchPattern}$`);
     const allocate = options?.allocate ?? (() => this.defaultAllocate(Ctor));
     return this.buildRule({
       matchKey: (key) => regex.test(key),
