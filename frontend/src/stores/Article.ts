@@ -1,6 +1,6 @@
 import api from "../api";
 import { Author, getAuthorKey } from "./Author";
-import { CompileString, UUIDPattern, builder } from "./storeConfig";
+import { CompileString, UUIDPattern, builder, resolver } from "./storeConfig";
 
 export class ArticleLink {
   name: string;
@@ -11,10 +11,13 @@ export class Article {
   id: string;
   title: string;
   content: string;
-  author: Author;
+  authorId: string;
   links: ArticleLink[];
   createdAt: Date;
   updatedAt: Date;
+  async getAuthor(): Promise<Author> {
+    return await resolver.resolveOutside<Author>(getAuthorKey(this.authorId));
+  }
 }
 
 export const ArticlePattern = "article";
@@ -23,7 +26,7 @@ export const ArticlePattern = "article";
 builder.buildRuleSimple(
   CompileString([ArticlePattern, UUIDPattern]),
   Article,
-  async (article, key, resolve) => {
+  async (article, key) => {
     const segments = key.split('/');
     const articleId = segments[1];
     const data = await api.publicArticles.getById(articleId);
@@ -35,7 +38,7 @@ builder.buildRuleSimple(
     article.createdAt = new Date(data.createdAt);
     article.updatedAt = new Date(data.updatedAt);
 
-    article.author = await resolve(getAuthorKey(data.authorId));
+    article.authorId = data.authorId;
   }
 );
 
