@@ -1,6 +1,6 @@
 import { ArticleType } from "../../../domain/article/entity";
 import { ArticleReference } from "../../../domain/article/references";
-import { ArticleResultDTO } from "./DTO";
+import { ArticleResultDTO, MinifiedArticleResultDTO } from "./DTO";
 
 export const resultMapper = (article: ArticleType): ArticleResultDTO => {
     return {
@@ -15,4 +15,10 @@ export const resultMapper = (article: ArticleType): ArticleResultDTO => {
         createdAt: article.createdAt.toISOString(),
         updatedAt: article.updatedAt.toISOString(),
     };
-}
+};
+
+export const minifiedMapper = (article: ArticleType): MinifiedArticleResultDTO => ({
+    id: article.id,
+    title: article.title,
+    authorId: article.authorId,
+});

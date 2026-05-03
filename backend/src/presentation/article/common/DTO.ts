@@ -87,9 +87,25 @@ export class ArticleResultDTO {
   updatedAt: string;
 }
 
+
 export class ArticleIdCollectionResultDTO {
   @ApiProperty({ type: [String] })
   @IsArray()
   @IsString({ each: true })
   ids: string[];
 }
+
+export class MinifiedArticleResultDTO {
+  @ApiProperty()
+  @IsString()
+  id: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsString()
+  authorId: string;
+}
+
