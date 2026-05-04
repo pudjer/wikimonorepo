@@ -1,14 +1,16 @@
 import { Inject } from "@nestjs/common";
 import { Transaction, Record, Integer } from "neo4j-driver";
 import { ArticleId } from "../../../domain/article/props/articleId";
-import { ArticleStatistic, ViewsNumber, LikesNumber, Learners, Masters, DagPoints, OrderingProp, Order } from "../../../domain/articleStatistic/entity";
-import { ArticleNotFoundError, ArticleStatisticRepository } from "../../../domain/articleStatistic/repository";
+import { ArticlePreview, ViewsNumber, LikesNumber, Learners, Masters, DagPoints, PreviewOrderingProp, PreviewOrder } from "../../../domain/articlePreview/entity";
+import { ArticleNotFoundError, ArticlePreviewRepository } from "../../../domain/articlePreview/repository";
 import { NEO4J_TRANSACTION_TOKEN } from "../../../tokens";
-
-
+import { Title } from "../../../domain/article/props/title";
+import { UserId } from "../../../domain/user/props/userId";
 
 type FindResult = {
   articleId: ArticleId;
+  title: Title;
+  authorId: UserId;
   views: Integer | null;
   likes: Integer | null;
   learners: Integer | null;
@@ -16,19 +18,21 @@ type FindResult = {
   dagPoints: Integer | null;
 };
 
-export class ArticleStatisticRepositoryImpl
-  implements ArticleStatisticRepository
+export class ArticlePreviewRepositoryImpl
+  implements ArticlePreviewRepository
 {
   constructor(
     @Inject(NEO4J_TRANSACTION_TOKEN)
     private readonly tx: Transaction
   ) {}
 
-  private mapFromRecord(record: Record<FindResult>): ArticleStatistic {
+  private mapFromRecord(record: Record<FindResult>): ArticlePreview {
     const r = record.toObject();
 
-    return new ArticleStatistic(
+    return new ArticlePreview(
       r.articleId,
+      r.title,
+      r.authorId,
       new ViewsNumber(r.views ? r.views.toNumber() : 0),
       new LikesNumber(r.likes ? r.likes.toNumber() : 0),
       new Learners(r.learners ? r.learners.toNumber() : 0),
@@ -37,12 +41,14 @@ export class ArticleStatisticRepositoryImpl
     );
   }
 
-  async findById(aId: ArticleId): Promise<ArticleStatistic> {
+  async findById(aId: ArticleId): Promise<ArticlePreview> {
     const res = await this.tx.run<FindResult>(
       `
-      MATCH (a:Article {id: $articleId})
+      MATCH (a:Article {id: $articleId})-[:AUTHORED_BY]->(u:User)
       RETURN 
         a.id AS articleId,
+        a.title AS title,
+        u.id AS authorId,
         a.views AS views,
         a.likes AS likes,
         a.learners AS learners,
@@ -59,13 +65,15 @@ export class ArticleStatisticRepositoryImpl
     return this.mapFromRecord(record);
   }
 
-  async findByIds(aIds: ArticleId[]): Promise<ArticleStatistic[]> {
+  async findByIds(aIds: ArticleId[]): Promise<ArticlePreview[]> {
     const res = await this.tx.run<FindResult>(
       `
-      MATCH (a:Article)
+      MATCH (a:Article)-[:AUTHORED_BY]->(u:User)
       WHERE a.id IN $articleIds
       RETURN 
         a.id AS articleId,
+        a.title AS title,
+        u.id AS authorId,
         a.views AS views,
         a.likes AS likes,
         a.learners AS learners,
@@ -79,27 +87,27 @@ export class ArticleStatisticRepositoryImpl
   }
 
   async getInOrder(
-    orderBy: OrderingProp,
-    order: Order
-  ): Promise<ArticleStatistic[]> {
+    orderBy: PreviewOrderingProp,
+    order: PreviewOrder
+  ): Promise<ArticlePreview[]> {
     const direction = order;
 
     const res = await this.tx.run<FindResult>(
       `
-        MATCH (a:Article)
+        MATCH (a:Article)-[:AUTHORED_BY]->(u:User)
         RETURN 
           a.id AS articleId,
+          a.title AS title,
+          u.id AS authorId,
           a.views AS views,
           a.likes AS likes,
           a.learners AS learners,
           a.masters AS masters,
           a.dagPoints AS dagPoints
-          ORDER BY ${orderBy} ${direction}
+          ORDER BY a.${orderBy} ${direction}
       `
     );
 
     return res.records.map((r) => this.mapFromRecord(r));
   }
-
-
 }

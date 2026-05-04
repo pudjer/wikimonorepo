@@ -29,16 +29,16 @@ import type { ArticleDAGResultDTO } from "backend/src/presentation/articleDAG/DT
 export type { ArticleDAGResultDTO }
 
 import type {
-  ArticleStatisticResultDTO,
+  ArticlePreviewResultDTO,
   GetByIdsDto,
-  ArticleStatisticCollectionResultDTO,
+  ArticlePreviewCollectionResultDTO,
   OrderDto,
-} from "backend/src/presentation/articleStatistic/DTO";
+} from "backend/src/presentation/articlePreview/DTO";
 
 export type {
-  ArticleStatisticResultDTO,
+  ArticlePreviewResultDTO,
   GetByIdsDto,
-  ArticleStatisticCollectionResultDTO,
+  ArticlePreviewCollectionResultDTO,
   OrderDto,
 }
 
@@ -116,7 +116,7 @@ import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO"
 
 export type { SessionDto, LoginDto }
 
-import { Order, OrderingProp } from "backend/src/domain/articleStatistic/entity";
+import { PreviewOrder as Order, PreviewOrderingProp as OrderingProp } from "backend/src/domain/articlePreview/entity";
 export { Order, OrderingProp }
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 export { LearnProgressStage }
@@ -203,17 +203,17 @@ export class ApiClient {
       this.get<ArticleDAGResultDTO>("/public/articleDAG", { ids }),
   };
 
-  // -------- Public ArticleStatistic --------
+  // -------- Public ArticlePreview --------
 
-  publicArticleStatistic = {
-    getById: (id: string): Promise<ArticleStatisticResultDTO> =>
-      this.get<ArticleStatisticResultDTO>(`/public/articleStatistic/stats/${id}`),
+  publicArticlePreview = {
+    getById: (id: string): Promise<ArticlePreviewResultDTO> =>
+      this.get<ArticlePreviewResultDTO>(`/public/articlePreview/stats/${id}`),
 
-    getByIds: (dto: GetByIdsDto): Promise<ArticleStatisticCollectionResultDTO> =>
-      this.post<ArticleStatisticCollectionResultDTO>("/public/articleStatistic/by-ids", dto),
+    getByIds: (dto: GetByIdsDto): Promise<ArticlePreviewCollectionResultDTO> =>
+      this.post<ArticlePreviewCollectionResultDTO>("/public/articleStatistic/by-ids", dto),
 
-    getInOrder: (dto: OrderDto): Promise<ArticleStatisticCollectionResultDTO> =>
-      this.get<ArticleStatisticCollectionResultDTO>("/public/articleStatistic/order", {
+    getInOrder: (dto: OrderDto): Promise<ArticlePreviewCollectionResultDTO> =>
+      this.get<ArticlePreviewCollectionResultDTO>("/public/articleStatistic/order", {
         order: dto.order,
         orderingProp: dto.orderingProp,
       }),

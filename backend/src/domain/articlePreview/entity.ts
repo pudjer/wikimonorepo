@@ -1,5 +1,7 @@
 import { ArticleId } from "../article/props/articleId"
-import { BadValueError } from "../common/domainErrors"
+import { Title } from "../article/props/title"
+import { UserId } from "../user/props/userId"
+
 import { NonNegativeIntegerVO } from "../utils/valueObjects"
 
 
@@ -17,9 +19,11 @@ export class Masters extends NonNegativeIntegerVO<typeof MastersSymbol> {}
 
 
 
-export class ArticleStatistic {
+export class ArticlePreview {
     constructor(
         public readonly articleId: ArticleId,
+        public readonly title: Title,
+        public readonly authorId: UserId,
         public readonly views: ViewsNumber,
         public readonly likes: LikesNumber,
         public readonly learners: Learners,
@@ -29,12 +33,12 @@ export class ArticleStatistic {
 }
 
 
-export enum Order{
+export enum PreviewOrder{
     ASC = "ASC",
     DESC = "DESC"
 }
 
-export enum OrderingProp{
+export enum PreviewOrderingProp{
     views = "views",
     likes = "likes",
     learners = "learners",

@@ -15,10 +15,10 @@ import {
   LEARN_PROGRESS_SERVICE_TOKEN,
   LIKE_SERVICE_TOKEN,
   VIEW_SERVICE_TOKEN,
-  ARTICLE_STATISTIC_SERVICE_TOKEN,
   ARTICLE_SEARCH_INDEX_SERVICE_TOKEN,
   ARTICLE_SEARCH_SERVICE_TOKEN,
   ARTICLE_DAG_SERVICE_TOKEN,
+  ARTICLE_PREVIEW_SERVICE_TOKEN,
   // Add other service tokens
 } from '../tokens';
 import { SessionService } from '../application/session/service';
@@ -38,7 +38,7 @@ import { LearnProgressService } from '../application/interactionUserArticle/lear
 import { LikeService } from '../application/interactionUserArticle/like/service';
 import { ViewService } from '../application/interactionUserArticle/view/service';
 import { TotalInteractionService } from '../application/interactionUserArticle/total/service';
-import { ArticleStatisticService } from '../application/articleTotalStatistic/service';
+import { ArticlePreviewService } from '../application/articleTotalStatistic/service';
 import { ArticleCreatedHandler, ArticleDeletedHandler, ArticleUpdatedHandler } from '../application/search/articleEventsHandlers';
 import { ArticleSearchIndexService, IArticleSearchIndexService } from '../application/search/indexingService';
 import { ArticleSearchService } from '../application/search/service';
@@ -73,7 +73,7 @@ import { ArticleDAGService } from '../application/articleDAG/service';
     { provide: VIEW_SERVICE_TOKEN, useClass: ViewService},
     { provide: TOTAL_INTERACTION_SERVICE_TOKEN, useClass: TotalInteractionService},
 
-    { provide: ARTICLE_STATISTIC_SERVICE_TOKEN, useClass: ArticleStatisticService},
+    { provide: ARTICLE_PREVIEW_SERVICE_TOKEN, useClass: ArticlePreviewService},
 
     { provide: ARTICLE_SEARCH_INDEX_SERVICE_TOKEN, useClass: ArticleSearchIndexService },
     { provide: ARTICLE_SEARCH_SERVICE_TOKEN, useClass: ArticleSearchService },
@@ -91,7 +91,7 @@ import { ArticleDAGService } from '../application/articleDAG/service';
 
     LEARN_PROGRESS_SERVICE_TOKEN, LIKE_SERVICE_TOKEN, VIEW_SERVICE_TOKEN, TOTAL_INTERACTION_SERVICE_TOKEN,
 
-    ARTICLE_STATISTIC_SERVICE_TOKEN,
+    ARTICLE_PREVIEW_SERVICE_TOKEN,
 
     ARTICLE_SEARCH_SERVICE_TOKEN, ARTICLE_SEARCH_INDEX_SERVICE_TOKEN,
 

@@ -24,7 +24,7 @@ import {
   ARTICLE_FACTORY_TOKEN,
   SESSION_FACTORY_TOKEN,
   USER_FACTORY_TOKEN,
-  ARTICLE_STATISTIC_REPOSITORY_TOKEN,
+  ARTICLE_PREVIEW_REPOSITORY_TOKEN,
   QUERY_VALIDATOR_TOKEN,
   ARTICLE_SEARCH_REPOSITORY_TOKEN,
   ARTICLE_DAG_REPOSITORY_TOKEN,
@@ -36,9 +36,7 @@ import { LearnProgressRepositoryImpl } from '../implementations/domain/interacti
 import { TotalInteractionRepositoryImpl } from '../implementations/domain/interactionUserArticle/total/repository';
 import { SessionRepositoryImpl } from '../implementations/domain/session/repository';
 import { UserRepositoryImpl } from '../implementations/domain/user/repository';
-// Add other repo impls: e.g. ArticleSearchRepositoryImpl from implementations/domain/search/repository.ts etc.
 import { DomainEventDispatcherImpl } from '../implementations/application/common/events/dispatcher';
-// Import all validator/factory impl classes from implementations/domain/*/props/*.ts etc.
 import { UserIdFactoryImpl, UserIdValidatorImpl } from '../implementations/domain/user/props/userId';
 import { UsernameValidatorImpl } from '../implementations/domain/user/props/username';
 import { PasswordValidatorImpl, HasherImpl } from '../implementations/domain/user/props/password';
@@ -53,10 +51,9 @@ import { ArticleFactory } from '../domain/article/entity';
 import { ArticleReferencesValidator } from '../domain/article/references';
 import { SessionFactory } from '../domain/session/entity';
 import { UserFactory } from '../domain/user/entity';
-import { ArticleStatisticRepositoryImpl } from '../implementations/domain/articleStatistic/repository';
+import { ArticlePreviewRepositoryImpl } from '../implementations/domain/articlePreview/repository';
 import { ArticleDAGRepositoryImpl } from '../implementations/domain/articleDAG/repository';
 import { InfrastructureModule } from '../infrastructure/infrastructure.module';
-
 
 @Global()
 @Module({
@@ -80,7 +77,7 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module';
     { provide: ARTICLE_TO_ARTICLE_LINK_NAME_VALIDATOR, useClass: ArticleToArticleLinkNameValidatorImpl },
     { provide: ARTICLE_SEARCH_REPOSITORY_TOKEN, useClass: ArticleSearchRepositoryImpl },
 
-    { provide: ARTICLE_REFERENCES_VALIDATOR, useClass: ArticleReferencesValidator }, // from domain/article/references.ts
+    { provide: ARTICLE_REFERENCES_VALIDATOR, useClass: ArticleReferencesValidator },
     { provide: HASHER_TOKEN, useClass: HasherImpl },
     { provide: ARTICLE_FACTORY_TOKEN, useClass: ArticleFactory },
     { provide: SESSION_FACTORY_TOKEN, useClass: SessionFactory },
@@ -95,12 +92,12 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module';
     { provide: LEARN_PROGRESS_REPOSITORY_TOKEN, useClass: LearnProgressRepositoryImpl },
     { provide: TOTAL_INTERACTION_REPOSITORY_TOKEN, useClass: TotalInteractionRepositoryImpl },
 
-    { provide: ARTICLE_STATISTIC_REPOSITORY_TOKEN, useClass: ArticleStatisticRepositoryImpl},
+    { provide: ARTICLE_PREVIEW_REPOSITORY_TOKEN, useClass: ArticlePreviewRepositoryImpl },
 
-    { provide: ARTICLE_DAG_REPOSITORY_TOKEN, useClass: ArticleDAGRepositoryImpl},
+    { provide: ARTICLE_DAG_REPOSITORY_TOKEN, useClass: ArticleDAGRepositoryImpl },
   ],
   exports: [
-    USER_REPOSITORY_TOKEN, ARTICLE_REPOSITORY_TOKEN, SESSION_REPOSITORY_TOKEN, /* all repos */
+    USER_REPOSITORY_TOKEN, ARTICLE_REPOSITORY_TOKEN, SESSION_REPOSITORY_TOKEN,
     USER_ID_VALIDATOR_TOKEN,
     ARTICLE_ID_VALIDATOR_TOKEN,
     SESSION_ID_VALIDATOR_TOKEN,
@@ -121,12 +118,10 @@ import { InfrastructureModule } from '../infrastructure/infrastructure.module';
     LIKE_REPOSITORY_TOKEN,
     VIEW_REPOSITORY_TOKEN,
     TOTAL_INTERACTION_REPOSITORY_TOKEN,
-    ARTICLE_STATISTIC_REPOSITORY_TOKEN,
+    ARTICLE_PREVIEW_REPOSITORY_TOKEN,
     QUERY_VALIDATOR_TOKEN,
     ARTICLE_SEARCH_REPOSITORY_TOKEN,
     ARTICLE_DAG_REPOSITORY_TOKEN
-
   ],
 })
 export class DomainModule {}
-

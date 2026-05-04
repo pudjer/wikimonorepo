@@ -1,6 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ArticleStatisticRepository } from "../../domain/articleStatistic/repository";
-import { ARTICLE_STATISTIC_REPOSITORY_TOKEN, NEO4J_DATABASE_TOKEN, NEO4J_DRIVER_TOKEN } from "../../tokens";
+import { NEO4J_DATABASE_TOKEN, NEO4J_DRIVER_TOKEN } from "../../tokens";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { Driver, Transaction } from "neo4j-driver";
 

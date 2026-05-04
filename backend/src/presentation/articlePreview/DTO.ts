@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Order, OrderingProp } from '../../domain/articleStatistic/entity';
-
+import { PreviewOrder, PreviewOrderingProp } from '../../domain/articlePreview/entity';
 
 export class GetByIdsDto {
   @ApiProperty({ type: [String] })
@@ -10,19 +9,29 @@ export class GetByIdsDto {
   @IsString({ each: true })
   ids: string[];
 }
-export class OrderDto{
-  @ApiProperty({ enum: Order })
-  @IsEnum(Order)
-  order: Order
 
-  @ApiProperty({ enum: OrderingProp })
-  @IsEnum(OrderingProp)
-  orderingProp: OrderingProp
+export class OrderDto{
+  @ApiProperty({ enum: PreviewOrder })
+  @IsEnum(PreviewOrder)
+  order: PreviewOrder
+
+  @ApiProperty({ enum: PreviewOrderingProp })
+  @IsEnum(PreviewOrderingProp)
+  orderingProp: PreviewOrderingProp
 }
-export class ArticleStatisticResultDTO {
+
+export class ArticlePreviewResultDTO {
   @ApiProperty()
   @IsString()
   articleId: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiProperty()
+  @IsString()
+  authorId: string;
 
   @ApiProperty()
   @IsNumber()
@@ -45,10 +54,10 @@ export class ArticleStatisticResultDTO {
   dagPoints: number;
 }
 
-export class ArticleStatisticCollectionResultDTO {
-  @ApiProperty({ type: [ArticleStatisticResultDTO] })
+export class ArticlePreviewCollectionResultDTO {
+  @ApiProperty({ type: [ArticlePreviewResultDTO] })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ArticleStatisticResultDTO)
-  statistics: ArticleStatisticResultDTO[];
+  @Type(() => ArticlePreviewResultDTO)
+  statistics: ArticlePreviewResultDTO[];
 }
