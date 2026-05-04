@@ -1,6 +1,10 @@
-import { AppRouter } from "./router";
+import { useEffect } from "react";
+import { use } from "./store/UsageExample";
 
 export default function App() {
-  return <AppRouter />;
+  useEffect(() => {
+    use()
+  })
+  return <div>hi</div>;
 }
 
