@@ -13,5 +13,5 @@ export const resultMapper = (stat: ArticlePreview): ArticlePreviewResultDTO => (
 });
 
 export const collectionResultMapper = (stats: ArticlePreview[]): ArticlePreviewCollectionResultDTO => ({
-  statistics: stats.map(resultMapper),
+  previews: stats.map(resultMapper),
 });

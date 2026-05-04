@@ -207,13 +207,13 @@ export class ApiClient {
 
   publicArticlePreview = {
     getById: (id: string): Promise<ArticlePreviewResultDTO> =>
-      this.get<ArticlePreviewResultDTO>(`/public/articlePreview/stats/${id}`),
+      this.get<ArticlePreviewResultDTO>(`/public/articlePreview/${id}`),
 
     getByIds: (dto: GetByIdsDto): Promise<ArticlePreviewCollectionResultDTO> =>
-      this.post<ArticlePreviewCollectionResultDTO>("/public/articleStatistic/by-ids", dto),
+      this.post<ArticlePreviewCollectionResultDTO>("/public/articlePreview/by-ids", dto),
 
     getInOrder: (dto: OrderDto): Promise<ArticlePreviewCollectionResultDTO> =>
-      this.get<ArticlePreviewCollectionResultDTO>("/public/articleStatistic/order", {
+      this.get<ArticlePreviewCollectionResultDTO>("/public/articlePreview/order", {
         order: dto.order,
         orderingProp: dto.orderingProp,
       }),

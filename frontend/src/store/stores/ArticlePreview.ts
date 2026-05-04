@@ -1,70 +1,38 @@
 import api from "../../api";
-import { ArticleFull, getArticleFullKey } from "./ArticleFull";
-import { ArticleMinified, getArticleMinifiedKey } from "./ArticleMinified";
-import { builder, CompileString, resolver, UUIDListPattern, UUIDPattern } from "../observableStoreConfig";
-import { ArticlePreviewResultDTO } from "../../api";
+import { buildRule, resolveOutside } from "../../lib/observableStoreConfig";
+import { ArticleBase } from "./ArticleBase";
+import { Article, ArticleRule } from "./ArticleFull";
 
-export const ArticlePreviewPattern = "articlePreview";
-export const getArticlePreviewKey = (id: string) => CompileString([ArticlePreviewPattern, id]);
-
-export class ArticlePreview {
+export class ArticlePreview extends ArticleBase{
   articleId: string;
   title: string;
-  authorId: string;
   views: number;
   likes: number;
   learners: number;
   masters: number;
   dagPoints: number;
-  async getArticleFull(): Promise<ArticleFull> {
-    return await resolver.resolveOutside<ArticleFull>(getArticleFullKey(this.articleId));
-  }
-  async getArticleMinified(): Promise<ArticleMinified> {
-    return await resolver.resolveOutside<ArticleMinified>(getArticleMinifiedKey(this.articleId));
+  async getArticle(): Promise<Article> {
+    return await resolveOutside(this.articleId, ArticleRule);
   }
 }
 
-builder.buildRuleSimple(
-  CompileString([ArticlePreviewPattern, UUIDPattern]),
-  ArticlePreview,
-  async (article, key) => {
-    const segments = key.split('/');
-    const articleId = segments[1];
-    const data = await api.publicArticlePreview.getById(articleId)
+export const ArticlePreviewRule = buildRule(
+  async (id: string) => await api.publicArticlePreview.getById(id),
+  { classConstructor: ArticlePreview }
+)
 
-    article.articleId = data.articleId;
-    article.title = data.title;
-    article.authorId = data.authorId;
-    article.views = data.views;
-    article.likes = data.likes;
-    article.learners = data.learners;
-    article.masters = data.masters;
-    article.dagPoints = data.dagPoints;
+export const ArticlePreviewCollectionRule = buildRule(
+  async (sortedIdsAmpersandTerminated: string) => {
+    const ids = sortedIdsAmpersandTerminated.split("&");
+    return await api.publicArticlePreview.getByIds({ ids });
+  },
+  { 
+    classConstructor: Array<ArticlePreview>,
+    update: async (target, data) => {
+      target.length = 0;
+      for (const preview of data.previews) {
+        target.push(await resolveOutside(preview.articleId, ArticlePreviewRule, preview));
+      }
+    },
   }
-);
-
-
-export const ArticlePreviewCollectionPattern = "articlePreviewCollection";
-export const getArticlePreviewCollectionKey = (ids: string[]) => CompileString([ArticlePreviewCollectionPattern, ids.toSorted().join('&')]);
-builder.buildRuleSimple(
-  CompileString([ArticlePreviewCollectionPattern, UUIDListPattern]),
-  Array,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async (target, key, _, allocated) => {
-    const segments = key.split('/');
-    const articleIds = segments[1].split('&');
-    const data = await api.publicArticlePreview.getByIds({ids: articleIds});
-    for (const statData of data.statistics) {
-      const stat = allocated<ArticlePreview>(getArticlePreviewKey(statData.articleId))
-      stat.articleId = statData.articleId;
-      stat.title = statData.title;
-      stat.authorId = statData.authorId;
-      stat.views = statData.views;
-      stat.likes = statData.likes;
-      stat.learners = statData.learners;
-      stat.masters = statData.masters;
-      stat.dagPoints = statData.dagPoints;
-      target.push(stat);
-    }
-  }
-);
+)

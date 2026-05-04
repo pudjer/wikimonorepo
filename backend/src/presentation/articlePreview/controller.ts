@@ -31,7 +31,7 @@ export class ArticlePreviewControllerPublic {
     @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadArticleIdError)' })
     @ApiNotFoundResponse({ description: 'Preview not found' })
     @ApiResponse({ status: 200, description: 'Preview found', type: ArticlePreviewResultDTO })
-    @Get('stats/:id')
+    @Get(':id')
     async findById(@Param('id') id: string): Promise<ArticlePreviewResultDTO> {
         const articleId = await this.articleIdValidator.validate(id);
         const stat = await this.articlePreviewService.getByArticleId(articleId);

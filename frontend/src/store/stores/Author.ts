@@ -1,12 +1,12 @@
 import api from "../../api";
 import { buildRule, resolveOutside } from "../../lib/observableStoreConfig";
-import { ArticleMinified } from "./ArticleMinified";
+import { ArticlePreview } from "./ArticlePreview";
 import { AuthorsArticlesRule } from "./AuthorsArticles";
 
 export class Author {
   id: string;
   username: string;
-  async getArticles(): Promise<ArticleMinified[]> {
+  async getArticles(): Promise<ArticlePreview[]> {
     return await resolveOutside(this.id, AuthorsArticlesRule);
   }
 

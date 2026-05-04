@@ -1,33 +1,36 @@
 import api from "../../api";
 import { buildRule, resolveOutside } from "../../lib/observableStoreConfig";
 import { ArticleBase } from "./ArticleBase";
-import { ArticleMinified, ArticleMinifiedRule } from "./ArticleMinified";
+import { ArticlePreview, ArticlePreviewRule } from "./ArticlePreview";
 
 export class ArticleLink {
   constructor(public name: string, public parent: string) {}
-  async getParentMinified(): Promise<ArticleMinified> {
-    return await resolveOutside(this.parent, ArticleMinifiedRule);
+  async getParentPreview(): Promise<ArticlePreview> {
+    return await resolveOutside(this.parent, ArticlePreviewRule);
   }
-  async getParentFull(): Promise<ArticleFull> {
-    return await resolveOutside(this.parent, ArticleFullRule);
+  async getParent(): Promise<Article> {
+    return await resolveOutside(this.parent, ArticleRule);
   }
 }
 
 
 
 
-export class ArticleFull extends ArticleBase {
+export class Article extends ArticleBase {
   title: string;
   content: string;
   links: ArticleLink[];
   createdAt: Date;
   updatedAt: Date;
+  async getPreview(): Promise<ArticlePreview> {
+    return await resolveOutside(this.id, ArticlePreviewRule);
+  }
 }
 
-export const ArticleFullRule = buildRule(
+export const ArticleRule = buildRule(
   async (id: string) => await api.publicArticles.getById(id),
   { 
-    classConstructor: ArticleFull , 
+    classConstructor: Article , 
     update: async (article, data) => {
       article.id = data.id;
       article.title = data.title;

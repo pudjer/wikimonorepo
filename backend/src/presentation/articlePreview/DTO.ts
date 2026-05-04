@@ -59,5 +59,5 @@ export class ArticlePreviewCollectionResultDTO {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ArticlePreviewResultDTO)
-  statistics: ArticlePreviewResultDTO[];
+  previews: ArticlePreviewResultDTO[];
 }
