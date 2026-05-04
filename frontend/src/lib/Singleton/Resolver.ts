@@ -12,6 +12,7 @@ export type BuildRule<T extends object> = BaseRule<T> & {
     target: T,
     key: string,
     resolve: ResolverFn,
+    allocated: <A extends object>(key: string) => A
   ): Promise<void>;
 };
 
@@ -41,21 +42,28 @@ class ResolveContext {
       throw new Error(`No rule found for key: ${key}`);
     }
 
-    const target = this.getOrCreate(key, rule);
+    const target = this.getOrAllocate(key, rule);
     // Запускаем гидратацию: при необходимости очищаем и строим заново
     await this.hydrate(target, key, async (t: T, k: string) => {
       await rule.update(
         t,
         k,
         this.resolve.bind(this),      // тот же контекст разрешения
+        this.getAllocated.bind(this)
       );
     });
     return target;
 
   }
-
+  private getAllocated<T extends object>(key: string): T {
+    const rule = this.findRule<T>(key);
+    if (!rule) {
+      throw new Error(`No rule found for key: ${key}`);
+    }
+    return this.getOrAllocate(key, rule);
+  }
   // Вспомогательный метод: достать из кэша или создать через правило
-  private getOrCreate<T extends object>(key: string, rule: BaseRule<T>): T {
+  private getOrAllocate<T extends object>(key: string, rule: BaseRule<T>): T {
     let obj = this.allocator.get<T>(key);
     if (!obj) {
       obj = rule.allocate(key);

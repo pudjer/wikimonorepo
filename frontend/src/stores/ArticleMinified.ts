@@ -1,17 +1,12 @@
 import api from "../api";
-import { Article, getArticleKey } from "./Article";
-import { Author, getAuthorKey } from "./Author";
+import { ArticleFull, getArticleFullKey } from "./ArticleFull";
+import { ArticleBase } from "./ArticleBase";
 import { builder, CompileString, resolver, UUIDPattern } from "./storeConfig";
 
-export class ArticleMinified{
-  id: string;
+export class ArticleMinified extends ArticleBase{
   title: string;
-  authorId: string;
-  async getAuthor(): Promise<Author> {
-    return await resolver.resolveOutside<Author>(getAuthorKey(this.authorId));
-  }
-  async getFullArticle(): Promise<Article> {
-    return await resolver.resolveOutside<Article>(getArticleKey(this.id));
+  async getFullArticle(): Promise<ArticleFull> {
+    return await resolver.resolveOutside<ArticleFull>(getArticleFullKey(this.id));
   }
 }
 

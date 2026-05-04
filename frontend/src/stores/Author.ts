@@ -1,9 +1,15 @@
 import api from "../api";
-import { builder, CompileString, UUIDPattern } from "./storeConfig";
+import { ArticleMinified } from "./ArticleMinified";
+import { getAuthorsArticlesKey } from "./AuthorsArticles";
+import { builder, CompileString, resolver, UUIDPattern } from "./storeConfig";
 
 export class Author {
   id: string;
   username: string;
+  async getArticles(): Promise<ArticleMinified[]> {
+    return await resolver.resolveOutside<ArticleMinified[]>(getAuthorsArticlesKey(this.id));
+  }
+
 }
 const UserPattern = "user";
 

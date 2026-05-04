@@ -127,7 +127,6 @@ export { RoleName }
 
 export class ApiClient {
   private readonly client: AxiosInstance;
-  private refreshIntervalId: ReturnType<typeof setInterval> | null = null;
 
   constructor(baseURL: string) {
     this.client = axios.create({

@@ -16,11 +16,12 @@ export function CompileString(strArr: string[]): string {
   return strArr.join("/");
 }
 export const UUIDPattern = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
-
+export const UUIDListPattern = `${UUIDPattern}(?:&${UUIDPattern})*`;
 
 ///imports
 import { Author } from "./Author";
-import { Article } from "./Article";
+import { ArticleFull } from "./ArticleFull";
+import { ArticleMinified } from "./ArticleMinified";
 
 ///
 

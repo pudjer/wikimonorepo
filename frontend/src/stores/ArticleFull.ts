@@ -1,31 +1,29 @@
 import api from "../api";
-import { Author, getAuthorKey } from "./Author";
-import { CompileString, UUIDPattern, builder, resolver } from "./storeConfig";
+import { ArticleBase } from "./ArticleBase";
+import { CompileString, UUIDPattern, builder } from "./storeConfig";
 
 export class ArticleLink {
   name: string;
   parent: string;
 }
 
-export class Article {
-  id: string;
+
+
+
+export class ArticleFull extends ArticleBase {
   title: string;
   content: string;
-  authorId: string;
   links: ArticleLink[];
   createdAt: Date;
   updatedAt: Date;
-  async getAuthor(): Promise<Author> {
-    return await resolver.resolveOutside<Author>(getAuthorKey(this.authorId));
-  }
 }
 
-export const ArticlePattern = "article";
+export const ArticleFullPattern = "articleFull";
 
 
 builder.buildRuleSimple(
-  CompileString([ArticlePattern, UUIDPattern]),
-  Article,
+  CompileString([ArticleFullPattern, UUIDPattern]),
+  ArticleFull,
   async (article, key) => {
     const segments = key.split('/');
     const articleId = segments[1];
@@ -42,7 +40,7 @@ builder.buildRuleSimple(
   }
 );
 
-export const getArticleKey = (id: string) => CompileString([ArticlePattern, id])
+export const getArticleFullKey = (id: string) => CompileString([ArticleFullPattern, id])
 
 
 
