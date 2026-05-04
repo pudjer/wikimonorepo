@@ -1,6 +1,6 @@
 import { ArticleStatistic, getArticleStatisticKey } from "./ArticleStatistic";
 import { Author, getAuthorKey } from "./Author";
-import { resolver } from "./storeConfig";
+import { resolver } from "./observableStoreConfig";
 
 export class ArticleBase{
   id: string;

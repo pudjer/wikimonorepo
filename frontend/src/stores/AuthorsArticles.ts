@@ -1,6 +1,6 @@
 import api from "../api";
 import { getArticleMinifiedKey } from "./ArticleMinified";
-import { builder, CompileString, UUIDPattern } from "./storeConfig";
+import { builder, CompileString, UUIDPattern } from "./observableStoreConfig";
 
 const authorsArticlesPattern = "authorsArticles";
 builder.buildRuleSimple(

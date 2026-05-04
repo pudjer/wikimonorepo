@@ -1,7 +1,7 @@
 import api from "../api";
 import { ArticleFull, getArticleFullKey } from "./ArticleFull";
 import { ArticleBase } from "./ArticleBase";
-import { builder, CompileString, resolver, UUIDPattern } from "./storeConfig";
+import { builder, CompileString, resolver, UUIDPattern } from "./observableStoreConfig";
 
 export class ArticleMinified extends ArticleBase{
   title: string;

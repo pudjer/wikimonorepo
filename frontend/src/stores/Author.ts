@@ -1,7 +1,6 @@
 import api from "../api";
 import { ArticleMinified } from "./ArticleMinified";
 import { getAuthorsArticlesKey } from "./AuthorsArticles";
-import { builder, CompileString, resolver, UUIDPattern } from "./storeConfig";
 
 export class Author {
   id: string;

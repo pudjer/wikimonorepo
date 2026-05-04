@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { Autorun, ClearWatchers } from "../observableProxy/autorun/autorun";
 
 export const getObserverHoc = (autorun: Autorun) =>

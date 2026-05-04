@@ -1,7 +1,7 @@
 import api from "../api";
 import { ArticleFull, getArticleFullKey } from "./ArticleFull";
 import { ArticleMinified, getArticleMinifiedKey } from "./ArticleMinified";
-import { builder, CompileString, resolver, UUIDListPattern, UUIDPattern } from "./storeConfig";
+import { builder, CompileString, resolver, UUIDListPattern, UUIDPattern } from "./observableStoreConfig";
 
 export const ArticleStatisticPattern = "articleStatistic";
 export const getArticleStatisticKey = (id: string) => CompileString([ArticleStatisticPattern, id]);

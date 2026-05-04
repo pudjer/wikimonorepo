@@ -2,106 +2,77 @@ import { Hydrate, Hydrator } from "./Hydrator";
 import { IdentityStore } from "./Singleton";
 
 // ========== Типы (без изменений) ==========
-export type BaseRule<T> = {
-  matchKey(key: string): boolean;
-  allocate(key: string): T;
-};
 
-export type BuildRule<T extends object> = BaseRule<T> & {
+export type BuildRule<T extends object, D, KEY> = {
+  allocate(key: KEY): T;
+  fetch(key: KEY): Promise<D>;
   update(
     target: T,
-    key: string,
+    data: D,
     resolve: ResolverFn,
-    allocated: <A extends object>(key: string) => A
+    key: KEY,
   ): Promise<void>;
 };
 
 
-export type ResolverFn = <T extends object>(key: string) => Promise<T>;
+export type ResolverFn = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>, data?: D) => Promise<T>;
 
-export type ResolveRule<T extends object = object> = BuildRule<T>
 
-export interface IResolver {
-  refreshOutside: <T extends object>(key: string) => Promise<T>;
-  addRule: (rule: ResolveRule) => void;
-  resolveOutside: <T extends object>(key: string) => Promise<T>;
+
+
+export type PerRuleIdentity<T extends object, D, KEY> = WeakMap<BuildRule<T, D, KEY>, IdentityStore<T, KEY>>;
+
+export class Resolver {
+
+  private readonly perRuleIdentity: PerRuleIdentity<object, unknown, unknown> = new WeakMap();
+  private readonly hydrator: Hydrator = new Hydrator();
+
+  resolveOutside: ResolverFn = async (key, rule, data?) => {
+    // Каждый внешний вызов получает СВОЙ hydrator unit
+    const hydrate = this.hydrator.getHydratorUnit();
+    const context = new ResolveContext(hydrate, this.perRuleIdentity);
+    return context.resolve(key, rule, data);
+  }
+
+  invalidate = (target: object): void => {
+    this.hydrator.invalidate(target);
+  }
 }
-
 
 // ========== Контекст одного внешнего вызова ==========
 class ResolveContext {
   constructor(
-    private readonly allocator: IdentityStore,
-    private readonly hydrate: Hydrate<object, unknown>,
-    private readonly rules: ResolveRule[]
+    private readonly hydrate: Hydrate,
+    private readonly perRuleIdentity: PerRuleIdentity<object, unknown, unknown>,
   ) {}
 
-  async resolve<T extends object>(key: string): Promise<T> {
-    const rule = this.findRule<T>(key);
-    if (!rule) {
-      throw new Error(`No rule found for key: ${key}`);
-    }
+  resolve = async <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>, data?: D): Promise<T> => {
+    const target = this.getOrAllocate<T, D, KEY>(key, rule);
 
-    const target = this.getOrAllocate(key, rule);
-    // Запускаем гидратацию: при необходимости очищаем и строим заново
-    await this.hydrate(target, key, async (t: T, k: string) => {
+    await this.hydrate(target, key, async (t: typeof target, k: typeof key) => {
+      const d = data || (await rule.fetch(k));
       await rule.update(
         t,
+        d,
+        this.resolve,
         k,
-        this.resolve.bind(this),      // тот же контекст разрешения
-        this.getAllocated.bind(this)
       );
     });
     return target;
 
   }
-  private getAllocated<T extends object>(key: string): T {
-    const rule = this.findRule<T>(key);
-    if (!rule) {
-      throw new Error(`No rule found for key: ${key}`);
+  private getOrAllocate = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>): T => {
+    let identity = this.perRuleIdentity.get(rule) as IdentityStore<T, KEY> 
+    if(!identity) {
+      identity = new IdentityStore();
+      this.perRuleIdentity.set(rule, identity);
     }
-    return this.getOrAllocate(key, rule);
-  }
-  // Вспомогательный метод: достать из кэша или создать через правило
-  private getOrAllocate<T extends object>(key: string, rule: BaseRule<T>): T {
-    let obj = this.allocator.get<T>(key);
-    if (!obj) {
-      obj = rule.allocate(key);
-      this.allocator.set(key, obj);
+    let target = identity.get(key);
+    if(!target) {
+      target = rule.allocate(key);
+      identity.set(key, target);
     }
-    return obj;
+    return target;
   }
 
-  private findRule<T extends object>(key: string): ResolveRule<T> | undefined {
-    return this.rules.find((rule) => rule.matchKey(key)) as ResolveRule<T>;
-  }
-}
-
-// ========== Публичный Resolver ==========
-export class Resolver implements IResolver {
-  private readonly rules: ResolveRule[] = [];
-
-  constructor(
-    private readonly allocator: IdentityStore,
-    private readonly hydrator: Hydrator
-  ) {}
-
-  addRule(rule: ResolveRule) {
-    this.rules.push(rule);
-  }
-
-  async refreshOutside<T extends object>(key: string) {
-    const target = this.allocator.get<T>(key);
-    if (target) {
-      this.hydrator.invalidate(target);
-    }
-    return this.resolveOutside<T>(key);
-  }
-
-  async resolveOutside<T extends object>(key: string): Promise<T> {
-    // Каждый внешний вызов получает СВОЙ hydrator unit
-    const hydrate = this.hydrator.getHydratorUnit();
-    const context = new ResolveContext(this.allocator, hydrate, this.rules);
-    return context.resolve<T>(key);
-  }
 }

@@ -17,7 +17,7 @@ export class Autorun{
     private readonly disposes = new WeakMap<Wrapped, Set<ClearWatchers>>()
 
 
-    public autorun(func: ClientFunction): ClearWatchers {
+    public autorun = (func: ClientFunction): ClearWatchers => {
         const disposable = () => {
             dispose()
             return func(dispose)
@@ -28,17 +28,17 @@ export class Autorun{
         return dispose
     }
 
-    public reaction<F extends ()=>unknown>(tracking: F, reaction: ()=>void): {dispose: ClearWatchers, result: ReturnType<F>}{
+    public reaction = <F extends ()=>unknown>(tracking: F, reaction: ()=>void): {dispose: ClearWatchers, result: ReturnType<F>} => {
         const wrapped = this.wrapper.wrap(tracking, reaction)
         const dispose = this.getDispose(reaction)
         return {dispose, result: wrapped() as ReturnType<F>}
     }
 
 
-    public registerObject<T extends object>(object: T): T {
+    public registerObject = <T extends object>(object: T): T => {
         return ObservableProxy(object, this.onRead, this.onChange) as T
     }
-    private getDispose(reaction: (...args: unknown[])=>unknown): ClearWatchers {
+    private getDispose = (reaction: (...args: unknown[])=>unknown): ClearWatchers => {
         const dispose: ClearWatchers = () => {
             const disposes = this.disposes.get(reaction)
             if(!disposes) return
@@ -60,10 +60,10 @@ export class Autorun{
 
 
 
-    private getReactionOnProp(object: object, property: ObjectsProperty<object>): ReadonlySet<Wrapped>{
+    private getReactionOnProp = (object: object, property: ObjectsProperty<object>): ReadonlySet<Wrapped> =>{
         return this.object_props_functionss_map.get(object)?.get(property) ?? new Set()
     }
-    private addReactionOnProp(object: object, property: ObjectsProperty<object>, cont: Wrapped){
+    private addReactionOnProp = (object: object, property: ObjectsProperty<object>, cont: Wrapped) => {
         let props = this.object_props_functionss_map.get(object)
         if(!props){
             props = new Map()
@@ -84,7 +84,7 @@ export class Autorun{
         disposes.add(() => this.removeReactionOnProp(object, property, cont))
     }
 
-    private removeReactionOnProp(object: object, property: ObjectsProperty<object>, cont: Wrapped){
+    private removeReactionOnProp = (object: object, property: ObjectsProperty<object>, cont: Wrapped) => {
         const props = this.object_props_functionss_map.get(object)
         if(!props) return
         const functions = props.get(property)

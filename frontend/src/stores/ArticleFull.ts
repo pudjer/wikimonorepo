@@ -1,6 +1,6 @@
 import api from "../api";
 import { ArticleBase } from "./ArticleBase";
-import { CompileString, UUIDPattern, builder } from "./storeConfig";
+import { CompileString, UUIDPattern, builder } from "./observableStoreConfig";
 
 export class ArticleLink {
   name: string;
