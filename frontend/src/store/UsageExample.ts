@@ -1,5 +1,5 @@
 import { resolveOutside } from "../lib/observableStoreConfig";
-import { ArticlePreviewRule } from "./stores/ArticlePreview";
+import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 
 export const use = async () => {
   const art = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", ArticlePreviewRule);

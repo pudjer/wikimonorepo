@@ -95,17 +95,4 @@ export class ArticleIdCollectionResultDTO {
   ids: string[];
 }
 
-export class MinifiedArticleResultDTO {
-  @ApiProperty()
-  @IsString()
-  id: string;
-
-  @ApiProperty()
-  @IsString()
-  title: string;
-
-  @ApiProperty()
-  @IsString()
-  authorId: string;
-}
 

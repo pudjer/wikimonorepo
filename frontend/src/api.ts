@@ -7,7 +7,6 @@ import type {
   ArticleIdCollectionResultDTO,
   CreateArticleDto,
   UpdateArticleDto,
-  MinifiedArticleResultDTO,
   ArticleReferenceDto,
 } from "backend/src/presentation/article/common/DTO";
 
@@ -16,7 +15,6 @@ export type {
   ArticleIdCollectionResultDTO,
   CreateArticleDto,
   UpdateArticleDto,
-  MinifiedArticleResultDTO,
   ArticleReferenceDto,
 }
 
@@ -161,9 +159,6 @@ export class ApiClient {
 
       getByAuthorId: (id: string): Promise<ArticleIdCollectionResultDTO> =>
         this.get<ArticleIdCollectionResultDTO>(`/public/articles/author/${id}`),
-
-      getMinifiedById: (id: string): Promise<MinifiedArticleResultDTO> =>
-        this.get<MinifiedArticleResultDTO>(`/public/articles/minified/${id}`),
     },
 
     articleDAG: {

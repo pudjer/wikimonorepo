@@ -9,8 +9,8 @@ import {
 } from '@nestjs/swagger';
 import { ArticleIdValidator } from "../../../domain/article/props/articleId";
 import { UserIdValidator } from "../../../domain/user/props/userId";
-import { ArticleResultDTO, ArticleIdCollectionResultDTO, MinifiedArticleResultDTO } from "../common/DTO";
-import { resultMapper, minifiedMapper } from "../common/mapper";
+import { ArticleResultDTO, ArticleIdCollectionResultDTO } from "../common/DTO";
+import { resultMapper } from "../common/mapper";
 import { ARTICLE_ID_VALIDATOR_TOKEN, ARTICLE_SERVICE_PUBLIC_TOKEN, USER_ID_VALIDATOR_TOKEN } from "../../../tokens";
 import { IArticleServicePublic } from "../../../application/article/public/service";
 
@@ -48,23 +48,12 @@ export class ArticleControllerPublic {
     @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadUserIdError)' })
     @ApiNotFoundResponse({ description: 'Author not found (e.g., AuthorNotFoundError)' })
     @ApiResponse({ status: 200, description: 'Article IDs found', type: ArticleIdCollectionResultDTO })
-@Get('author/:id')
+    @Get('author/:id')
     async findByAuthorId(@Param('id') id: string): Promise<ArticleIdCollectionResultDTO> {
         const userId = await this.userIdValidator.validate(id);
         const articleIds = await this.articleService.findByAuthorId(userId);
         return { ids: articleIds };
     }
 
-    @ApiOperation({ summary: 'Get minified article by ID' })
-    @ApiParam({ name: 'id', description: 'Article ID' })
-    @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadArticleIdError)' })
-    @ApiNotFoundResponse({ description: 'Article not found (e.g., ArticleNotFoundError)' })
-    @ApiResponse({ status: 200, description: 'Minified article found', type: MinifiedArticleResultDTO })
-    @Get('minified/:id')
-    async findMinifiedById(@Param('id') id: string): Promise<MinifiedArticleResultDTO> {
-        const articleId = await this.articleIdValidator.validate(id);
-        const article = await this.articleService.findById(articleId);
-        return minifiedMapper(article);
-    }
 }
 

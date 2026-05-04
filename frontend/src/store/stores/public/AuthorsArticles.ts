@@ -1,5 +1,5 @@
-import api from "../../api";
-import { buildRule, resolveOutside } from "../../lib/observableStoreConfig";
+import api from "../../../api";
+import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 

@@ -1,4 +1,4 @@
-import { resolveOutside } from "../../lib/observableStoreConfig";
+import { resolveOutside } from "../../../lib/observableStoreConfig";
 import { Author, AuthorRule } from "./Author";
 
 export class ArticleBase{
