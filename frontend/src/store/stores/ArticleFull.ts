@@ -28,7 +28,7 @@ export class Article extends ArticleBase {
 }
 
 export const ArticleRule = buildRule(
-  async (id: string) => await api.publicArticles.getById(id),
+  async (id: string) => await api.public.articles.getById(id),
   { 
     classConstructor: Article , 
     update: async (article, data) => {

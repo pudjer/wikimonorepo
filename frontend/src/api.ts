@@ -8,6 +8,7 @@ import type {
   CreateArticleDto,
   UpdateArticleDto,
   MinifiedArticleResultDTO,
+  ArticleReferenceDto,
 } from "backend/src/presentation/article/common/DTO";
 
 export type {
@@ -16,9 +17,8 @@ export type {
   CreateArticleDto,
   UpdateArticleDto,
   MinifiedArticleResultDTO,
+  ArticleReferenceDto,
 }
-
-
 
 import type { Success } from "backend/src/presentation/common/DTO";
 
@@ -46,12 +46,14 @@ import type {
   SearchArticlesQueryDto,
   SearchInArticlesQueryDto,
   SearchArticlesResultDto,
+  ArticleSearchResultDto,
 } from "backend/src/presentation/search/DTO";
 
 export type {
   SearchArticlesQueryDto,
   SearchInArticlesQueryDto,
   SearchArticlesResultDto,
+  ArticleSearchResultDto,
 }
 
 import type {
@@ -106,12 +108,6 @@ export type {
   UserRegisterInputDtoAdmin,
 }
 
-import type { ArticleReferenceDto } from "backend/src/presentation/article/common/DTO";
-export type { ArticleReferenceDto }
-
-import type { ArticleSearchResultDto } from "backend/src/presentation/search/DTO";
-export type { ArticleSearchResultDto }
-
 import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO";
 
 export type { SessionDto, LoginDto }
@@ -138,7 +134,6 @@ export class ApiClient {
     });
   }
 
-
   private async get<T>(url: string, params?: Record<string, unknown>): Promise<T> {
     const res: AxiosResponse<T> = await this.client.get(url, { params });
     return res.data;
@@ -159,150 +154,138 @@ export class ApiClient {
     return res.data;
   }
 
-  // -------- Public Articles --------
+  public = {
+    articles: {
+      getById: (id: string): Promise<ArticleResultDTO> =>
+        this.get<ArticleResultDTO>(`/public/articles/article/${id}`),
 
-  publicArticles = {
-    getById: (id: string): Promise<ArticleResultDTO> =>
-      this.get<ArticleResultDTO>(`/public/articles/article/${id}`),
+      getByAuthorId: (id: string): Promise<ArticleIdCollectionResultDTO> =>
+        this.get<ArticleIdCollectionResultDTO>(`/public/articles/author/${id}`),
 
-    getByAuthorId: (id: string): Promise<ArticleIdCollectionResultDTO> =>
-      this.get<ArticleIdCollectionResultDTO>(`/public/articles/author/${id}`),
+      getMinifiedById: (id: string): Promise<MinifiedArticleResultDTO> =>
+        this.get<MinifiedArticleResultDTO>(`/public/articles/minified/${id}`),
+    },
 
-    getMinifiedById: (id: string): Promise<MinifiedArticleResultDTO> =>
-      this.get<MinifiedArticleResultDTO>(`/public/articles/minified/${id}`),
+    articleDAG: {
+      getDAG: (ids: string[]): Promise<ArticleDAGResultDTO> =>
+        this.get<ArticleDAGResultDTO>("/public/articleDAG", { ids }),
+    },
+
+    articlePreview: {
+      getById: (id: string): Promise<ArticlePreviewResultDTO> =>
+        this.get<ArticlePreviewResultDTO>(`/public/articlePreview/${id}`),
+
+      getByIds: (dto: GetByIdsDto): Promise<ArticlePreviewCollectionResultDTO> =>
+        this.post<ArticlePreviewCollectionResultDTO>("/public/articlePreview/by-ids", dto),
+
+      getInOrder: (dto: OrderDto): Promise<ArticlePreviewCollectionResultDTO> =>
+        this.get<ArticlePreviewCollectionResultDTO>("/public/articlePreview/order", {
+          order: dto.order,
+          orderingProp: dto.orderingProp,
+        }),
+    },
+
+    search: {
+      searchArticles: (dto: SearchArticlesQueryDto): Promise<SearchArticlesResultDto> =>
+        this.get<SearchArticlesResultDto>("/public/search/articles", {
+          query: dto.query,
+          page: dto.page,
+          size: dto.size,
+        }),
+
+      searchInArticles: (dto: SearchInArticlesQueryDto): Promise<SearchArticlesResultDto> =>
+        this.get<SearchArticlesResultDto>("/public/search/in-articles", {
+          query: dto.query,
+          articleIds: dto.articleIds,
+          page: dto.page,
+          size: dto.size,
+        }),
+    },
+
+    user: {
+      get: (userId: string): Promise<UserOutputDtoPublic> =>
+        this.get<UserOutputDtoPublic>(`/public/user/${userId}`),
+
+      register: (dto: UserRegisterInputDtoPublic): Promise<RegisterOutputDto> =>
+        this.post<RegisterOutputDto>("/public/user", dto),
+    },
   };
 
+  private = {
+    articles: {
+      create: (dto: CreateArticleDto): Promise<ArticleResultDTO> =>
+        this.post<ArticleResultDTO>("/private/articles", dto),
 
-  // -------- Private Articles --------
+      update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
+        this.patch<ArticleResultDTO>(`/private/articles/${id}`, dto),
 
-  privateArticles = {
-    create: (dto: CreateArticleDto): Promise<ArticleResultDTO> =>
-      this.post<ArticleResultDTO>("/private/articles", dto),
+      delete: (id: string): Promise<Success> =>
+        this.delete<Success>(`/private/articles/${id}`),
+    },
 
-    update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
-      this.patch<ArticleResultDTO>(`/private/articles/${id}`, dto),
+    interactionUserArticle: {
+      updateLearnProgress: (articleId: string, dto: UpdateLearnProgressDto): Promise<Success> =>
+        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/learnProgress`, dto),
 
-    delete: (id: string): Promise<Success> =>
-      this.delete<Success>(`/private/articles/${id}`),
+      like: (articleId: string): Promise<Success> =>
+        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
+
+      unlike: (articleId: string): Promise<Success> =>
+        this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
+
+      view: (articleId: string): Promise<Success> =>
+        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
+
+      removeView: (articleId: string): Promise<Success> =>
+        this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
+
+      getTotal: (articleId: string): Promise<InteractionResultDto> =>
+        this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
+
+      getLikes: (): Promise<LikeDto[]> =>
+        this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
+
+      getViews: (): Promise<ViewDto[]> =>
+        this.get<ViewDto[]>("/private/interactionUserArticle/views"),
+
+      getLearnProgress: (): Promise<LearnProgressDto[]> =>
+        this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
+    },
+
+    user: {
+      get: (): Promise<UserOutputDtoPrivate> =>
+        this.get<UserOutputDtoPrivate>("/private/user"),
+
+      update: (dto: UpdateInputDtoPrivate): Promise<UserOutputDtoPrivate> =>
+        this.patch<UserOutputDtoPrivate>("/private/user", dto),
+    },
   };
 
-  // -------- Admin Articles --------
+  admin = {
+    articles: {
+      update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
+        this.patch<ArticleResultDTO>(`/admin/articles/${id}`, dto),
 
-  adminArticles = {
-    update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
-      this.patch<ArticleResultDTO>(`/admin/articles/${id}`, dto),
+      delete: (id: string): Promise<Success> =>
+        this.delete<Success>(`/admin/articles/${id}`),
+    },
 
-    delete: (id: string): Promise<Success> =>
-      this.delete<Success>(`/admin/articles/${id}`),
+    user: {
+      get: (userId: string): Promise<UserOutputDtoAdmin> =>
+        this.get<UserOutputDtoAdmin>(`/admin/user/${userId}`),
+
+      update: (userId: string, dto: UserUpdateInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
+        this.patch<UserOutputDtoAdmin>(`/admin/user/${userId}`, dto),
+
+      register: (dto: UserRegisterInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
+        this.post<UserOutputDtoAdmin>("/admin/user", dto),
+    },
+
+    session: {
+      logoutAll: (userId: string): Promise<Success> =>
+        this.post<Success>(`/admin/session/${userId}`),
+    },
   };
-
-  // -------- Public ArticleDAG --------
-
-  publicArticleDAG = {
-    getDAG: (ids: string[]): Promise<ArticleDAGResultDTO> =>
-      this.get<ArticleDAGResultDTO>("/public/articleDAG", { ids }),
-  };
-
-  // -------- Public ArticlePreview --------
-
-  publicArticlePreview = {
-    getById: (id: string): Promise<ArticlePreviewResultDTO> =>
-      this.get<ArticlePreviewResultDTO>(`/public/articlePreview/${id}`),
-
-    getByIds: (dto: GetByIdsDto): Promise<ArticlePreviewCollectionResultDTO> =>
-      this.post<ArticlePreviewCollectionResultDTO>("/public/articlePreview/by-ids", dto),
-
-    getInOrder: (dto: OrderDto): Promise<ArticlePreviewCollectionResultDTO> =>
-      this.get<ArticlePreviewCollectionResultDTO>("/public/articlePreview/order", {
-        order: dto.order,
-        orderingProp: dto.orderingProp,
-      }),
-  };
-
-  // -------- Public Search --------
-
-  publicSearch = {
-    searchArticles: (dto: SearchArticlesQueryDto): Promise<SearchArticlesResultDto> =>
-      this.get<SearchArticlesResultDto>("/public/search/articles", {
-        query: dto.query,
-        page: dto.page,
-        size: dto.size,
-      }),
-
-    searchInArticles: (dto: SearchInArticlesQueryDto): Promise<SearchArticlesResultDto> =>
-      this.get<SearchArticlesResultDto>("/public/search/in-articles", {
-        query: dto.query,
-        articleIds: dto.articleIds,
-        page: dto.page,
-        size: dto.size,
-      }),
-  };
-
-  // -------- Private InteractionUserArticle --------
-
-  privateInteractionUserArticle = {
-    updateLearnProgress: (articleId: string, dto: UpdateLearnProgressDto): Promise<Success> =>
-      this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/learnProgress`, dto),
-
-    like: (articleId: string): Promise<Success> =>
-      this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
-
-    unlike: (articleId: string): Promise<Success> =>
-      this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
-
-    view: (articleId: string): Promise<Success> =>
-      this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
-
-    removeView: (articleId: string): Promise<Success> =>
-      this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
-
-    getTotal: (articleId: string): Promise<InteractionResultDto> =>
-      this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
-
-    getLikes: (): Promise<LikeDto[]> =>
-      this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
-
-    getViews: (): Promise<ViewDto[]> =>
-      this.get<ViewDto[]>("/private/interactionUserArticle/views"),
-
-    getLearnProgress: (): Promise<LearnProgressDto[]> =>
-      this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
-  };
-
-  // -------- Public User --------
-
-  publicUser = {
-    get: (userId: string): Promise<UserOutputDtoPublic> =>
-      this.get<UserOutputDtoPublic>(`/public/user/${userId}`),
-
-    register: (dto: UserRegisterInputDtoPublic): Promise<RegisterOutputDto> =>
-      this.post<RegisterOutputDto>("/public/user", dto),
-  };
-
-  // -------- Private User --------
-
-  privateUser = {
-    get: (): Promise<UserOutputDtoPrivate> =>
-      this.get<UserOutputDtoPrivate>("/private/user"),
-
-    update: (dto: UpdateInputDtoPrivate): Promise<UserOutputDtoPrivate> =>
-      this.patch<UserOutputDtoPrivate>("/private/user", dto),
-  };
-
-  // -------- Admin User --------
-
-  adminUser = {
-    get: (userId: string): Promise<UserOutputDtoAdmin> =>
-      this.get<UserOutputDtoAdmin>(`/admin/user/${userId}`),
-
-    update: (userId: string, dto: UserUpdateInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
-      this.patch<UserOutputDtoAdmin>(`/admin/user/${userId}`, dto),
-
-    register: (dto: UserRegisterInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
-      this.post<UserOutputDtoAdmin>("/admin/user", dto),
-  };
-
-  // -------- Session --------
 
   session = {
     refresh: (): Promise<SessionDto> =>
@@ -315,18 +298,9 @@ export class ApiClient {
       this.post<Success>("/session/logout-all"),
   };
 
-  // -------- Login --------
-
   login = {
     login: (dto: LoginDto): Promise<SessionDto> =>
       this.post<SessionDto>("/login", dto),
-  };
-
-  // -------- Admin Session --------
-
-  adminSession = {
-    logoutAll: (userId: string): Promise<Success> =>
-      this.post<Success>(`/admin/session/${userId}`),
   };
 }
 

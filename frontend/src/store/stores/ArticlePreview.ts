@@ -17,14 +17,14 @@ export class ArticlePreview extends ArticleBase{
 }
 
 export const ArticlePreviewRule = buildRule(
-  async (id: string) => await api.publicArticlePreview.getById(id),
+  async (id: string) => await api.public.articlePreview.getById(id),
   { classConstructor: ArticlePreview }
 )
 
 export const ArticlePreviewCollectionRule = buildRule(
   async (sortedIdsAmpersandTerminated: string) => {
     const ids = sortedIdsAmpersandTerminated.split("&");
-    return await api.publicArticlePreview.getByIds({ ids });
+    return await api.public.articlePreview.getByIds({ ids });
   },
   { 
     classConstructor: Array<ArticlePreview>,

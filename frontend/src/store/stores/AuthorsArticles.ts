@@ -6,7 +6,7 @@ import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 
 export const AuthorsArticlesRule = buildRule(
-  async (id: string) => await api.publicArticles.getByAuthorId(id),
+  async (id: string) => await api.public.articles.getByAuthorId(id),
   { 
     classConstructor: Array<ArticlePreview>, 
     update: async (target, data) => { 
