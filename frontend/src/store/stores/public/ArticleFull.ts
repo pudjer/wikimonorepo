@@ -17,7 +17,6 @@ export class ArticleLink {
 
 
 export class Article extends ArticleBase {
-  title: string;
   content: string;
   links: ArticleLink[];
   createdAt: Date;

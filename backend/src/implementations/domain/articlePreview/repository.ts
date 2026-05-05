@@ -8,7 +8,7 @@ import { Title } from "../../../domain/article/props/title";
 import { UserId } from "../../../domain/user/props/userId";
 
 type FindResult = {
-  articleId: ArticleId;
+  id: ArticleId;
   title: Title;
   authorId: UserId;
   views: Integer | null;
@@ -30,7 +30,7 @@ export class ArticlePreviewRepositoryImpl
     const r = record.toObject();
 
     return new ArticlePreview(
-      r.articleId,
+      r.id,
       r.title,
       r.authorId,
       new ViewsNumber(r.views ? r.views.toNumber() : 0),
@@ -46,7 +46,7 @@ export class ArticlePreviewRepositoryImpl
       `
       MATCH (a:Article {id: $articleId})-[:AUTHORED_BY]->(u:User)
       RETURN 
-        a.id AS articleId,
+        a.id AS id,
         a.title AS title,
         u.id AS authorId,
         a.views AS views,
@@ -71,7 +71,7 @@ export class ArticlePreviewRepositoryImpl
       MATCH (a:Article)-[:AUTHORED_BY]->(u:User)
       WHERE a.id IN $articleIds
       RETURN 
-        a.id AS articleId,
+        a.id AS id,
         a.title AS title,
         u.id AS authorId,
         a.views AS views,
@@ -96,7 +96,7 @@ export class ArticlePreviewRepositoryImpl
       `
         MATCH (a:Article)-[:AUTHORED_BY]->(u:User)
         RETURN 
-          a.id AS articleId,
+          a.id AS id,
           a.title AS title,
           u.id AS authorId,
           a.views AS views,

@@ -38,7 +38,7 @@ import { LearnProgressService } from '../application/interactionUserArticle/lear
 import { LikeService } from '../application/interactionUserArticle/like/service';
 import { ViewService } from '../application/interactionUserArticle/view/service';
 import { TotalInteractionService } from '../application/interactionUserArticle/total/service';
-import { ArticlePreviewService } from '../application/articleTotalStatistic/service';
+import { ArticlePreviewService } from '../application/articlePreview/service';
 import { ArticleCreatedHandler, ArticleDeletedHandler, ArticleUpdatedHandler } from '../application/search/articleEventsHandlers';
 import { ArticleSearchIndexService, IArticleSearchIndexService } from '../application/search/indexingService';
 import { ArticleSearchService } from '../application/search/service';

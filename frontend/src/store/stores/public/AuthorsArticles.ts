@@ -1,5 +1,5 @@
 import api from "../../../api";
-import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
+import { buildRule } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 
@@ -9,10 +9,10 @@ export const AuthorsArticlesRule = buildRule(
   async (id: string) => await api.public.articles.getByAuthorId(id),
   { 
     classConstructor: Array<ArticlePreview>, 
-    update: async (target, data) => { 
+    update: async (target, data, resolve) => { 
       target.length = 0
       const sortedIdsAmpersandTerminated = data.ids.toSorted().join("&")
-      const previews = await resolveOutside(sortedIdsAmpersandTerminated, ArticlePreviewCollectionRule)
+      const previews = await resolve(sortedIdsAmpersandTerminated, ArticlePreviewCollectionRule)
       target.push(...previews)
     } 
   }

@@ -2,7 +2,7 @@ import { ArticlePreview } from '../../domain/articlePreview/entity';
 import { ArticlePreviewResultDTO, ArticlePreviewCollectionResultDTO } from './DTO';
 
 export const resultMapper = (stat: ArticlePreview): ArticlePreviewResultDTO => ({
-  articleId: stat.articleId,
+  id: stat.id,
   title: stat.title,
   authorId: stat.authorId,
   views: stat.views.value,

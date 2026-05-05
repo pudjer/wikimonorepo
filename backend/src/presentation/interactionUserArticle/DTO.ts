@@ -10,6 +10,12 @@ export class UpdateLearnProgressDto {
 }
 export class InteractionResultDto {
     @ApiProperty()
+    userId: string;
+
+    @ApiProperty()
+    articleId: string;
+
+    @ApiProperty()
     isViewed: boolean;
 
     @ApiProperty()

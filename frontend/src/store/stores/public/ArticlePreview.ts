@@ -4,15 +4,13 @@ import { ArticleBase } from "./ArticleBase";
 import { Article, ArticleRule } from "./ArticleFull";
 
 export class ArticlePreview extends ArticleBase{
-  articleId: string;
-  title: string;
   views: number;
   likes: number;
   learners: number;
   masters: number;
   dagPoints: number;
   async getArticle(): Promise<Article> {
-    return await resolveOutside(this.articleId, ArticleRule);
+    return await resolveOutside(this.id, ArticleRule);
   }
 }
 
@@ -28,10 +26,10 @@ export const ArticlePreviewCollectionRule = buildRule(
   },
   { 
     classConstructor: Array<ArticlePreview>,
-    update: async (target, data) => {
+    update: async (target, data, resolve) => {
       target.length = 0;
       for (const preview of data.previews) {
-        target.push(await resolveOutside(preview.articleId, ArticlePreviewRule, preview));
+        target.push(await resolve(preview.id, ArticlePreviewRule, preview));
       }
     },
   }

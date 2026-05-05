@@ -21,7 +21,7 @@ export class Masters extends NonNegativeIntegerVO<typeof MastersSymbol> {}
 
 export class ArticlePreview {
     constructor(
-        public readonly articleId: ArticleId,
+        public readonly id: ArticleId,
         public readonly title: Title,
         public readonly authorId: UserId,
         public readonly views: ViewsNumber,

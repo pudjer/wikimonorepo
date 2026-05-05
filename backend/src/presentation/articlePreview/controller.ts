@@ -13,7 +13,7 @@ import { ArticleIdValidator } from "../../domain/article/props/articleId";
 import { GetByIdsDto, ArticlePreviewResultDTO, ArticlePreviewCollectionResultDTO, OrderDto } from "./DTO";
 import { resultMapper, collectionResultMapper } from "./mapper";
 import { ARTICLE_ID_VALIDATOR_TOKEN, ARTICLE_PREVIEW_SERVICE_TOKEN } from "../../tokens";
-import { IArticlePreviewService } from "../../application/articleTotalStatistic/service";
+import { IArticlePreviewService } from "../../application/articlePreview/service";
 import { PreviewOrder, PreviewOrderingProp } from "../../domain/articlePreview/entity";
 
 @ApiTags('public/articlePreview')
@@ -31,7 +31,7 @@ export class ArticlePreviewControllerPublic {
     @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadArticleIdError)' })
     @ApiNotFoundResponse({ description: 'Preview not found' })
     @ApiResponse({ status: 200, description: 'Preview found', type: ArticlePreviewResultDTO })
-    @Get(':id')
+    @Get('stat/:id')
     async findById(@Param('id') id: string): Promise<ArticlePreviewResultDTO> {
         const articleId = await this.articleIdValidator.validate(id);
         const stat = await this.articlePreviewService.getByArticleId(articleId);

@@ -1,5 +1,6 @@
 import { resolveOutside } from "../lib/observableStoreConfig";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
+import { DAGRule } from "./stores/public/DAG";
 
 export const use = async () => {
   const art = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", ArticlePreviewRule);
@@ -14,4 +15,6 @@ export const use = async () => {
   console.log(author);
   const articles = await author.getArticles();
   console.log(articles);
+  const dag = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", DAGRule);
+  console.log(dag);
 }

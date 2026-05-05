@@ -23,7 +23,7 @@ export class OrderDto{
 export class ArticlePreviewResultDTO {
   @ApiProperty()
   @IsString()
-  articleId: string;
+  id: string;
 
   @ApiProperty()
   @IsString()

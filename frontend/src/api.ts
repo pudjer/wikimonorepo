@@ -168,7 +168,7 @@ export class ApiClient {
 
     articlePreview: {
       getById: (id: string): Promise<ArticlePreviewResultDTO> =>
-        this.get<ArticlePreviewResultDTO>(`/public/articlePreview/${id}`),
+        this.get<ArticlePreviewResultDTO>(`/public/articlePreview/stat/${id}`),
 
       getByIds: (dto: GetByIdsDto): Promise<ArticlePreviewCollectionResultDTO> =>
         this.post<ArticlePreviewCollectionResultDTO>("/public/articlePreview/by-ids", dto),
@@ -219,32 +219,38 @@ export class ApiClient {
     },
 
     interactionUserArticle: {
-      updateLearnProgress: (articleId: string, dto: UpdateLearnProgressDto): Promise<Success> =>
-        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/learnProgress`, dto),
+      likes: {
+        like: (articleId: string): Promise<Success> =>
+          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
+  
+        unlike: (articleId: string): Promise<Success> =>
+          this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
 
-      like: (articleId: string): Promise<Success> =>
-        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
+        getLikes: (): Promise<LikeDto[]> =>
+          this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
+      },
 
-      unlike: (articleId: string): Promise<Success> =>
-        this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
+      views: {
+        view: (articleId: string): Promise<Success> =>
+          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
+  
+        removeView: (articleId: string): Promise<Success> =>
+          this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
 
-      view: (articleId: string): Promise<Success> =>
-        this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
+        getViews: (): Promise<ViewDto[]> =>
+          this.get<ViewDto[]>("/private/interactionUserArticle/views"),
+      },
 
-      removeView: (articleId: string): Promise<Success> =>
-        this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
+      learnProgress: {
+        updateLearnProgress: (articleId: string, dto: UpdateLearnProgressDto): Promise<Success> =>
+          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/learnProgress`, dto),
+        
+        getLearnProgress: (): Promise<LearnProgressDto[]> =>
+          this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
+      },
 
       getTotal: (articleId: string): Promise<InteractionResultDto> =>
         this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
-
-      getLikes: (): Promise<LikeDto[]> =>
-        this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
-
-      getViews: (): Promise<ViewDto[]> =>
-        this.get<ViewDto[]>("/private/interactionUserArticle/views"),
-
-      getLearnProgress: (): Promise<LearnProgressDto[]> =>
-        this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
     },
 
     user: {

@@ -129,6 +129,8 @@ export class InteractionUserArticleController {
     const userId = await this.userIdValidator.validate(userIdStr);
     const total = await this.totalService.get(articleId, userId);
     return {
+      userId: total.userId,
+      articleId: total.articleId,
       isLiked: total.isLiked,
       isViewed: total.isViewed,
       learnProgressStage: total.learnProgressStage,
