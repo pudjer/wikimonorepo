@@ -19,18 +19,16 @@ interface IDAG<Node> {
     getNodesLayers(articleIds: ReadonlySet<Node>): Layers<Node>;
 }
 export class DAG<Node> implements IDAG<Node> {
-    private readonly articleIds: NodeSet<Node> = new Set();
     private nodeParents: LinkedNodes<Node> = new Map();
     private nodeChildren: LinkedNodes<Node> = new Map();
     private nodeAncestors: LinkedNodes<Node> = new Map();
     private nodeDescendants: LinkedNodes<Node> = new Map();
     private readonly layersFromLastGeneration: Layers<Node> = [];
     constructor(
-        nodes: NodeSet<Node>,
-        private readonly links: NodeRelations<Node, unknown>
+        public readonly nodes: NodeSet<Node>,
+        public readonly links: NodeRelations<Node, unknown>
     ){
         nodes.forEach(node => {
-            this.articleIds.add(node);
             this.nodeParents.set(node, new Set());
             this.nodeChildren.set(node, new Set());
             this.nodeAncestors.set(node, new Set());
@@ -72,7 +70,7 @@ export class DAG<Node> implements IDAG<Node> {
             recStack.delete(node);
         };
     
-        for (const node of this.articleIds) {
+        for (const node of this.nodes) {
             if (!visited.has(node)) {
                 dfs(node);
             }

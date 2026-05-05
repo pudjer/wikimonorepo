@@ -8,7 +8,9 @@ import { LIKE_REPOSITORY_TOKEN, TOTAL_INTERACTION_REPOSITORY_TOKEN } from "../..
 export interface ITotalInteractionService {
     get(articleId: ArticleId, userId: UserId): Promise<TotalInteraction>
     getAll(userId: UserId): Promise<TotalInteraction[]>
+    getByArticleIds(articleIds: ArticleId[], userId: UserId): Promise<TotalInteraction[]>
 }
+
 @Injectable()
 export class TotalInteractionService implements ITotalInteractionService {
     constructor(
@@ -21,4 +23,9 @@ export class TotalInteractionService implements ITotalInteractionService {
     async getAll(userId: UserId): Promise<TotalInteraction[]> {
         return await this.totalInteractionRepository.findAllByUser(userId);
     }
+
+    async getByArticleIds(articleIds: ArticleId[], userId: UserId): Promise<TotalInteraction[]> {
+        return await this.totalInteractionRepository.findByArticleIds(articleIds, userId);
+    }
 }
+

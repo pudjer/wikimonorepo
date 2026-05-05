@@ -36,7 +36,7 @@ export class SearchControllerPublic {
     @ApiBadRequestResponse({ description: 'Invalid input (bad query or pagination)' })
     @ApiResponse({ status: 200, description: 'Search results', type: SearchArticlesResultDto })
     @Post('articles')
-    async searchArticles(@Body(ValidationPipe) dto: ArticleQueryDto): Promise<SearchArticlesResultDto> {
+    async searchArticles(@Body() dto: ArticleQueryDto): Promise<SearchArticlesResultDto> {
         const searchQuery = await toArticleQuery(dto, this.queryValidator, this.articleIdValidator, this.userIdValidator);
         const results = await this.searchService.searchArticles(searchQuery);
         return {

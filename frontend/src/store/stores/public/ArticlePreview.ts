@@ -21,14 +21,15 @@ export const ArticlePreviewRule = buildRule(
 
 export const ArticlePreviewCollectionRule = buildRule(
   async (sortedIdsAmpersandTerminated: string) => {
-    const ids = sortedIdsAmpersandTerminated.split("&");
-    return await api.public.articlePreview.getByIds({ ids });
+    const ids = sortedIdsAmpersandTerminated.split("&").filter(id => id !== "");
+    const res = await api.public.articlePreview.getByIds({ ids })
+    return res.previews;
   },
   { 
     classConstructor: Array<ArticlePreview>,
     update: async (target, data, resolve) => {
       target.length = 0;
-      for (const preview of data.previews) {
+      for (const preview of data) {
         target.push(await resolve(preview.id, ArticlePreviewRule, preview));
       }
     },

@@ -161,7 +161,7 @@ export class ApiClient {
 
     articleDAG: {
       getDAG: (ids: string[]): Promise<ArticleDAGResultDTO> =>
-        this.get<ArticleDAGResultDTO>("/public/articleDAG", { ids }),
+        this.post<ArticleDAGResultDTO>("/public/articleDAG", { ids }),
     },
 
     articlePreview: {
@@ -235,10 +235,14 @@ export class ApiClient {
       total: {
         getTotal: (articleId: string): Promise<InteractionResultDto> =>
           this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
-  
+
         getTotalAll: (): Promise<InteractionResultDto[]> =>
           this.get<InteractionResultDto[]>(`/private/interactionUserArticle/total`),
+
+        getTotalByIds: (ids: string[]): Promise<InteractionResultDto[]> =>
+          this.post<InteractionResultDto[]>("/private/interactionUserArticle/total/by-ids", { ids }),
       }
+
 
     },
 

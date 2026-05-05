@@ -12,7 +12,7 @@ import {
 import { ArticleIdValidator } from "../../domain/article/props/articleId";
 import { UserId, UserIdValidator } from "../../domain/user/props/userId";
 import { UserIdParam } from "../common/auth/paramDecorators";
-import { InteractionResultDto, LearnProgressDto, LikeDto, UpdateLearnProgressDto, ViewDto } from "./DTO";
+import { InteractionResultDto, LearnProgressDto, LikeDto, TotalByIdsDto, UpdateLearnProgressDto, ViewDto } from "./DTO";
 import { ARTICLE_ID_VALIDATOR_TOKEN, LEARN_PROGRESS_SERVICE_TOKEN, LIKE_SERVICE_TOKEN, TOTAL_INTERACTION_SERVICE_TOKEN, USER_ID_VALIDATOR_TOKEN, VIEW_SERVICE_TOKEN } from "../../tokens";
 import { ILearnProgressService } from "../../application/interactionUserArticle/learnProgress/service";
 import { ILikeService } from "../../application/interactionUserArticle/like/service";
@@ -159,8 +159,8 @@ export class InteractionUserArticleController {
   async getLikes(@UserIdParam() userId: UserId): Promise<LikeDto[]> {
     const likes = await this.likeService.getByUserId(userId);
     return likes.map(like => ({
-      articleId: like.articleId as string,
-      userId: like.userId as string,
+      articleId: like.articleId,
+      userId: like.userId,
       timestamp: like.timestamp.toISOString(),
     }));
   }
@@ -171,8 +171,8 @@ export class InteractionUserArticleController {
   async getViews(@UserIdParam() userId: UserId): Promise<ViewDto[]> {
     const views = await this.viewService.getByUserId(userId);
     return views.map(view => ({
-      articleId: view.articleId as string,
-      userId: view.userId as string,
+      articleId: view.articleId,
+      userId: view.userId,
       timestamp: view.timestamp.toISOString(),
     }));
   }
@@ -183,11 +183,30 @@ export class InteractionUserArticleController {
   async getLearnProgress(@UserIdParam() userId: UserId): Promise<LearnProgressDto[]> {
     const progresses = await this.learnProgressService.getByUserId(userId);
     return progresses.map(progress => ({
-      articleId: progress.articleId as string,
-      userId: progress.userId as string,
+      articleId: progress.articleId,
+      userId: progress.userId,
       learnProgressStage: progress.learnProgressStage,
       updatedAt: progress.updatedAt.toISOString(),
     }));
   }
-}
 
+  @ApiOperation({ summary: 'Get user-article interaction total stats by article IDs' })
+  @ApiBody({ type: TotalByIdsDto })
+  @ApiResponse({ status: 200, type: [InteractionResultDto] })
+  @Post('total/by-ids')
+  async getTotalByIds(
+    @Body() dto: TotalByIdsDto,
+    @UserIdParam() userId: UserId,
+  ): Promise<InteractionResultDto[]> {
+    const articleIds = await Promise.all(dto.ids.map(id => this.articleIdValidator.validate(id)));
+    const totals = await this.totalService.getByArticleIds(articleIds, userId);
+    return totals.map(total => ({
+      userId: total.userId,
+      articleId: total.articleId,
+      isLiked: total.isLiked,
+      isViewed: total.isViewed,
+      learnProgressStage: total.learnProgressStage,
+      lastInteraction: total.lastInteraction ? total.lastInteraction.toISOString() : null,
+    }));
+  }
+}

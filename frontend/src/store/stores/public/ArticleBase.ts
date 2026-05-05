@@ -1,7 +1,7 @@
-import { AxiosError } from "axios";
 import { resolveOutside } from "../../../lib/observableStoreConfig";
-import { TotalInteractions, TotalInteractionsRule } from "../private/TotalInteractions";
+import { TotalInteraction, TotalInteractionsRule } from "../private/TotalInteractions";
 import { Author, AuthorRule } from "./Author";
+import { NullIfUnauthorized } from "../private/NullIfUnauthorized";
 
 export class ArticleBase{
   id: string;
@@ -10,14 +10,7 @@ export class ArticleBase{
   async getAuthor(): Promise<Author> {
     return await resolveOutside(this.authorId, AuthorRule);
   }
-  async getInteractions(): Promise<TotalInteractions | null> {
-    try {
-      return await resolveOutside(this.id, TotalInteractionsRule);
-    } catch (e) {
-      if (e instanceof AxiosError && e.message === "401") {
-        return null;
-      }
-      throw e;
-    }
+  async getInteractions(): Promise<TotalInteraction | null> {
+      return NullIfUnauthorized(resolveOutside(this.id, TotalInteractionsRule))
   }
 }

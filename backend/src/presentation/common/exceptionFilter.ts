@@ -5,7 +5,7 @@ import {
     HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AppError, AuthorityError, BadValueError, LinksCycleError, NotFoundError, UniqueError } from '../../domain/common/domainErrors';
+import { AppError, AuthorityError, BadValueError, LinksCycleError, NotFoundError, UnauthorizedError, UniqueError } from '../../domain/common/domainErrors';
 
 
 @Catch()
@@ -13,6 +13,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
+        console.error(exception);
     
         if (exception instanceof AppError) {
             const { status, message } = this.mapError(exception);
@@ -42,7 +43,6 @@ export class AppExceptionFilter implements ExceptionFilter {
         }
     
         // Fallback
-        console.error(exception);
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             statusCode: 500,
             message: 'Internal server error',
@@ -71,6 +71,10 @@ export class AppExceptionFilter implements ExceptionFilter {
 
         if (error instanceof LinksCycleError) {
             return { status: HttpStatus.CONFLICT, message: error.message };
+        }
+
+        if (error instanceof UnauthorizedError) {
+            return { status: HttpStatus.UNAUTHORIZED, message: error.message };
         }
 
         // дефолт для AppError

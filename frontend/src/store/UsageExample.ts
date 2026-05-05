@@ -1,3 +1,4 @@
+import api from "../api";
 import { resolveOutside } from "../lib/observableStoreConfig";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 import { DAGRule } from "./stores/public/DAG";
@@ -18,6 +19,14 @@ export const use = async () => {
   console.log(articles);
   const dag = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", DAGRule);
   console.log(dag);
+  await api.login.login({
+    "username": "st22ring",
+    "password": "striDD@@33ng"
+  });
   const root = await resolveOutside(undefined, RootRule);
   console.log(root);
+  if (root.me){
+    const myDAG = root.me.myDAG;
+    console.log(myDAG);
+  }
 }

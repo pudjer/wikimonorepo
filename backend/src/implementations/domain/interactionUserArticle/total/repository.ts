@@ -52,22 +52,28 @@ export class TotalInteractionRepositoryImpl implements TotalInteractionRepositor
       throw new UserNotFoundError();
     }
   }
-
-  private async assertArticleExists(articleId: ArticleId) {
-    const res = await this.tx.run(
-      `MATCH (a:Article {id: $articleId}) RETURN a LIMIT 1`,
-      { articleId }
+  private async assertArticlesExists(articleIds: ArticleId[]) {
+    const result = await this.tx.run(
+      `
+      MATCH (a:Article)
+      WHERE a.id IN $ids
+      RETURN count(a) as count
+      `,
+      { ids: articleIds }
     );
 
-    if (!res.records.length) {
+    const count = result.records[0].get('count').toNumber();
+
+    if (count !== articleIds.length) {
       throw new ArticleNotFoundError();
     }
   }
 
+
 // Метод find
 async find(aId: ArticleId, uId: UserId): Promise<TotalInteraction> {
   await this.assertUserExists(uId);
-  await this.assertArticleExists(aId);
+  await this.assertArticlesExists([aId]);
 
   const result = await this.tx.run<DbResult>(
     `
@@ -150,4 +156,51 @@ async findAllByUser(uId: UserId): Promise<TotalInteraction[]> {
 
   return result.records.map((record) => this.mapFromDb(record));
 }
+
+async findByArticleIds(aIds: ArticleId[], uId: UserId): Promise<TotalInteraction[]> {
+  await this.assertUserExists(uId);
+  await this.assertArticlesExists(aIds);
+  const result = await this.tx.run<DbResult>(
+    `
+    MATCH (u:User {id: $uId})
+    WITH u
+    UNWIND $aIds AS articleId
+
+    // ищем статью – предполагаем, что она есть в базе
+    MATCH (a:Article {id: articleId})
+
+    // опционально подтягиваем все три типа отношений
+    OPTIONAL MATCH (u)-[v:VIEWS]->(a)
+    OPTIONAL MATCH (u)-[l:LIKES]->(a)
+    OPTIONAL MATCH (u)-[lp:LEARNS_PROGRESS]->(a)
+
+    // собираем мета-данные
+    WITH articleId,
+        u.id AS userId,
+        v, l, lp,
+        REDUCE(
+          maxTs = NULL,
+          ts IN [lp.updatedAt, v.timestamp, l.timestamp] |
+          CASE
+            WHEN ts IS NULL THEN maxTs
+            WHEN maxTs IS NULL THEN ts
+            WHEN ts > maxTs THEN ts
+            ELSE maxTs
+          END
+        ) AS lastInteraction
+
+    RETURN
+      articleId,
+      userId,
+      lastInteraction,
+      v IS NOT NULL AS isViewed,
+      l IS NOT NULL AS isLiked,
+      COALESCE(lp.learnProgressStage, 'unknown') AS learnProgressStage
+    `,
+    { uId, aIds },
+  );
+
+  return result.records.map((record) => this.mapFromDb(record));
 }
+}
+

@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum } from "class-validator";
+import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
 import { LearnProgressStage } from "../../domain/interactionUserArticle/learnProgress/entity";
+import { Type } from "class-transformer";
 
 
 export class UpdateLearnProgressDto {
@@ -80,3 +81,9 @@ export class LearnProgressDto {
     updatedAt: string;
 }
 
+export class TotalByIdsDto {
+    @ApiProperty({ type: [String] })
+    @IsArray()
+    @IsString({ each: true })
+    ids: string[];
+}

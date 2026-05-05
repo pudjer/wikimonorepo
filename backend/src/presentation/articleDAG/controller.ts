@@ -27,13 +27,12 @@ export class ArticleDAGController {
     ) {}
 
     @ApiOperation({ summary: 'Get Article DAG by Article IDs' })
-    @ApiQuery({ name: 'ids', isArray: true, type: String })
     @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadArticleIdError)' })
     @ApiNotFoundResponse({ description: 'DAG not found or empty' })
     @ApiResponse({ status: 200, description: 'DAG found', type: ArticleDAGResultDTO })
-    @Get()
+    @Post()
     async getDAG(
-        @Query() dto: GetArticleDAGQueryDto,
+        @Body() dto: GetArticleDAGQueryDto,
     ): Promise<ArticleDAGResultDTO> {
         const articleIds: ArticleId[] = await Promise.all(
             dto.ids.map(id => this.articleIdValidator.validate(id))

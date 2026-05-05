@@ -1,5 +1,5 @@
 import { UserId } from "../user/props/userId";
-import { AuthorityError, AppError } from "../common/domainErrors";
+import { AppError, UnauthorizedError } from "../common/domainErrors";
 import { NonNegativeIntegerVO, PastOrPresentDateVO } from "../utils/valueObjects";
 import { SessionId, SessionIdFactory, SessionIdValidator } from "./props/sessionId";
 import { Inject, Injectable } from "@nestjs/common";
@@ -37,7 +37,7 @@ class Session {
 }
 
 export class BadSessionError extends AppError{}
-export class SessionExpiredError extends AuthorityError{}
+export class SessionExpiredError extends UnauthorizedError{}
 
 @Injectable()
 export class SessionFactory{

@@ -27,7 +27,12 @@ export class AuthorityError extends AppError {
         this.name = this.constructor.name; // корректно выставляем имя ошибки
     }
 }
-
+export class UnauthorizedError extends AppError {
+    constructor(message?: string) {
+        super(message ?? new.target.name + ": unauthorized error"); // или this.constructor.name
+        this.name = this.constructor.name; // корректно выставляем имя ошибки
+    }
+}
 export class LinksCycleError<T> extends AppError {
     constructor(
       public readonly linksThatCauseCycle: T[]

@@ -1,5 +1,5 @@
 import { UserId } from '../user/props/userId';
-import { AuthorityError, NotFoundError } from '../common/domainErrors';
+import { UnauthorizedError } from '../common/domainErrors';
 import { SessionType } from './entity';
 import { SessionId } from './props/sessionId';
 
@@ -10,6 +10,6 @@ export interface SessionRepository {
   deleteByUserId(userId: UserId): Promise<true>
 }
 
-export class SessionNotFoundError extends AuthorityError{}
+export class SessionNotFoundError extends UnauthorizedError{}
 
 

@@ -9,7 +9,10 @@ import { Link } from "backend/src/domain/common/entity";
 export class PreviewDAG extends DAG<ArticlePreview> {}
 
 export const DAGRule = buildRule(
-  async (sortedIdsAmpersandTerminated: string) => await api.public.articleDAG.getDAG(sortedIdsAmpersandTerminated.split("&")),
+  async (sortedIdsAmpersandTerminated: string) => {
+    const ids = sortedIdsAmpersandTerminated.split("&").filter(id => id !== "");
+    return await api.public.articleDAG.getDAG(ids);
+  },
   { 
     classConstructor: PreviewDAG,
     update: async (target, data, resolve) => { 

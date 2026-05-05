@@ -2,7 +2,7 @@ import api, { LearnProgressStage } from "../../../api";
 import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewRule } from "../public/ArticlePreview";
 
-export class TotalInteractions {
+export class TotalInteraction {
       userId: string;
       articleId: string;
       isViewed: boolean;
@@ -19,7 +19,7 @@ export const TotalInteractionsRule = buildRule(
     return await api.private.interactionUserArticle.total.getTotal(articleId);
   },
   { 
-    classConstructor: TotalInteractions, 
+    classConstructor: TotalInteraction, 
     async update(target, data) {
       target.userId = data.userId;
       target.articleId = data.articleId;
@@ -30,13 +30,27 @@ export const TotalInteractionsRule = buildRule(
     },
   }
 );
-
+export const TotalInteractionsCollectionRule = buildRule(
+  async (idsSortedAmpersandTerminated: string) => {
+    const ids = idsSortedAmpersandTerminated.split("&").filter(id => id !== "");
+    return await api.private.interactionUserArticle.total.getTotalByIds(ids);
+  },
+  { 
+    classConstructor: Array<TotalInteraction>,
+    async update(target, data, resolve) {
+      target.length = 0;
+      for (const interaction of data) {
+        target.push(await resolve(interaction.articleId, TotalInteractionsRule, interaction));
+      }
+    },
+  }
+)
 export const MyInteractionsRule = buildRule(
   async () => {
     return await api.private.interactionUserArticle.total.getTotalAll();
   },
   { 
-    classConstructor: Array<TotalInteractions>,
+    classConstructor: Array<TotalInteraction>,
     async update(target, data, resolve) {
       target.length = 0;
       for (const interaction of data) {

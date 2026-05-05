@@ -3,7 +3,7 @@ import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 
 export class GetArticleDAGQueryDto {
-    @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+    @ApiProperty({ type: [String] })
     @IsArray()
     @IsString({ each: true })
     ids: string[];
