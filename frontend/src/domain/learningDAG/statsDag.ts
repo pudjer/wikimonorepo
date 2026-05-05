@@ -16,17 +16,17 @@ export class StatsBuilder<T extends IHasStage> {
             );
             this.statsMap.set(node, stats)
         }
-        for(const stats of this.statsMap.values()){
-            stats.init()
-        }
     }
 
-    private getStats(node: T): LearningStats<T> {
+    public getStats(node: T): LearningStats<T> {
         const stats = this.statsMap.get(node);
         if(!stats){
             throw new NoNodeInGraphError();
         }
         return stats;
+    }
+    public getAllStats(): LearningStats<T>[] {
+        return Array.from(this.statsMap.values());
     }
 
 }

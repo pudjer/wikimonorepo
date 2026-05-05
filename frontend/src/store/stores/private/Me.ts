@@ -1,7 +1,7 @@
 import { UniqueCollection } from "backend/src/domain/utils/collections";
 import { DAG } from "../../../domain/DAG/entity";
 import { StatsBuilder } from "../../../domain/learningDAG/statsDag";
-import { buildRule } from "../../../lib/observableStoreConfig";
+import { autorun, buildRule } from "../../../lib/observableStoreConfig";
 import { MyProfile, MyProfileRule } from "./MyProfile";
 import { TotalInteraction, MyInteractionsRule, TotalInteractionsCollectionRule } from "./TotalInteractions";
 import { NodeRelations } from "backend/src/domain/articleDAG/entity";
@@ -10,8 +10,7 @@ import { Link } from "backend/src/domain/common/entity";
 
 export class Me{
   profile: MyProfile
-  interactions: TotalInteraction[]
-  myDAG: StatsBuilder<TotalInteraction>
+  myStatsDAG: StatsBuilder<TotalInteraction>
 }
 
 export const MeRule = buildRule(
@@ -20,12 +19,25 @@ export const MeRule = buildRule(
     classConstructor: Me, 
     update: async (target, data, resolve) => {
       target.profile = await resolve(undefined, MyProfileRule);
-      const dag = await resolve(undefined, MyInteractionDAGRule);
-      target.myDAG = new StatsBuilder(dag);
+      target.myStatsDAG = await resolve(undefined, MyInteractionStatsRule);
     } 
   }
 )
+export class MyInteractionStats extends StatsBuilder<TotalInteraction>{}
 
+export const MyInteractionStatsRule = buildRule(
+  async () => {},
+  { 
+    classConstructor: MyInteractionStats, 
+    update: async (target, data, resolve) => {
+      const dag = await resolve(undefined, MyInteractionDAGRule);
+      target = new MyInteractionStats(dag);
+      for (const stat of target.getAllStats()) {
+        autorun.autorun(() => stat.init());
+      }
+    } 
+  }
+)
 
 export class InteractionDAG extends DAG<TotalInteraction>{}
 

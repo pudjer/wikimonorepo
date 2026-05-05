@@ -59,9 +59,7 @@ export class LearningStats<T extends IHasStage>{
     }
 
 
-    init(): void {
-        this.setStage(this._value.learnProgressStage)
-    }
+
     
     setStage(stage: LearnProgressStage): void {
         const prev = this.valueStage
@@ -110,6 +108,24 @@ export class LearningStats<T extends IHasStage>{
         this.getAncestors().forEach((ancestor) => ancestor.addLearningDescendant(-1))
     }
 
+    getAncestorsMasteringDegree(): number{
+        const total = this.getAncestors().size
+        if (total === 0) return 1
+        return this._masteredAncestorsCount.value / total
+    }
+    getTransitiveAncestorsMasteringDegree(): number{
+        const total = this.getAncestors().size
+        if (total === 0) return 1
+        return this._transitiveMasteredAncestorsCount.value / total
+    }
+    getScore(): number{
+        return this._learningDescendantsCount.value * this.getAncestorsMasteringDegree()
+    }
+
+
+
+
+    ////PUBLIC
     isMastered(): boolean{
         return this.valueStage === LearnProgressStage.Mastered
     }
@@ -122,21 +138,8 @@ export class LearningStats<T extends IHasStage>{
     isTransitiveLearning(): boolean{
         return this._learningDescendantsCount.value > 0 || this.isLearning()
     }
-
-
-    getAncestorsMasteringDegree(): number{
-        const total = this.getAncestors().size
-        if (total === 0) return 1
-        return this._masteredAncestorsCount.value / total
-    }
-    getTransitiveAncestorsMasteringDegree(): number{
-        const total = this.getAncestors().size
-        if (total === 0) return 1
-        return this._transitiveMasteredAncestorsCount.value / total
-    }
-
-    getScore(): number{
-        return this._learningDescendantsCount.value * this.getAncestorsMasteringDegree()
+    init(): void {
+        this.setStage(this._value.learnProgressStage)
     }
     getTransitiveScore(): number{
         return this._learningDescendantsCount.value * this.getTransitiveAncestorsMasteringDegree()

@@ -2,7 +2,7 @@ import { Autorun } from "./observableProxy/autorun/autorun";
 import { getObserverHoc } from "./reactObserver/observer";
 import { BuildRule, Resolver, ResolverFn } from "./Singleton/Resolver";
 
-const autorun = new Autorun()
+export const autorun = new Autorun()
 export const observer = getObserverHoc(autorun);
 
 const resolver = new Resolver();

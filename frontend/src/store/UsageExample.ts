@@ -26,7 +26,7 @@ export const use = async () => {
   const root = await resolveOutside(undefined, RootRule);
   console.log(root);
   if (root.me){
-    const myDAG = root.me.myDAG;
+    const myDAG = root.me.myStatsDAG;
     console.log(myDAG);
   }
 }
