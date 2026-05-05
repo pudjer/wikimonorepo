@@ -3,8 +3,6 @@ import {
     Catch,
     ArgumentsHost,
     HttpStatus,
-    BadRequestException,
-    ForbiddenException,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AppError, AuthorityError, BadValueError, LinksCycleError, NotFoundError, UniqueError } from '../../domain/common/domainErrors';
@@ -15,29 +13,35 @@ export class AppExceptionFilter implements ExceptionFilter {
     catch(exception: unknown, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
-
+    
         if (exception instanceof AppError) {
             const { status, message } = this.mapError(exception);
-
             return response.status(status).json({
                 statusCode: status,
                 message,
                 error: exception.constructor.name,
             });
         }
-        if(exception instanceof BadRequestException){
-            return response.status(HttpStatus.BAD_REQUEST).json({
-                statusCode: 400,
-                message: 'Bad request',
-            })
+    
+        // Маппинг известных HTTP-исключений
+        const httpExceptionMap: Record<string, { status: number; message: string }> = {
+            NotFoundException: { status: 404, message: 'Not found' },
+            UnauthorizedException: { status: 401, message: 'Unauthorized' },
+            BadRequestException: { status: 400, message: 'Bad request' },
+            ForbiddenException: { status: 403, message: 'Forbidden' },
+        };
+    
+        const exceptionName = exception?.constructor?.name;
+        const mappedError = exceptionName && httpExceptionMap[exceptionName];
+    
+        if (mappedError) {
+            return response.status(mappedError.status).json({
+                statusCode: mappedError.status,
+                message: mappedError.message,
+            });
         }
-        if(exception instanceof ForbiddenException){
-            return response.status(HttpStatus.FORBIDDEN).json({
-                statusCode: 403,
-                message: 'Forbidden',
-            })
-        }
-        // fallback (не доменные ошибки)
+    
+        // Fallback
         console.error(exception);
         return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
             statusCode: 500,

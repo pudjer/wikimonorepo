@@ -251,6 +251,9 @@ export class ApiClient {
 
       getTotal: (articleId: string): Promise<InteractionResultDto> =>
         this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
+
+      getTotalAll: (): Promise<InteractionResultDto[]> =>
+        this.get<InteractionResultDto[]>(`/private/interactionUserArticle/total`),
     },
 
     user: {

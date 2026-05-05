@@ -138,8 +138,22 @@ export class InteractionUserArticleController {
     };
   }
 
+  @ApiOperation({ summary: 'Get user-article interaction total stats for all interacted articles' })
+  @ApiResponse({ status: 200, type: [InteractionResultDto] })
+  @Get('total')
+  async getTotalAll(@UserIdParam() userId: UserId): Promise<InteractionResultDto[]> {
+    const totals = await this.totalService.getAll(userId);
+    return totals.map(total => ({
+      userId: total.userId,
+      articleId: total.articleId,
+      isLiked: total.isLiked,
+      isViewed: total.isViewed,
+      learnProgressStage: total.learnProgressStage,
+      lastInteraction: total.lastInteraction ? total.lastInteraction.toISOString() : null,
+    }));
+  }
+
   @ApiOperation({ summary: 'Get all likes by user' })
-  @ApiBadRequestResponse({ description: 'Invalid input' })
   @ApiResponse({ status: 200, type: [LikeDto] })
   @Get('likes')
   async getLikes(@UserIdParam() userId: UserId): Promise<LikeDto[]> {
@@ -152,7 +166,6 @@ export class InteractionUserArticleController {
   }
 
   @ApiOperation({ summary: 'Get all views by user' })
-  @ApiBadRequestResponse({ description: 'Invalid input' })
   @ApiResponse({ status: 200, type: [ViewDto] })
   @Get('views')
   async getViews(@UserIdParam() userId: UserId): Promise<ViewDto[]> {
@@ -165,7 +178,6 @@ export class InteractionUserArticleController {
   }
 
   @ApiOperation({ summary: 'Get all learn progress by user' })
-  @ApiBadRequestResponse({ description: 'Invalid input' })
   @ApiResponse({ status: 200, type: [LearnProgressDto] })
   @Get('learnProgress')
   async getLearnProgress(@UserIdParam() userId: UserId): Promise<LearnProgressDto[]> {

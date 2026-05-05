@@ -7,6 +7,7 @@ import { TotalInteraction } from './entity';
 
 export interface TotalInteractionRepository {
   find(aId: ArticleId, uId: UserId): Promise<TotalInteraction>;
+  findAllByUser(uId: UserId): Promise<TotalInteraction[]>;
 }
 
 
