@@ -6,7 +6,7 @@
         "request": "launch",
         "name": "Vite + Edge (auto start)",
         "url": "http://localhost:5173",
-        "webRoot": "${workspaceFolder}/frontend",
+        "webRoot": "${workspaceFolder}",
         "preLaunchTask": "pnpm:dev"
       },
       {

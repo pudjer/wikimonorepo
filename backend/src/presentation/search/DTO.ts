@@ -2,7 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsOptional, IsInt, Min, Max, IsArray } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-export class SearchArticlesQueryDto {
+
+export class ArticleQueryDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
@@ -22,13 +23,18 @@ export class SearchArticlesQueryDto {
   @Min(1)
   @Max(100)
   size: number = 10;
-}
 
-export class SearchInArticlesQueryDto extends SearchArticlesQueryDto {
-  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  articleIds: string[];
+  articleIds?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  authorIds?: string[];
 }
 
 export class ArticleSearchResultDto {

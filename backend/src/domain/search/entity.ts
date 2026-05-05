@@ -24,10 +24,15 @@ export class Limit extends NonNegativeIntegerVO<typeof LimitSymbol>{}
 declare const OffsetSymbol: unique symbol
 export class Offset extends NonNegativeIntegerVO<typeof OffsetSymbol>{}
 
+export class ArticleFilters{
+  authorIds?: UserId[]
+  articleIds?: ArticleId[]
+}
 export class ArticleSearchQuery{
     constructor(
         public readonly queryText: QueryText,
         public readonly limit: Limit,
-        public readonly offset: Offset
+        public readonly offset: Offset,
+        public readonly filters: ArticleFilters
     ){}
 }

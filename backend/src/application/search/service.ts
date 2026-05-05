@@ -6,7 +6,6 @@ import { ArticleId } from '../../domain/article/props/articleId';
 
 export interface IArticleSearchService {
   searchArticles(query: ArticleSearchQuery): Promise<ArticleSearchResult[]>
-  searchInArticles(query: ArticleSearchQuery, articleIds: ArticleId[]): Promise<ArticleSearchResult[]>
 }
 
 @Injectable()
@@ -17,9 +16,5 @@ export class ArticleSearchService implements IArticleSearchService {
 
   async searchArticles(query: ArticleSearchQuery): Promise<ArticleSearchResult[]> {
     return this.searchRepo.search(query);
-  }
-
-  async searchInArticles(query: ArticleSearchQuery, articleIds: ArticleId[]): Promise<ArticleSearchResult[]> {
-    return this.searchRepo.searchIn(query, articleIds);
   }
 }

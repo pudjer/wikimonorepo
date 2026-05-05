@@ -53,18 +53,15 @@ export class ArticleSearchRepositoryImpl implements ArticleSearchRepository {
   // ---------------------------
 
   async search(query: ArticleSearchQuery): Promise<ArticleSearchResult[]> {
-    return this.executeSearch({
-      queryText: query.queryText,
-      from: query.offset.value,
-      size: query.limit.value,
-      query: this.buildTextQuery(query.queryText),
-    });
-  }
-
-  async searchIn(
-    query: ArticleSearchQuery,
-    articleIds: ArticleId[],
-  ): Promise<ArticleSearchResult[]> {
+    const filterClauses: any[] = [];
+  
+    if (query.filters.articleIds?.length) {
+      filterClauses.push({ terms: { id: query.filters.articleIds } });
+    }
+    if (query.filters.authorIds?.length) {
+      filterClauses.push({ terms: { authorId: query.filters.authorIds } });
+    }
+  
     return this.executeSearch({
       queryText: query.queryText,
       from: query.offset.value,
@@ -72,9 +69,7 @@ export class ArticleSearchRepositoryImpl implements ArticleSearchRepository {
       query: {
         bool: {
           must: this.buildTextQuery(query.queryText),
-          filter: {
-            terms: { id: articleIds },
-          },
+          filter: filterClauses,
         },
       },
     });

@@ -41,15 +41,13 @@ export type {
 }
 
 import type {
-  SearchArticlesQueryDto,
-  SearchInArticlesQueryDto,
+  ArticleQueryDto,
   SearchArticlesResultDto,
   ArticleSearchResultDto,
 } from "backend/src/presentation/search/DTO";
 
 export type {
-  SearchArticlesQueryDto,
-  SearchInArticlesQueryDto,
+  ArticleQueryDto,
   SearchArticlesResultDto,
   ArticleSearchResultDto,
 }
@@ -180,22 +178,7 @@ export class ApiClient {
         }),
     },
 
-    search: {
-      searchArticles: (dto: SearchArticlesQueryDto): Promise<SearchArticlesResultDto> =>
-        this.get<SearchArticlesResultDto>("/public/search/articles", {
-          query: dto.query,
-          page: dto.page,
-          size: dto.size,
-        }),
-
-      searchInArticles: (dto: SearchInArticlesQueryDto): Promise<SearchArticlesResultDto> =>
-        this.get<SearchArticlesResultDto>("/public/search/in-articles", {
-          query: dto.query,
-          articleIds: dto.articleIds,
-          page: dto.page,
-          size: dto.size,
-        }),
-    },
+    searchArticle: (dto: ArticleQueryDto): Promise<SearchArticlesResultDto> => this.post<SearchArticlesResultDto>("/public/articles/search", dto),
 
     user: {
       get: (userId: string): Promise<UserOutputDtoPublic> =>
