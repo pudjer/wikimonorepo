@@ -19,7 +19,8 @@
     "noImplicitAny": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "strictNullChecks": true,  // должна быть true
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"]

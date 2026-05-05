@@ -249,11 +249,14 @@ export class ApiClient {
           this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
       },
 
-      getTotal: (articleId: string): Promise<InteractionResultDto> =>
-        this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
+      total: {
+        getTotal: (articleId: string): Promise<InteractionResultDto> =>
+          this.get<InteractionResultDto>(`/private/interactionUserArticle/articles/${articleId}/total`),
+  
+        getTotalAll: (): Promise<InteractionResultDto[]> =>
+          this.get<InteractionResultDto[]>(`/private/interactionUserArticle/total`),
+      }
 
-      getTotalAll: (): Promise<InteractionResultDto[]> =>
-        this.get<InteractionResultDto[]>(`/private/interactionUserArticle/total`),
     },
 
     user: {
