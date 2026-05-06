@@ -119,7 +119,9 @@ export class LearningStats<T extends IHasStage>{
         return this._transitiveMasteredAncestorsCount.value / total
     }
     getScore(): number{
-        return this._learningDescendantsCount.value * this.getAncestorsMasteringDegree()
+        if(this.isMastered()) return 0
+        const isLearningFactor = this.isLearning() ? 1 : 0
+        return (this._learningDescendantsCount.value + isLearningFactor) * this.getAncestorsMasteringDegree()
     }
 
 
@@ -142,7 +144,9 @@ export class LearningStats<T extends IHasStage>{
         this.setStage(this._value.learnProgressStage)
     }
     getTransitiveScore(): number{
-        return this._learningDescendantsCount.value * this.getTransitiveAncestorsMasteringDegree()
+        if(this.isMastered()) return 0
+        const isLearningFactor = this.isLearning() ? 1 : 0
+        return (this._learningDescendantsCount.value + isLearningFactor) * this.getTransitiveAncestorsMasteringDegree()
     }
 
 

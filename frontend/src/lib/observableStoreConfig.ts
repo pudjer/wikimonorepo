@@ -25,7 +25,8 @@ export type Options<T extends object, D, KEY> =
 )
 & (
   | {
-      classConstructor: new (...args: unknown[]) => T;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      classConstructor: new (...args: any[]) => T;
       allocate?: never;
     }
   | {

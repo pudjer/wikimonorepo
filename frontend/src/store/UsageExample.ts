@@ -1,4 +1,4 @@
-import api from "../api";
+import api, { LearnProgressStage } from "../api";
 import { resolveOutside } from "../lib/observableStoreConfig";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 import { DAGRule } from "./stores/public/DAG";
@@ -26,7 +26,15 @@ export const use = async () => {
   const root = await resolveOutside(undefined, RootRule);
   console.log(root);
   if (root.me){
-    const myDAG = root.me.myStatsDAG;
-    console.log(myDAG);
+    const interaction = root.me.learningHistory[0]
+    const stat = await interaction.getStats();
+
+    console.log(stat?.getTransitiveScore());
+    await root.me.myDAG.nodes.forEach(async (node) => {
+      const int = await node.getInteractions()
+      if (int && (int !== interaction)) int.learnProgressStage = LearnProgressStage.Mastered
+    });
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log(stat?.getTransitiveScore());
   }
 }

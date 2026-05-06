@@ -43,7 +43,8 @@ export class Resolver {
 class ResolveContext {
   constructor(
     private readonly hydrate: Hydrate,
-    private readonly perRuleIdentity: PerRuleIdentity<object, unknown, unknown>,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    private readonly perRuleIdentity: PerRuleIdentity<any, any, any>,
   ) {}
 
   resolve = async <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>, data?: D): Promise<T> => {
@@ -62,9 +63,9 @@ class ResolveContext {
 
   }
   private getOrAllocate = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>): T => {
-    let identity = this.perRuleIdentity.get(rule) as IdentityStore<T, KEY> 
+    let identity = this.perRuleIdentity.get(rule);
     if(!identity) {
-      identity = new IdentityStore();
+      identity = new IdentityStore<T, KEY>();
       this.perRuleIdentity.set(rule, identity);
     }
     let target = identity.get(key);

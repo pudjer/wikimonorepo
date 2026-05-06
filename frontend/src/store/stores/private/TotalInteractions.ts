@@ -1,6 +1,9 @@
 import api, { LearnProgressStage } from "../../../api";
+import { NoNodeInGraphError } from "../../../domain/DAG/entity";
+import { LearningStats } from "../../../domain/learningDAG/stats";
 import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewRule } from "../public/ArticlePreview";
+import { MyLearningStatsRule } from "./Me";
 
 export class TotalInteraction {
       userId: string;
@@ -11,6 +14,15 @@ export class TotalInteraction {
       lastInteraction: Date | null;
       async getPreview(): Promise<ArticlePreview> {
         return await resolveOutside(this.articleId, ArticlePreviewRule);
+      }
+      async getStats(): Promise<null | LearningStats<this>> {
+        const myStatsDAG = await resolveOutside(undefined, MyLearningStatsRule);
+        try {
+          return myStatsDAG.getStats(this);
+        }catch(e) {
+          if (e instanceof NoNodeInGraphError) return null;
+          throw e;
+        }
       }
 }
 

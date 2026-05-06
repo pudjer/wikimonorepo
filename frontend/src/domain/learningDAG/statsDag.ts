@@ -18,8 +18,8 @@ export class StatsBuilder<T extends IHasStage> {
         }
     }
 
-    public getStats(node: T): LearningStats<T> {
-        const stats = this.statsMap.get(node);
+    public getStats<CONC extends T>(node: CONC): LearningStats<CONC> {
+        const stats = this.statsMap.get(node) as (LearningStats<CONC> | undefined);
         if(!stats){
             throw new NoNodeInGraphError();
         }

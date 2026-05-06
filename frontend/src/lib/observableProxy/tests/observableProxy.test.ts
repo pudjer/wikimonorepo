@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import {
@@ -9,8 +10,8 @@ import {
 } from '../observableProxy'
 
 describe('ObservableProxy', () => {
-  let onRead: Callback<object>
-  let onChange: Callback<object>
+  let onRead: Callback<any>
+  let onChange: Callback<any>
 
   beforeEach(() => {
     onRead = vi.fn()
@@ -267,7 +268,7 @@ describe('ObservableProxy', () => {
     const arr = [1, 2, 3]
     const proxy = ObservableProxy<typeof arr>(arr, onRead, onChange)
 
-    const result = []
+    const result: number[] = []
 
     for (const item of proxy) {
       result.push(item)
