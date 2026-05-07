@@ -1,5 +1,5 @@
-import api from "../../../api";
-import { buildRule } from "../../../lib/observableStoreConfig";
+import api from "../../../../api";
+import { buildRule } from "../../../../lib/observableStoreConfig";
 
 export class MyProfile {
   id: string

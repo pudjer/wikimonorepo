@@ -3,7 +3,7 @@ import { NoNodeInGraphError } from "../../../domain/DAG/entity";
 import { LearningStats } from "../../../domain/learningDAG/stats";
 import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewRule } from "../public/ArticlePreview";
-import { MyLearningStatsRule } from "./Me";
+import { MyLearningStatsRule } from "./MeBuild/LearningStats";
 
 export class TotalInteraction {
       userId: string;
