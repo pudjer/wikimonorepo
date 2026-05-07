@@ -8,8 +8,10 @@ import { NodeRelations } from "backend/src/domain/articleDAG/entity";
 import api, { LearnProgressStage } from "../../../api";
 import { Link } from "backend/src/domain/common/entity";
 import { DAGRule, PreviewDAG } from "../public/DAG";
+import { AxiosError } from "axios";
 
 export class Me{
+  isAdmin: boolean
   profile: MyProfile
   history: TotalInteraction[]
   learningHistory: TotalInteraction[]
@@ -23,6 +25,16 @@ export const MeRule = buildRule(
     classConstructor: Me, 
     update: async (target, data, resolve) => {
       target.profile = await resolve(undefined, MyProfileRule);
+      try{
+        await api.admin.user.get(target.profile.id);
+        target.isAdmin = true;  
+      }catch(e) {
+        if (e instanceof AxiosError && e.status === 403) {
+          target.isAdmin = false;
+        }else{
+          console.error(e);
+        }
+      }
       target.history = await resolve(undefined, MyInteractionsRule)
       target.learningHistory = await resolve(undefined, MyLearningHistoryRule);
       const learningIds = target.learningHistory.map(i => i.articleId);

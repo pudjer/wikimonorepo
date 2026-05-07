@@ -2,6 +2,8 @@ import api, { LearnProgressStage } from "../api";
 import { resolveOutside } from "../lib/observableStoreConfig";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 import { DAGRule } from "./stores/public/DAG";
+import { InOrderRule } from "./stores/public/InOrder";
+import { SearchPreviews } from "./stores/public/SearchPreviews";
 import { RootRule } from "./stores/Root";
 
 export const use = async () => {
@@ -37,4 +39,10 @@ export const use = async () => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(stat?.getTransitiveScore());
   }
+
+  const search = await SearchPreviews({ query: "string" });
+  console.log(search);
+
+  const inOrder = await resolveOutside("DESC:learners", InOrderRule)
+  console.log(inOrder);
 }

@@ -178,7 +178,7 @@ export class ApiClient {
         }),
     },
 
-    searchArticle: (dto: ArticleQueryDto): Promise<SearchArticlesResultDto> => this.post<SearchArticlesResultDto>("/public/articles/search", dto),
+    searchArticle: (dto: ArticleQueryDto): Promise<SearchArticlesResultDto> => this.post<SearchArticlesResultDto>("/public/search/articles", dto),
 
     user: {
       get: (userId: string): Promise<UserOutputDtoPublic> =>

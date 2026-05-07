@@ -22,8 +22,8 @@ export const toArticleQuery = async (
   userIdValidator: UserIdValidator
 ): Promise<ArticleSearchQuery> => {
   const queryText = await queryValidator.validate(dto.query);
-  const offset = new Offset((dto.page - 1) * dto.size);
-  const limit = new Limit(dto.size);
+  const offset = new Offset(((dto.page || 1) - 1) * (dto.size || 10));
+  const limit = new Limit(dto.size || 10);
   const articleIds = dto.articleIds && await Promise.all(
     dto.articleIds.map(async (id) => {
       return await articleIdValidator.validate(id);

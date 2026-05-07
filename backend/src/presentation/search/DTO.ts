@@ -14,7 +14,7 @@ export class ArticleQueryDto {
   @Transform((params: { value: string }) => Number(params.value))
   @IsInt()
   @Min(1)
-  page: number = 1;
+  page?: number
 
   @ApiPropertyOptional({ default: 10, maximum: 100 })
   @IsOptional()
@@ -22,7 +22,7 @@ export class ArticleQueryDto {
   @IsInt()
   @Min(1)
   @Max(100)
-  size: number = 10;
+  size?: number
 
   @ApiPropertyOptional()
   @IsOptional()
