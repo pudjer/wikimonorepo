@@ -26,7 +26,7 @@ export class Neo4jSchema implements OnModuleInit {
       `);
 
       await session.run(`
-        CREATE CONSTRAINT session_id_unique IF NOT EXISTS
+        CREATE CONSTRAINT session_id_unique_constraint IF NOT EXISTS
         FOR (s:Session)
         REQUIRE s.id IS UNIQUE
       `);
