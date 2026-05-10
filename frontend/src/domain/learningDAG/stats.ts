@@ -124,10 +124,16 @@ export class LearningStats<T extends IHasStage>{
         return (this._learningDescendantsCount.value + isLearningFactor) * this.getAncestorsMasteringDegree()
     }
 
-
-
-
+    
+    
+    
     ////PUBLIC
+    init(): void {
+        this.setStage(this._value.learnProgressStage)
+    }
+
+
+    
     isMastered(): boolean{
         return this.valueStage === LearnProgressStage.Mastered
     }
@@ -139,9 +145,6 @@ export class LearningStats<T extends IHasStage>{
     }
     isTransitiveLearning(): boolean{
         return this._learningDescendantsCount.value > 0 || this.isLearning()
-    }
-    init(): void {
-        this.setStage(this._value.learnProgressStage)
     }
     getTransitiveScore(): number{
         if(this.isMastered()) return 0

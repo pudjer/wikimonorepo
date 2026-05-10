@@ -33,19 +33,28 @@ pages:
       inOrderComponent
   private:
     learningDagPage:
-      learningDag
+      each node of dag is:
+        statComponent(stat):
+          isMastered - green
+          isLearning - blue
+          isTransitiveMastered - lightgreen
+          isTransitiveLearning - lightblue
+          getTransitiveScore
+        preview: previewComponent(value.articleId)
+        interaction: interactionComponent(value.articleId)
+      previewComponent(ids sorted by getTransitiveScore)
 components:
   public:
     searchComponent:
       input/filters/button
-      previewListComponent(...ids)
+      previewListComponent(ids)
     inOrderComponent:
       orderProp/order/button
-      previewListComponent(...ids)
+      previewListComponent(ids)
     authorComponent(id):
       username
     authorArticlesComponent(id):
-      previewListComponent(...ids)
+      previewListComponent(ids)
     articleInfo/Content/Links: editable if my
     articlesDagComponent(ids):
       building and representation of dag
@@ -61,7 +70,7 @@ components:
       like/dislike
       remove view if viewed
       learningStageSelector
-    myInteractionCollectionComponent:
+    myInteractionsComponent:
       likes: previewListComponent(ints.filter)
       views: prev...
       learning: prev...
