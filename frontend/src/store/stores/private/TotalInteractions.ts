@@ -1,9 +1,5 @@
 import api, { LearnProgressStage } from "../../../api";
-import { NoNodeInGraphError } from "../../../domain/DAG/entity";
-import { LearningStats } from "../../../domain/learningDAG/stats";
 import { f } from "../../../lib";
-import { ArticlePreview, ArticlePreviewRule } from "../public/ArticlePreview";
-import { MyLearningStatsRule } from "./MeBuild/LearningStats";
 
 export class TotalInteraction {
       userId: string;
@@ -12,18 +8,6 @@ export class TotalInteraction {
       isLiked: boolean;
       learnProgressStage: LearnProgressStage;
       lastInteraction: Date | null;
-      async getPreview(): Promise<ArticlePreview> {
-        return await ArticlePreviewRule.resolveOutside(this.articleId);
-      }
-      async getStats(): Promise<null | LearningStats<this>> {
-        const myStatsDAG = await MyLearningStatsRule.resolveOutside(undefined);
-        try {
-          return myStatsDAG.getStats(this);
-        }catch(e) {
-          if (e instanceof NoNodeInGraphError) return null;
-          throw e;
-        }
-      }
 }
 
 export const TotalInteractionRule = f.buildRule(

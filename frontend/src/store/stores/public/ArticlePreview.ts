@@ -1,7 +1,6 @@
 import api from "../../../api";
 import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
-import { Article, ArticleRule } from "./ArticleFull";
 
 export class ArticlePreview extends ArticleBase{
   views: number;
@@ -9,9 +8,6 @@ export class ArticlePreview extends ArticleBase{
   learners: number;
   masters: number;
   dagPoints: number;
-  async getArticle(): Promise<Article> {
-    return await ArticleRule.resolveOutside(this.id);
-  }
 }
 
 export const ArticlePreviewRule = f.buildRule(

@@ -1,7 +1,7 @@
 import api from "../../../api";
 import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
-import { ArticlePreview, ArticlePreviewCollectionRule, ArticlePreviewRule } from "./ArticlePreview";
+import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 export class ArticleLink {
   name: string;
@@ -16,9 +16,6 @@ export class Article extends ArticleBase {
   links: ArticleLink[];
   createdAt: Date;
   updatedAt: Date;
-  async getPreview(): Promise<ArticlePreview> {
-    return await ArticlePreviewRule.resolveOutside(this.id);
-  }
 }
 
 export const ArticleRule = f.buildRule(
