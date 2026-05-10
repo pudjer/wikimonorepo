@@ -46,11 +46,19 @@ export const AppHeader = f.observer(function AppHeader() {
           StructedWiki
         </Typography>
 
+        <Button color="inherit" component={Link} to="/search">
+          Search
+        </Button>
+        <Button color="inherit" component={Link} to="/rank">
+          Ranking
+        </Button>
+
         {me ? (
           <Button color="inherit" component={Link} to="/profile">
             Profile
           </Button>
         ) : null}
+
 
         {authButtons}
       </Toolbar>

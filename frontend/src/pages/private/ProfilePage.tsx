@@ -1,7 +1,7 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { f } from "../lib";
-import { RootRule } from "../store/stores/Root";
+import { f } from "../../lib";
+import { RootRule } from "../../store/stores/Root";
 
 export const ProfilePage = f.observer(function ProfilePage() {
   const navigate = useNavigate();
