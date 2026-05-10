@@ -1,11 +1,12 @@
 import api, { ArticleQueryDto } from "../../../api";
+import { arrayToString } from "../../stringArray";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 export type SearchOutput = {contentSnippet: string, relevanceScore: number}
 export type SearchRecord = {info: SearchOutput, preview: ArticlePreview}
 export const SearchPreviews = async (query: ArticleQueryDto): Promise<SearchRecord[]> => {
   const searchRes = await api.public.searchArticle(query)
-  const ids = searchRes.results.map(r => r.id).toSorted().join("&")
+  const ids = arrayToString(searchRes.results.map(r => r.id))
   const prevs: ArticlePreview[] = await ArticlePreviewCollectionRule.resolveOutside(ids)
   
   // Создаём Map для быстрого доступа к превью по id

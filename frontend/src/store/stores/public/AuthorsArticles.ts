@@ -1,5 +1,6 @@
 import api from "../../../api";
 import { f } from "../../../lib";
+import { arrayToString } from "../../stringArray";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 
@@ -11,7 +12,7 @@ export const AuthorsArticlesRule = f.buildRule(
     classConstructor: Array<ArticlePreview>, 
     update: async (target, data, resolve) => { 
       target.length = 0
-      const sortedIdsAmpersandTerminated = data.ids.toSorted().join("&")
+      const sortedIdsAmpersandTerminated = arrayToString(data.ids);
       const previews = await ArticlePreviewCollectionRule.resolveInside(resolve, sortedIdsAmpersandTerminated);
       target.push(...previews)
     } 
