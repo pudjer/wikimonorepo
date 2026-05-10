@@ -1,5 +1,5 @@
 import api from "../../../../api";
-import { buildRule } from "../../../../lib/observableStoreConfig";
+import { f } from "../../../../lib";
 
 export class MyProfile {
   id: string
@@ -7,7 +7,7 @@ export class MyProfile {
 }
 
 
-export const MyProfileRule = buildRule(
+export const MyProfileRule = f.buildRule(
   async () => await api.private.user.get(),
   { classConstructor: MyProfile }
 )

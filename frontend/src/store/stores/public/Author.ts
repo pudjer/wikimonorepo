@@ -1,5 +1,5 @@
 import api from "../../../api";
-import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
+import { f } from "../../../lib";
 import { ArticlePreview } from "./ArticlePreview";
 import { AuthorsArticlesRule } from "./AuthorsArticles";
 
@@ -7,12 +7,12 @@ export class Author {
   id: string;
   username: string;
   async getArticles(): Promise<ArticlePreview[]> {
-    return await resolveOutside(this.id, AuthorsArticlesRule);
+    return await AuthorsArticlesRule.resolveOutside(this.id)
   }
 
 }
 
-export const AuthorRule = buildRule(
+export const AuthorRule = f.buildRule(
   async (id: string) => await api.public.user.get(id),
   { classConstructor: Author }
 )

@@ -1,14 +1,14 @@
 import { LearnProgressStage } from "../../../../api";
-import { buildRule } from "../../../../lib/observableStoreConfig";
-import { TotalInteraction, MyInteractionsRule } from "../TotalInteractions";
+import { f } from "../../../../lib";
+import { MyInteractionsRule, TotalInteraction } from "../TotalInteractions";
 
 
-export const MyLearningHistoryRule = buildRule(
+export const MyLearningHistoryRule = f.buildRule(
   async () => { },
   {
     classConstructor: (Array<TotalInteraction>),
     update: async (target, data, resolve) => {
-      const interactions = await resolve(undefined, MyInteractionsRule);
+      const interactions = await MyInteractionsRule.resolveInside(resolve, undefined);
       const filetered = interactions.filter(p => p.learnProgressStage !== LearnProgressStage.Unknown);
       target.length = 0;
       target.push(...filetered);

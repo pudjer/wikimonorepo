@@ -1,7 +1,7 @@
 import api, { LearnProgressStage } from "../../../api";
 import { NoNodeInGraphError } from "../../../domain/DAG/entity";
 import { LearningStats } from "../../../domain/learningDAG/stats";
-import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
+import { f } from "../../../lib";
 import { ArticlePreview, ArticlePreviewRule } from "../public/ArticlePreview";
 import { MyLearningStatsRule } from "./MeBuild/LearningStats";
 
@@ -13,10 +13,10 @@ export class TotalInteraction {
       learnProgressStage: LearnProgressStage;
       lastInteraction: Date | null;
       async getPreview(): Promise<ArticlePreview> {
-        return await resolveOutside(this.articleId, ArticlePreviewRule);
+        return await ArticlePreviewRule.resolveOutside(this.articleId);
       }
       async getStats(): Promise<null | LearningStats<this>> {
-        const myStatsDAG = await resolveOutside(undefined, MyLearningStatsRule);
+        const myStatsDAG = await MyLearningStatsRule.resolveOutside(undefined);
         try {
           return myStatsDAG.getStats(this);
         }catch(e) {
@@ -26,7 +26,7 @@ export class TotalInteraction {
       }
 }
 
-export const TotalInteractionsRule = buildRule(
+export const TotalInteractionRule = f.buildRule(
   async (articleId: string) => {
     return await api.private.interactionUserArticle.total.getTotal(articleId);
   },
@@ -42,7 +42,7 @@ export const TotalInteractionsRule = buildRule(
     },
   }
 );
-export const TotalInteractionsCollectionRule = buildRule(
+export const TotalInteractionsCollectionRule = f.buildRule(
   async (idsSortedAmpersandTerminated: string) => {
     const ids = idsSortedAmpersandTerminated.split("&").filter(id => id !== "");
     return await api.private.interactionUserArticle.total.getTotalByIds(ids);
@@ -52,12 +52,12 @@ export const TotalInteractionsCollectionRule = buildRule(
     async update(target, data, resolve) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await resolve(interaction.articleId, TotalInteractionsRule, interaction));
+        target.push(await TotalInteractionRule.resolveInside(resolve, interaction.articleId, interaction));
       }
     },
   }
 )
-export const MyInteractionsRule = buildRule(
+export const MyInteractionsRule = f.buildRule(
   async () => {
     return await api.private.interactionUserArticle.total.getTotalAll();
   },
@@ -66,7 +66,7 @@ export const MyInteractionsRule = buildRule(
     async update(target, data, resolve) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await resolve(interaction.articleId, TotalInteractionsRule, interaction));
+        target.push(await TotalInteractionRule.resolveInside(resolve, interaction.articleId, interaction));
       }
       target.sort((a, b) => {
         if(a.lastInteraction === null) return 1;

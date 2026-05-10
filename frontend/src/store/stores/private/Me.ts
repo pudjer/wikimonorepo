@@ -1,10 +1,10 @@
-import { buildRule } from "../../../lib/observableStoreConfig";
 import { MyProfile, MyProfileRule } from "./MeBuild/MyProfile";
 import { TotalInteraction, MyInteractionsRule } from "./TotalInteractions";
 import { DAGRule, PreviewDAG } from "../public/DAG";
 import { checkIsAdmin } from "./MeBuild/CheckIsAdmin";
 import { MyLearningHistoryRule } from "./MeBuild/MyLearningHystory";
 import { MyLearningStats, MyLearningStatsRule } from "./MeBuild/LearningStats";
+import { f } from "../../../lib";
 
 export class Me{
   isAdmin: boolean
@@ -15,18 +15,18 @@ export class Me{
   myStatsDAGCash: MyLearningStats
 }
 
-export const MeRule = buildRule(
+export const MeRule = f.buildRule(
   async () => {},
   { 
     classConstructor: Me, 
     update: async (target, data, resolve) => {
-      target.profile = await resolve(undefined, MyProfileRule);
+      target.profile = await MyProfileRule.resolveInside(resolve, undefined);
       target.isAdmin = await checkIsAdmin(target.profile.id);
-      target.history = await resolve(undefined, MyInteractionsRule)
-      target.learningHistory = await resolve(undefined, MyLearningHistoryRule);
+      target.history = await MyInteractionsRule.resolveInside(resolve, undefined);
+      target.learningHistory = await MyLearningHistoryRule.resolveInside(resolve, undefined);
       const learningIds = target.learningHistory.map(i => i.articleId).toSorted().join("&");
-      target.myDAG = await resolve(learningIds, DAGRule);
-      target.myStatsDAGCash = await resolve(undefined, MyLearningStatsRule);
+      target.myDAG = await DAGRule.resolveInside(resolve, learningIds);
+      target.myStatsDAGCash = await MyLearningStatsRule.resolveInside(resolve, undefined);
     } 
   }
 )

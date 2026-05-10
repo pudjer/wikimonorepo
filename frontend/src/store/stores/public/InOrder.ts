@@ -1,11 +1,11 @@
 import { PreviewOrderingProp, PreviewOrder } from "backend/src/domain/articlePreview/entity";
 import { api } from "../../../api";
-import { buildRule } from "../../../lib/observableStoreConfig";
 import { ArticlePreview, ArticlePreviewRule } from "./ArticlePreview";
+import { f } from "../../../lib";
 
 
 export type OrderColonOrderBy = `${PreviewOrder}:${PreviewOrderingProp}`
-export const InOrderRule = buildRule(
+export const InOrderRule = f.buildRule(
   async (orderColonOrderBy: OrderColonOrderBy) => {
     const [order, orderingProp] = orderColonOrderBy.split(":") as [PreviewOrder, PreviewOrderingProp]
     return await api.public.articlePreview.getInOrder({ order, orderingProp });
@@ -15,7 +15,7 @@ export const InOrderRule = buildRule(
     async update(target, data, resolve) {
       target.length = 0;
       for (const preview of data.previews) {
-        target.push(await resolve(preview.id, ArticlePreviewRule, preview));
+        target.push(await ArticlePreviewRule.resolveInside(resolve, preview.id, preview));
       }
     },
   }

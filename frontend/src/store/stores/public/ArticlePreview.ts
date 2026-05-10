@@ -1,5 +1,5 @@
 import api from "../../../api";
-import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
+import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
 import { Article, ArticleRule } from "./ArticleFull";
 
@@ -10,16 +10,16 @@ export class ArticlePreview extends ArticleBase{
   masters: number;
   dagPoints: number;
   async getArticle(): Promise<Article> {
-    return await resolveOutside(this.id, ArticleRule);
+    return await ArticleRule.resolveOutside(this.id);
   }
 }
 
-export const ArticlePreviewRule = buildRule(
+export const ArticlePreviewRule = f.buildRule(
   async (id: string) => await api.public.articlePreview.getById(id),
   { classConstructor: ArticlePreview }
 )
 
-export const ArticlePreviewCollectionRule = buildRule(
+export const ArticlePreviewCollectionRule = f.buildRule(
   async (sortedIdsAmpersandTerminated: string) => {
     const ids = sortedIdsAmpersandTerminated.split("&").filter(id => id !== "");
     const res = await api.public.articlePreview.getByIds({ ids })
@@ -30,7 +30,7 @@ export const ArticlePreviewCollectionRule = buildRule(
     update: async (target, data, resolve) => {
       target.length = 0;
       for (const preview of data) {
-        target.push(await resolve(preview.id, ArticlePreviewRule, preview));
+        target.push(await ArticlePreviewRule.resolveInside(resolve, preview.id, preview));
       }
     },
   }

@@ -37,6 +37,11 @@ export class Resolver {
   invalidate = (target: object): void => {
     this.hydrator.invalidate(target);
   }
+
+  refresh: ResolverFn = async (key, rule, data?) => {
+    this.invalidate(this.perRuleIdentity.get(rule)?.get(key) ?? {});
+    return await this.resolveOutside(key, rule, data);
+  }
 }
 
 // ========== Контекст одного внешнего вызова ==========

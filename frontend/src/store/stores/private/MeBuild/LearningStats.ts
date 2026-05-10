@@ -4,19 +4,19 @@ import { UniqueCollection } from "backend/src/domain/utils/collections";
 import api from "../../../../api";
 import { DAG } from "../../../../domain/DAG/entity";
 import { StatsBuilder } from "../../../../domain/learningDAG/statsDag";
-import { buildRule, autorun } from "../../../../lib/observableStoreConfig";
-import { TotalInteraction, TotalInteractionsCollectionRule } from "../TotalInteractions";
+import { autorun, f } from "../../../../lib";
+import {  TotalInteraction, TotalInteractionsCollectionRule } from "../TotalInteractions";
 import { MyLearningHistoryRule } from "./MyLearningHystory";
 
 
 export class MyLearningStats extends StatsBuilder<TotalInteraction> { }
 
-export const MyLearningStatsRule = buildRule(
+export const MyLearningStatsRule = f.buildRule(
   async () => { },
   {
     classConstructor: MyLearningStats,
     update: async (target, data, resolve) => {
-      const dag = await resolve(undefined, MyLearningDAGRule);
+      const dag = await MyLearningDAGRule.resolveInside(resolve, undefined);
       const res = new MyLearningStats(dag);
       for (const stat of res.getAllStats()) {
         autorun.autorun(() => stat.init());
@@ -33,18 +33,18 @@ export const MyLearningStatsRule = buildRule(
 
 export class LearningDAG extends DAG<TotalInteraction> { }
 
-export const MyLearningDAGRule = buildRule(
+export const MyLearningDAGRule = f.buildRule(
   async () => { },
   {
     classConstructor: LearningDAG,
     update: async (target, data, resolve) => {
-      const learning = await resolve(undefined, MyLearningHistoryRule);
+      const learning = await MyLearningHistoryRule.resolveInside(resolve, undefined);
       const learningArticleIds = learning.map(i => i.articleId);
 
       const { links, nodes } = await api.public.articleDAG.getDAG(learningArticleIds);
 
       const nodesSortedAmpersandTerminated = nodes.toSorted().join("&");
-      const allNodes = await resolve(nodesSortedAmpersandTerminated, TotalInteractionsCollectionRule);
+      const allNodes = await TotalInteractionsCollectionRule.resolveInside(resolve, nodesSortedAmpersandTerminated);
 
       const interactionMap = new Map(allNodes.map(p => [p.articleId, p]));
 

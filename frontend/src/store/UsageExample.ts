@@ -1,5 +1,4 @@
 import api, { LearnProgressStage } from "../api";
-import { resolveOutside } from "../lib/observableStoreConfig";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 import { DAGRule } from "./stores/public/DAG";
 import { InOrderRule } from "./stores/public/InOrder";
@@ -7,7 +6,7 @@ import { SearchPreviews } from "./stores/public/SearchPreviews";
 import { RootRule } from "./stores/Root";
 
 export const use = async () => {
-  const art = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", ArticlePreviewRule);
+  const art = await ArticlePreviewRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(art);
   const artFull = await art.getArticle();
   console.log(artFull);
@@ -19,13 +18,13 @@ export const use = async () => {
   console.log(author);
   const articles = await author.getArticles();
   console.log(articles);
-  const dag = await resolveOutside("357c25ed-5e75-4245-9e20-a87d14129f00", DAGRule);
+  const dag = await DAGRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(dag);
   await api.login.login({
     "username": "st22ring",
     "password": "striDD@@33ng"
   });
-  const root = await resolveOutside(undefined, RootRule);
+  const root = await RootRule.resolveOutside(undefined);
   console.log(root);
   if (root.me){
     const interaction = root.me.learningHistory[0]
@@ -43,6 +42,6 @@ export const use = async () => {
   const search = await SearchPreviews({ query: "string" });
   console.log(search);
 
-  const inOrder = await resolveOutside("DESC:learners", InOrderRule)
+  const inOrder = await InOrderRule.resolveOutside("DESC:learners");
   console.log(inOrder);
 }

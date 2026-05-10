@@ -1,15 +1,15 @@
 import api from "../../../api";
-import { buildRule, resolveOutside } from "../../../lib/observableStoreConfig";
+import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
 import { ArticlePreview, ArticlePreviewRule } from "./ArticlePreview";
 
 export class ArticleLink {
   constructor(public name: string, public parent: string) {}
   async getParentPreview(): Promise<ArticlePreview> {
-    return await resolveOutside(this.parent, ArticlePreviewRule);
+    return await ArticlePreviewRule.resolveOutside(this.parent);
   }
   async getParent(): Promise<Article> {
-    return await resolveOutside(this.parent, ArticleRule);
+    return await ArticleRule.resolveOutside(this.parent);
   }
 }
 
@@ -22,11 +22,11 @@ export class Article extends ArticleBase {
   createdAt: Date;
   updatedAt: Date;
   async getPreview(): Promise<ArticlePreview> {
-    return await resolveOutside(this.id, ArticlePreviewRule);
+    return await ArticlePreviewRule.resolveOutside(this.id);
   }
 }
 
-export const ArticleRule = buildRule(
+export const ArticleRule = f.buildRule(
   async (id: string) => await api.public.articles.getById(id),
   { 
     classConstructor: Article , 
