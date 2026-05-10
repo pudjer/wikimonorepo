@@ -1,4 +1,5 @@
-import api, { LearnProgressStage } from "../api";
+import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
+import mutationApi from "../api/mutationApi";
 import { MyLearningStatsRule } from "./stores/private/MeBuild/LearningStats";
 import { ArticleRule } from "./stores/public/ArticleFull";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
@@ -14,7 +15,7 @@ export const use = async () => {
   console.log(art);
   const artFull = await ArticleRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(artFull);
-  const link = await artFull.links[0];
+  const link = artFull.links[0];
   console.log(link);
   const parent = link.parent;
   console.log(parent);
@@ -24,7 +25,7 @@ export const use = async () => {
   console.log(articles);
   const dag = await DAGRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(dag);
-  await api.login.login({
+  await mutationApi.public.login({
     "username": "st22ring",
     "password": "striDD@@33ng"
   });
@@ -32,12 +33,12 @@ export const use = async () => {
   console.log(root);
   if (root.me){
     const interaction = root.me.learningHistory[0]
-    const stat = await (await MyLearningStatsRule.resolveOutside(undefined)).getStats(interaction)
+    const stat = (await MyLearningStatsRule.resolveOutside(undefined)).getStats(interaction)
 
     console.log(stat?.getTransitiveScore());
-    await root.me.myLearningStats.dag.nodes.forEach(async (node) => {
-      const int = node
-      if (int && (int !== interaction)) int.learnProgressStage = LearnProgressStage.Mastered
+    root.me.myLearningStats.dag.nodes.forEach(async (node) => {
+      const int = node;
+      if (int && (int !== interaction)) int.learnProgressStage = LearnProgressStage.Mastered;
     });
     await new Promise(resolve => setTimeout(resolve, 1000));
     console.log(stat?.getTransitiveScore());

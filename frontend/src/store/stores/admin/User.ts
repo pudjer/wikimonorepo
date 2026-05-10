@@ -1,5 +1,5 @@
 import { RoleName } from "backend/src/domain/user/roles"
-import api from "../../../api"
+import queryApi from "../../../api/queryApi"
 import { f } from "../../../lib"
 
 export class UserForAdmin {
@@ -10,7 +10,7 @@ export class UserForAdmin {
 
 export const UserForAdminRule = f.buildRule(
   async (key: string) => {
-    return await api.admin.user.get(key)
+    return await queryApi.admin.user.get(key)
   },
   {classConstructor: UserForAdmin}
 )

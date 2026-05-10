@@ -1,4 +1,4 @@
-import api from "../../../api";
+import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 
 export class Author {
@@ -7,6 +7,6 @@ export class Author {
 }
 
 export const AuthorRule = f.buildRule(
-  async (id: string) => await api.public.user.get(id),
+  async (id: string) => await queryApi.public.user.get(id),
   { classConstructor: Author }
 )

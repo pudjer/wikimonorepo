@@ -1,7 +1,11 @@
 
 
+import { Routes } from "react-router-dom";
 export const App = () => {
-  return null
-}
+  return (
+    <Routes>
+    </Routes>
+  );
+};
 
 

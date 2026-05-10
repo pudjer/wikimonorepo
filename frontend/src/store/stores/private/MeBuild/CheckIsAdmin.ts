@@ -1,9 +1,9 @@
 import { AxiosError } from "axios";
-import api from "../../../../api";
+import queryApi from "../../../../api/queryApi";
 
 export const checkIsAdmin = async (myId: string): Promise<boolean> => {
   try{
-    await api.admin.user.get(myId);
+    await queryApi.admin.user.get(myId);
     return true;  
   }catch(e) {
     if (e instanceof AxiosError && e.status === 403) {

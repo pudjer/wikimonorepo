@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { AxiosInstance, AxiosResponse } from "axios";
-import { API_BASE_URL } from "./config";
+import { API_BASE_URL } from "../config";
 
 import type {
   ArticleResultDTO,
@@ -104,20 +104,16 @@ export type {
   UserRegisterInputDtoAdmin,
 }
 
-import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO";
+import type { SessionDto } from "backend/src/presentation/session/DTO";
 
-export type { SessionDto, LoginDto }
+export type { SessionDto }
 
 import { PreviewOrder as Order, PreviewOrderingProp as OrderingProp } from "backend/src/domain/articlePreview/entity";
 export { Order, OrderingProp }
-import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
-export { LearnProgressStage }
-import { RoleName } from "backend/src/domain/user/roles";
-export { RoleName }
 
 // ===================== API Client =====================
 
-export class ApiClient {
+export class QueryApiClient {
   private readonly client: AxiosInstance;
 
   constructor(baseURL: string) {
@@ -140,15 +136,7 @@ export class ApiClient {
     return res.data;
   }
 
-  private async patch<T>(url: string, data?: unknown): Promise<T> {
-    const res: AxiosResponse<T> = await this.client.patch(url, data);
-    return res.data;
-  }
-
-  private async delete<T>(url: string): Promise<T> {
-    const res: AxiosResponse<T> = await this.client.delete(url);
-    return res.data;
-  }
+  // ===================== Only Queries (read) =====================
 
   public = {
     articles: {
@@ -178,56 +166,28 @@ export class ApiClient {
         }),
     },
 
-    searchArticle: (dto: ArticleQueryDto): Promise<SearchArticlesResultDto> => this.post<SearchArticlesResultDto>("/public/search/articles", dto),
+    searchArticle: (dto: ArticleQueryDto): Promise<SearchArticlesResultDto> =>
+      this.post<SearchArticlesResultDto>("/public/search/articles", dto),
 
     user: {
       get: (userId: string): Promise<UserOutputDtoPublic> =>
         this.get<UserOutputDtoPublic>(`/public/user/${userId}`),
-
-      register: (dto: UserRegisterInputDtoPublic): Promise<RegisterOutputDto> =>
-        this.post<RegisterOutputDto>("/public/user", dto),
     },
   };
 
   private = {
-    articles: {
-      create: (dto: CreateArticleDto): Promise<ArticleResultDTO> =>
-        this.post<ArticleResultDTO>("/private/articles", dto),
-
-      update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
-        this.patch<ArticleResultDTO>(`/private/articles/${id}`, dto),
-
-      delete: (id: string): Promise<Success> =>
-        this.delete<Success>(`/private/articles/${id}`),
-    },
-
     interactionUserArticle: {
       likes: {
-        like: (articleId: string): Promise<Success> =>
-          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
-  
-        unlike: (articleId: string): Promise<Success> =>
-          this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/like`),
-
         getLikes: (): Promise<LikeDto[]> =>
           this.get<LikeDto[]>("/private/interactionUserArticle/likes"),
       },
 
       views: {
-        view: (articleId: string): Promise<Success> =>
-          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
-  
-        removeView: (articleId: string): Promise<Success> =>
-          this.delete<Success>(`/private/interactionUserArticle/articles/${articleId}/view`),
-
         getViews: (): Promise<ViewDto[]> =>
           this.get<ViewDto[]>("/private/interactionUserArticle/views"),
       },
 
       learnProgress: {
-        updateLearnProgress: (articleId: string, dto: UpdateLearnProgressDto): Promise<Success> =>
-          this.post<Success>(`/private/interactionUserArticle/articles/${articleId}/learnProgress`, dto),
-        
         getLearnProgress: (): Promise<LearnProgressDto[]> =>
           this.get<LearnProgressDto[]>("/private/interactionUserArticle/learnProgress"),
       },
@@ -241,65 +201,30 @@ export class ApiClient {
 
         getTotalByIds: (ids: string[]): Promise<InteractionResultDto[]> =>
           this.post<InteractionResultDto[]>("/private/interactionUserArticle/total/by-ids", { ids }),
-      }
-
-
+      },
     },
 
     user: {
       get: (): Promise<UserOutputDtoPrivate> =>
         this.get<UserOutputDtoPrivate>("/private/user"),
-
-      update: (dto: UpdateInputDtoPrivate): Promise<UserOutputDtoPrivate> =>
-        this.patch<UserOutputDtoPrivate>("/private/user", dto),
     },
   };
 
   admin = {
-    articles: {
-      update: (id: string, dto: UpdateArticleDto): Promise<ArticleResultDTO> =>
-        this.patch<ArticleResultDTO>(`/admin/articles/${id}`, dto),
-
-      delete: (id: string): Promise<Success> =>
-        this.delete<Success>(`/admin/articles/${id}`),
-    },
-
     user: {
       get: (userId: string): Promise<UserOutputDtoAdmin> =>
         this.get<UserOutputDtoAdmin>(`/admin/user/${userId}`),
-
-      update: (userId: string, dto: UserUpdateInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
-        this.patch<UserOutputDtoAdmin>(`/admin/user/${userId}`, dto),
-
-      register: (dto: UserRegisterInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
-        this.post<UserOutputDtoAdmin>("/admin/user", dto),
-    },
-
-    session: {
-      logoutAll: (userId: string): Promise<Success> =>
-        this.post<Success>(`/admin/session/${userId}`),
     },
   };
 
   session = {
     refresh: (): Promise<SessionDto> =>
       this.post<SessionDto>("/session/refresh"),
-
-    logout: (): Promise<Success> =>
-      this.post<Success>("/session/logout"),
-
-    logoutAll: (): Promise<Success> =>
-      this.post<Success>("/session/logout-all"),
-  };
-
-  login = {
-    login: (dto: LoginDto): Promise<SessionDto> =>
-      this.post<SessionDto>("/login", dto),
   };
 }
 
 // ===================== Default Singleton =====================
 
-export const api = new ApiClient(API_BASE_URL);
-export default api;
+export const queryApi = new QueryApiClient(API_BASE_URL);
+export default queryApi;
 

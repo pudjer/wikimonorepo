@@ -1,4 +1,5 @@
-import api, { LearnProgressStage } from "../../../api";
+import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
+import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { stringToArray } from "../../stringArray";
 
@@ -13,7 +14,7 @@ export class TotalInteraction {
 
 export const TotalInteractionRule = f.buildRule(
   async (articleId: string) => {
-    return await api.private.interactionUserArticle.total.getTotal(articleId);
+    return await queryApi.private.interactionUserArticle.total.getTotal(articleId);
   },
   { 
     classConstructor: TotalInteraction, 
@@ -30,7 +31,7 @@ export const TotalInteractionRule = f.buildRule(
 export const TotalInteractionsCollectionRule = f.buildRule(
   async (idsSortedAmpersandTerminated: string) => {
     const ids = stringToArray(idsSortedAmpersandTerminated)
-    return await api.private.interactionUserArticle.total.getTotalByIds(ids);
+    return await queryApi.private.interactionUserArticle.total.getTotalByIds(ids);
   },
   { 
     classConstructor: Array<TotalInteraction>,
@@ -44,7 +45,7 @@ export const TotalInteractionsCollectionRule = f.buildRule(
 )
 export const MyInteractionsRule = f.buildRule(
   async () => {
-    return await api.private.interactionUserArticle.total.getTotalAll();
+    return await queryApi.private.interactionUserArticle.total.getTotalAll();
   },
   { 
     classConstructor: Array<TotalInteraction>,

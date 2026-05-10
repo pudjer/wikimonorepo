@@ -1,4 +1,4 @@
-import api from "../../../../api";
+import queryApi from "../../../../api/queryApi";
 import { f } from "../../../../lib";
 
 export class MyProfile {
@@ -8,6 +8,6 @@ export class MyProfile {
 
 
 export const MyProfileRule = f.buildRule(
-  async () => await api.private.user.get(),
+  async () => await queryApi.private.user.get(),
   { classConstructor: MyProfile }
 )

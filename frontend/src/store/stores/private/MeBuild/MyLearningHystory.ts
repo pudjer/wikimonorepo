@@ -1,4 +1,4 @@
-import { LearnProgressStage } from "../../../../api";
+import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import { f } from "../../../../lib";
 import { MyInteractionsRule, TotalInteraction } from "../TotalInteractions";
 

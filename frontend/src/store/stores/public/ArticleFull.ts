@@ -1,4 +1,4 @@
-import api from "../../../api";
+import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { arrayToString } from "../../stringArray";
 import { ArticleBase } from "./ArticleBase";
@@ -20,7 +20,7 @@ export class Article extends ArticleBase {
 }
 
 export const ArticleRule = f.buildRule(
-  async (id: string) => await api.public.articles.getById(id),
+  async (id: string) => await queryApi.public.articles.getById(id),
   { 
     classConstructor: Article , 
     update: async (article, data) => {

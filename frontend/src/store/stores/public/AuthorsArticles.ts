@@ -1,4 +1,4 @@
-import api from "../../../api";
+import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { arrayToString } from "../../stringArray";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
@@ -7,7 +7,7 @@ import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 
 export const AuthorsArticlesRule = f.buildRule(
-  async (id: string) => await api.public.articles.getByAuthorId(id),
+  async (id: string) => await queryApi.public.articles.getByAuthorId(id),
   { 
     classConstructor: Array<ArticlePreview>, 
     update: async (target, data, resolve) => { 

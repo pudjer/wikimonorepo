@@ -1,7 +1,7 @@
 import { NodeRelations } from "backend/src/domain/articleDAG/entity";
 import { Link } from "backend/src/domain/common/entity";
 import { UniqueCollection } from "backend/src/domain/utils/collections";
-import api from "../../../../api";
+import queryApi from "../../../../api/queryApi";
 import { DAG } from "../../../../domain/DAG/entity";
 import { StatsBuilder } from "../../../../domain/learningDAG/statsDag";
 import { autorun, f } from "../../../../lib";
@@ -42,7 +42,7 @@ export const MyLearningDAGRule = f.buildRule(
       const learning = await MyLearningHistoryRule.resolveInside(resolve, undefined);
       const learningArticleIds = learning.map(i => i.articleId);
 
-      const { links, nodes } = await api.public.articleDAG.getDAG(learningArticleIds);
+      const { links, nodes } = await queryApi.public.articleDAG.getDAG(learningArticleIds);
 
       const nodesSortedAmpersandTerminated = arrayToString(nodes);
       const allNodes = await TotalInteractionsCollectionRule.resolveInside(resolve, nodesSortedAmpersandTerminated);

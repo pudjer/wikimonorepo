@@ -1,4 +1,4 @@
-import api from "../../../api";
+import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { stringToArray } from "../../stringArray";
 import { ArticleBase } from "./ArticleBase";
@@ -12,14 +12,14 @@ export class ArticlePreview extends ArticleBase{
 }
 
 export const ArticlePreviewRule = f.buildRule(
-  async (id: string) => await api.public.articlePreview.getById(id),
+  async (id: string) => await queryApi.public.articlePreview.getById(id),
   { classConstructor: ArticlePreview }
 )
 
 export const ArticlePreviewCollectionRule = f.buildRule(
   async (sortedIdsAmpersandTerminated: string) => {
     const ids = stringToArray(sortedIdsAmpersandTerminated)
-    const res = await api.public.articlePreview.getByIds({ ids })
+    const res = await queryApi.public.articlePreview.getByIds({ ids })
     return res.previews;
   },
   { 

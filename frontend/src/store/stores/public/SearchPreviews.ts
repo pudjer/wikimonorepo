@@ -1,11 +1,11 @@
-import api, { ArticleQueryDto } from "../../../api";
+import queryApi, { ArticleQueryDto } from "../../../api/queryApi";
 import { arrayToString } from "../../stringArray";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
 export type SearchOutput = {contentSnippet: string, relevanceScore: number}
 export type SearchRecord = {info: SearchOutput, preview: ArticlePreview}
 export const SearchPreviews = async (query: ArticleQueryDto): Promise<SearchRecord[]> => {
-  const searchRes = await api.public.searchArticle(query)
+  const searchRes = await queryApi.public.searchArticle(query)
   const ids = arrayToString(searchRes.results.map(r => r.id))
   const prevs: ArticlePreview[] = await ArticlePreviewCollectionRule.resolveOutside(ids)
   

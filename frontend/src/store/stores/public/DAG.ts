@@ -1,5 +1,5 @@
 import { NodeRelations } from "backend/src/domain/articleDAG/entity";
-import api from "../../../api";
+import queryApi from "../../../api/queryApi";
 import { DAG } from "../../../domain/DAG/entity";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 import { UniqueCollection } from "backend/src/domain/utils/collections";
@@ -12,7 +12,7 @@ export class PreviewDAG extends DAG<ArticlePreview> {}
 export const DAGRule = f.buildRule(
   async (sortedIdsAmpersandTerminated: string) => {
     const ids = stringToArray(sortedIdsAmpersandTerminated)
-    return await api.public.articleDAG.getDAG(ids);
+    return await queryApi.public.articleDAG.getDAG(ids);
   },
   { 
     classConstructor: PreviewDAG,
