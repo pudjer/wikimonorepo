@@ -12,7 +12,7 @@ export const use = async () => {
   console.log(artFull);
   const link = await artFull.links[0];
   console.log(link);
-  const parent = await link.getParent();
+  const parent = link.parent;
   console.log(parent);
   const author = await parent.getAuthor();
   console.log(author);

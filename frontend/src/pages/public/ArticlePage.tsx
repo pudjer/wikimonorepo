@@ -30,8 +30,8 @@ export const ArticlePage = f.observer(function ArticlePage() {
                 </Typography>
                 <Stack spacing={1}>
                   {res.data.links.map((l) => (
-                    <Typography key={l.parent} variant="body2" color="text.secondary">
-                      {l.name} → {l.parent}
+                    <Typography key={l.parent.title} variant="body2" color="text.secondary">
+                      {l.name} → {l.parent.title}
                     </Typography>
                   ))}
                 </Stack>

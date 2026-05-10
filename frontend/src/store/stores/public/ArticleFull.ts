@@ -1,16 +1,11 @@
 import api from "../../../api";
 import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
-import { ArticlePreview, ArticlePreviewRule } from "./ArticlePreview";
+import { ArticlePreview, ArticlePreviewCollectionRule, ArticlePreviewRule } from "./ArticlePreview";
 
 export class ArticleLink {
-  constructor(public name: string, public parent: string) {}
-  async getParentPreview(): Promise<ArticlePreview> {
-    return await ArticlePreviewRule.resolveOutside(this.parent);
-  }
-  async getParent(): Promise<Article> {
-    return await ArticleRule.resolveOutside(this.parent);
-  }
+  name: string;
+  parent: ArticlePreview;
 }
 
 
@@ -34,7 +29,13 @@ export const ArticleRule = f.buildRule(
       article.id = data.id;
       article.title = data.title;
       article.content = data.content;
-      article.links = data.links.map((link) => new ArticleLink(link.name, link.parent));
+      const sortedIdsAmpersandTerminated = data.links.map(link => link.parent).toSorted().join("&")
+      const parents = await ArticlePreviewCollectionRule.resolveOutside(sortedIdsAmpersandTerminated);
+      const parentsMap = new Map(parents.map(parent => [parent.id, parent]));
+      article.links = data.links.map(link => ({
+        name: link.name,
+        parent: parentsMap.get(link.parent)!
+      }));
       article.createdAt = new Date(data.createdAt);
       article.updatedAt = new Date(data.updatedAt);
       article.authorId = data.authorId;
