@@ -12,3 +12,4 @@ export * from "./SearchComponent";
 export * from "./ArticlesDagComponent";
 export * from "./HeaderComponent";
 export * from "./LoginComponent";
+export * from "./GenericDagPresentation"

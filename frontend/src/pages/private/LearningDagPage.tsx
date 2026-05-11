@@ -56,8 +56,8 @@ export const LearningDagPage = f.observer(() => {
 
         <Grid container spacing={3}>
           {allStats.map((stat) => {
-            const isMastered = stat.value.learnProgressStage === LearnProgressStage.Mastered;
-            const isLearning = stat.value.learnProgressStage === LearnProgressStage.Learning;
+            const isMastered = stat.isMastered();
+            const isLearning = stat.isLearning();
             const isTransitiveMastered = stat.isTransitiveMastered();
             const isTransitiveLearning = stat.isTransitiveLearning();
 

@@ -182,7 +182,7 @@ export class DAG<Node> implements IDAG<Node> {
         }
         return subNodeIds
     }
-    getLayers(): ReadonlyArray<ReadonlySet<Node>> {
+    getLayers(): Layers<Node> {
         return this.layersFromLastGeneration
     }
     getNodesLayers(articleIds: ReadonlySet<Node>): Layers<Node> {

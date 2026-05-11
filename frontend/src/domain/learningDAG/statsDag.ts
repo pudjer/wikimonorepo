@@ -1,3 +1,4 @@
+import { autorun } from "../../lib";
 import { DAG, NoNodeInGraphError } from "../DAG/entity";
 import { type IHasStage, LearningStats } from "./stats";
 
@@ -9,11 +10,11 @@ export class StatsBuilder<T extends IHasStage> {
         public readonly dag: DAG<T>
     ){
         for(const node of dag.nodes){
-            const stats = new LearningStats(
+            const stats = autorun.registerObject(new LearningStats(
                 node, 
                 (): ReadonlySet<LearningStats<T>> => new Set(this.dag.getAncestors(node).values().map(ancestor => this.getStats(ancestor))), 
                 (): ReadonlySet<LearningStats<T>> => new Set(this.dag.getDescendants(node).values().map(descendant => this.getStats(descendant)))
-            );
+            ));
             this.statsMap.set(node, stats)
         }
     }
