@@ -4,7 +4,7 @@ import { ISessionServiceAdmin } from "../../application/session/serviceAdmin";
 import { UserIdValidator } from "../../domain/user/props/userId";
 import { AdminRole } from "../../domain/user/roles";
 import { SESSION_SERVICE_ADMIN_TOKEN, SESSION_SERVICE_TOKEN, USER_ID_VALIDATOR_TOKEN } from "../../tokens";
-import { RoleAuth } from "../common/auth/role/roleDecorator";
+import { RoleAuth } from "../common/auth/roleDecorator";
 import { Success } from "../common/DTO";
 
 @RoleAuth([AdminRole])

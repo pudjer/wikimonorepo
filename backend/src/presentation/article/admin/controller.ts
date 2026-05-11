@@ -18,7 +18,7 @@ import { resultMapper } from "../common/mapper";
 import { Success } from "../../common/DTO";
 import { ARTICLE_ID_VALIDATOR_TOKEN, ARTICLE_REFERENCES_VALIDATOR, ARTICLE_SERVICE_ADMIN_TOKEN, ARTICLE_SERVICE_PRIVATE_TOKEN, CONTENT_VALIDATOR_TOKEN, TITLE_VALIDATOR_TOKEN } from "../../../tokens";
 import { UpdateArticleInputPrivate } from "../../../application/article/private/DTO";
-import { RoleAuth } from "../../common/auth/role/roleDecorator";
+import { RoleAuth } from "../../common/auth/roleDecorator";
 import { AdminRole } from "../../../domain/user/roles";
 import { IArticleServiceAdmin } from "../../../application/article/admin/service";
 

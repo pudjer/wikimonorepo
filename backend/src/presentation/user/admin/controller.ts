@@ -5,7 +5,7 @@ import { PasswordValidator } from "../../../domain/user/props/password";
 import { UsernameValidator } from "../../../domain/user/props/username";
 import { AdminRole, roleByName } from "../../../domain/user/roles";
 import { PASSWORD_VALIDATOR_TOKEN, USER_ID_VALIDATOR_TOKEN, USER_SERVICE_ADMIN_TOKEN, USERNAME_VALIDATOR_TOKEN } from "../../../tokens";
-import { RoleAuth } from "../../common/auth/role/roleDecorator";
+import { RoleAuth } from "../../common/auth/roleDecorator";
 import { UserUpdateInputDtoAdmin, UserOutputDtoAdmin, UserRegisterInputDtoAdmin } from "./DTO";
 import { UserIdValidator } from "../../../domain/user/props/userId";
 import { RegisterUserInputAdmin, UpdateUserInputAdmin } from "../../../application/user/admin/DTO";

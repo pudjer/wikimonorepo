@@ -22,7 +22,7 @@ import { Success } from "../../common/DTO";
 import { IArticleServicePrivate } from "../../../application/article/private/service";
 import { ARTICLE_ID_VALIDATOR_TOKEN, ARTICLE_REFERENCES_VALIDATOR, ARTICLE_SERVICE_PRIVATE_TOKEN, CONTENT_VALIDATOR_TOKEN, TITLE_VALIDATOR_TOKEN } from "../../../tokens";
 import { CreateArticleInputPrivate, UpdateArticleInputPrivate } from "../../../application/article/private/DTO";
-import { RoleAuth } from "../../common/auth/role/roleDecorator";
+import { RoleAuth } from "../../common/auth/roleDecorator";
 import { BaseRole } from "../../../domain/user/roles";
 
   

@@ -17,7 +17,7 @@ import { ARTICLE_ID_VALIDATOR_TOKEN, LEARN_PROGRESS_SERVICE_TOKEN, LIKE_SERVICE_
 import { ILearnProgressService } from "../../application/interactionUserArticle/learnProgress/service";
 import { ILikeService } from "../../application/interactionUserArticle/like/service";
 import { IViewService } from "../../application/interactionUserArticle/view/service";
-import { RoleAuth } from "../common/auth/role/roleDecorator";
+import { RoleAuth } from "../common/auth/roleDecorator";
 import { BaseRole } from "../../domain/user/roles";
 import { Success } from "../common/DTO";
 import { ITotalInteractionService } from "../../application/interactionUserArticle/total/service";

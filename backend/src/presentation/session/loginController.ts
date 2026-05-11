@@ -4,7 +4,7 @@ import { ILoginUseCase } from "../../application/loginUseCase";
 import { PasswordValidator } from "../../domain/user/props/password";
 import { UsernameValidator } from "../../domain/user/props/username";
 import { LOGIN_USE_CASE_TOKEN, USERNAME_VALIDATOR_TOKEN, PASSWORD_VALIDATOR_TOKEN } from "../../tokens";
-import { SESSION_COOKIE_NAME } from "../common/auth/session/consts";
+import { SESSION_COOKIE_NAME } from "../common/auth/consts";
 import { LoginDto, SessionDto } from "./DTO";
 import { Response } from "express";
 

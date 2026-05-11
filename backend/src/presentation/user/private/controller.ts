@@ -6,7 +6,7 @@ import { UserId, UserIdValidator } from "../../../domain/user/props/userId";
 import { UsernameValidator } from "../../../domain/user/props/username";
 import { BaseRole } from "../../../domain/user/roles";
 import { PASSWORD_VALIDATOR_TOKEN, USER_ID_VALIDATOR_TOKEN, USER_SERVICE_PRIVATE_TOKEN, USERNAME_VALIDATOR_TOKEN } from "../../../tokens";
-import { RoleAuth } from "../../common/auth/role/roleDecorator";
+import { RoleAuth } from "../../common/auth/roleDecorator";
 import { UpdateInputDtoPrivate, UserOutputDtoPrivate } from "./DTO";
 import { UpdateUserInputPrivate } from "../../../application/user/private/DTO";
 import { UserIdParam } from "../../common/auth/paramDecorators";
