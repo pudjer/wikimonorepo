@@ -7,7 +7,7 @@ import { AuthorRule } from "./stores/public/Author";
 import { AuthorsArticlesRule } from "./stores/public/AuthorsArticles";
 import { DAGRule } from "./stores/public/DAG";
 import { InOrderRule } from "./stores/public/InOrder";
-import { SearchPreviews } from "./stores/public/SearchPreviews";
+import { Search } from "./stores/public/SearchPreviews";
 import { RootRule } from "./stores/Root";
 
 export const use = async () => {
@@ -44,7 +44,7 @@ export const use = async () => {
     console.log(stat?.getTransitiveScore());
   }
 
-  const search = await SearchPreviews({ query: "string" });
+  const search = await Search({ query: "string" });
   console.log(search);
 
   const inOrder = await InOrderRule.resolveOutside("DESC:learners");
