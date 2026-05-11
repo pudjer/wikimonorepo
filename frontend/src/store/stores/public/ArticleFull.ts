@@ -1,6 +1,5 @@
 import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
-import { arrayToString } from "../../stringArray";
 import { ArticleBase } from "./ArticleBase";
 import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 
@@ -27,8 +26,7 @@ export const ArticleRule = f.buildRule(
       article.id = data.id;
       article.title = data.title;
       article.content = data.content;
-      const sortedIdsAmpersandTerminated = arrayToString(data.links.map(link => link.parent));
-      const parents = await ArticlePreviewCollectionRule.resolveOutside(sortedIdsAmpersandTerminated);
+      const parents = await ArticlePreviewCollectionRule.resolveOutside(data.links.map(link => link.parent).toSorted());
       const parentsMap = new Map(parents.map(parent => [parent.id, parent]));
       article.links = data.links.map(link => ({
         name: link.name,

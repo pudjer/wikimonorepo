@@ -7,7 +7,6 @@ import { StatsBuilder } from "../../../../domain/learningDAG/statsDag";
 import { autorun, f } from "../../../../lib";
 import {  TotalInteraction, TotalInteractionsCollectionRule } from "../TotalInteractions";
 import { MyLearningHistoryRule } from "./MyLearningHystory";
-import { arrayToString } from "../../../stringArray";
 
 
 export class MyLearningStats extends StatsBuilder<TotalInteraction> { }
@@ -44,8 +43,7 @@ export const MyLearningDAGRule = f.buildRule(
 
       const { links, nodes } = await queryApi.public.articleDAG.getDAG(learningArticleIds);
 
-      const nodesSortedAmpersandTerminated = arrayToString(nodes);
-      const allNodes = await TotalInteractionsCollectionRule.resolveInside(resolve, nodesSortedAmpersandTerminated);
+      const allNodes = await TotalInteractionsCollectionRule.resolveInside(resolve, nodes.toSorted());
 
       const interactionMap = new Map(allNodes.map(p => [p.articleId, p]));
 

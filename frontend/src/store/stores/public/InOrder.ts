@@ -1,14 +1,11 @@
-import { PreviewOrderingProp, PreviewOrder } from "backend/src/domain/articlePreview/entity";
-import { queryApi } from "../../../api/queryApi";
+import { OrderDto, queryApi } from "../../../api/queryApi";
 import { ArticlePreview, ArticlePreviewRule } from "./ArticlePreview";
 import { f } from "../../../lib";
 
 
-export type OrderColonOrderBy = `${PreviewOrder}:${PreviewOrderingProp}`
 export const InOrderRule = f.buildRule(
-  async (orderColonOrderBy: OrderColonOrderBy) => {
-    const [order, orderingProp] = orderColonOrderBy.split(":") as [PreviewOrder, PreviewOrderingProp]
-    return await queryApi.public.articlePreview.getInOrder({ order, orderingProp });
+  async (orderDto: OrderDto) => {
+    return await queryApi.public.articlePreview.getInOrder(orderDto);
   },
   { 
     classConstructor: Array<ArticlePreview>,

@@ -23,7 +23,7 @@ export const use = async () => {
   console.log(author);
   const articles = await AuthorsArticlesRule.resolveOutside(author.id);
   console.log(articles);
-  const dag = await DAGRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
+  const dag = await DAGRule.resolveOutside(["72d2ad66-794e-4666-b40f-793496ae5adb"]);
   console.log(dag);
   await mutationApi.public.login({
     "username": "st22ring",

@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { f } from "../lib";
 import { ArticlePreviewCollectionRule } from "../store/stores/public/ArticlePreview";
 import { PreviewComponent } from "./PreviewComponent";
@@ -15,8 +14,7 @@ const PreviewListComponentBase = ({
   onSelect, 
   horizontal = false 
 }: PreviewListComponentProps) => {
-  const key = useMemo(() => ids.join("&"), [ids]);
-  const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(key, [key]);
+  const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(ids);
 
   if (isPending) {
     return (

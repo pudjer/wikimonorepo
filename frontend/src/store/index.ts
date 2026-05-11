@@ -1,4 +1,3 @@
-export * from "./stringArray";
 
 export * from "./stores/Root";
 

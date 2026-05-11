@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import { f } from "../lib";
-import { InOrderRule, OrderColonOrderBy } from "../store/stores/public/InOrder";
+import { InOrderRule } from "../store/stores/public/InOrder";
 import { PreviewListComponent } from "./PreviewListComponent";
 import { PreviewOrder, PreviewOrderingProp } from "backend/src/domain/articlePreview/entity";
 import {
@@ -40,17 +40,13 @@ const InOrderComponentBase = ({
 }: InOrderComponentProps) => {
   const [order, setOrder] = useState<PreviewOrder>(initialOrder);
   const [orderBy, setOrderBy] = useState<PreviewOrderingProp>(initialOrderBy);
+  const orderDto = useMemo(() => ({ order, orderingProp: orderBy }), [order, orderBy]);
 
-  const orderKey = useMemo(
-    () => `${order}:${orderBy}` as OrderColonOrderBy,
-    [order, orderBy]
-  );
-
-  const { data, isPending, error } = InOrderRule.useResolve(orderKey, [orderKey]);
+  const { data, isPending, error } = InOrderRule.useResolve(orderDto);
 
   const handleRefresh = useCallback(async () => {
-    await InOrderRule.refresh(orderKey);
-  }, [orderKey]);
+    await InOrderRule.refresh(orderDto);
+  }, [orderDto ]);
 
   const articleIds = useMemo(
     () => data?.map((preview) => preview.id) ?? [],
