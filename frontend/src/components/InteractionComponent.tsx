@@ -11,19 +11,20 @@ import {
   Typography,
 } from "@mui/material";
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
+import { RootRule } from "../store";
 
 type InteractionComponentProps = {
   id: string;
 };
 
 const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
-  const { data, isPending, error } = TotalInteractionRule.useResolve(id, [id]);
-  
+  const { data: root } = RootRule.useResolve(true);
+  const { data, isPending, error } = TotalInteractionRule.useResolve(root?.myId ? { articleId: id, myId: root.myId } : undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
-    await TotalInteractionRule.refresh(id);
-  }, [id]);
+    if(root?.myId) await TotalInteractionRule.refresh({articleId: id, myId: root.myId});
+  }, [root?.myId, id]);
 
   const handleLikeToggle = async () => {
     if (!data) {

@@ -1,17 +1,17 @@
+import queryApi from "../../api/queryApi";
 import { f } from "../../lib";
-import { Me, MeRule } from "./private/Me";
-import { NullIfUnauthorized } from "./private/NullIfUnauthorized";
+import { UndefinedIfUnauthorized } from "./private/UndefinedIfUnauthorized";
 
 export class Root{
-  me: Me | null
+  myId: string | undefined
 }
 
 export const RootRule = f.buildRule(
-  async () => {},
+  async (tru: true) => {},
   { 
     classConstructor: Root, 
-    async update(target, data, resolve){
-      target.me = await NullIfUnauthorized(MeRule.resolveInside(resolve, undefined));
+    async update(target){
+      target.myId = await UndefinedIfUnauthorized(queryApi.private.user.get().then(res => res.id))
     }
   }
 )

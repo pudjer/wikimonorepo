@@ -8,7 +8,7 @@ import { AsyncState, useAsync } from "./useAsync";
 export interface RuleOutput<T extends object, D, KEY> {
   resolveOutside(key: KEY, data?: D): Promise<T>;
   refresh(key: KEY, data?: D): Promise<T>;
-  useResolve(key: KEY, deps?: unknown[], data?: D): AsyncState<T>;
+  useResolve(key: KEY | undefined): AsyncState<T>;
   resolveInside(resolve: ResolverFn, key: KEY, data?: D): Promise<T>;
 }
 export class Facade {
@@ -27,14 +27,14 @@ export class Facade {
   ): RuleOutput<T, D, KEY> => { 
     const rule = this.ruleBuilder.buildRule(fetch, options);
     return {
-      resolveOutside: async (key: KEY, data?: D) => await this.resolver.resolveOutside(key, rule, data),
-      refresh: async (key: KEY, data?: D) => await this.resolver.refresh(key, rule, data),
-      useResolve: (key: KEY, deps?: unknown[], data?: D) => {
-        const asyncFunction = () => this.resolver.resolveOutside(key, rule, data);
-        return useAsync(asyncFunction, deps || []);
+      resolveOutside: async (key: KEY, data?: D) => await this.resolver.resolveOutside<T, D, KEY>(key, rule, data),
+      refresh: async (key: KEY, data?: D) => await this.resolver.refresh<T, D, KEY>(key, rule, data),
+      useResolve: (key: KEY | undefined) => {
+        const asyncFunction = key ? () => this.resolver.resolveOutside<T, D, KEY>(key, rule) : () => new Promise<T>(() => {});
+        return useAsync(asyncFunction, [JSON.stringify(key)]);
       },
       resolveInside: async (resolve: ResolverFn, key: KEY, data?: D) => {
-        return await resolve(key, rule, data);
+        return await resolve<T, D, KEY>(key, rule, data);
       }
     };
   }

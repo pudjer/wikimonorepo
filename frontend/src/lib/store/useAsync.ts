@@ -43,7 +43,7 @@ export function useAsync<T>(
     return () => {
       cancelledRef.current = true;
     };
-  }, [stableFunction, ...deps]);
+  }, [stableFunction]);
 
   return state;
 }

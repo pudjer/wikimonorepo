@@ -8,6 +8,6 @@ export class MyProfile {
 
 
 export const MyProfileRule = f.buildRule(
-  async () => await queryApi.private.user.get(),
+  async (myId: string) => await queryApi.private.user.get(),
   { classConstructor: MyProfile }
 )

@@ -15,16 +15,16 @@ export class Me{
 }
 
 export const MeRule = f.buildRule(
-  async () => {},
+  async (myId: string) => {},
   { 
     classConstructor: Me, 
-    update: async (target, data, resolve) => {
-      target.profile = await MyProfileRule.resolveInside(resolve, undefined);
+    update: async (target, data, resolve, myId: string) => {
+      target.profile = await MyProfileRule.resolveInside(resolve, myId);
       target.isAdmin = await checkIsAdmin(target.profile.id);
-      target.history = await MyInteractionsRule.resolveInside(resolve, undefined);
+      target.history = await MyInteractionsRule.resolveInside(resolve, myId);
       target.historyCash = new Map(target.history.map(h => [h.articleId, h]));
-      target.learningHistory = await MyLearningHistoryRule.resolveInside(resolve, undefined);
-      target.myLearningStats = await MyLearningStatsRule.resolveInside(resolve, undefined);
+      target.learningHistory = await MyLearningHistoryRule.resolveInside(resolve, myId);
+      target.myLearningStats = await MyLearningStatsRule.resolveInside(resolve, myId);
     } 
   }
 )

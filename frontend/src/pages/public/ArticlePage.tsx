@@ -21,14 +21,14 @@ export const ArticlePage = f.observer(() => {
     data: article,
     isPending: isArticlePending,
     error: articleError,
-  } = ArticleRule.useResolve(id, [id]);
+  } = ArticleRule.useResolve(id);
   const {
     data: rootData,
     isPending: isRootPending,
-  } = RootRule.useResolve(undefined);
+  } = RootRule.useResolve(true);
 
   const isPending = isArticlePending || isRootPending;
-  const isMy = !!rootData?.me?.profile?.id && article?.authorId === rootData.me.profile.id;
+  const isMy = !!rootData?.myId && article?.authorId === rootData.myId;
 
   const linksForComponent = useMemo(() => {
     if (!article) return [];

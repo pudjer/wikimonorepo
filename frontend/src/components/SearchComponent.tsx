@@ -69,7 +69,6 @@ const SearchComponentBase = ({
           return;
         }
         setResults(data);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (e) {
         if (!mounted) {
           return;

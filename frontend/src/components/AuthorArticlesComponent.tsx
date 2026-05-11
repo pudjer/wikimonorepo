@@ -10,7 +10,7 @@ type AuthorArticlesComponentProps = {
 };
 
 const AuthorArticlesComponentBase = ({ authorId, onSelect }: AuthorArticlesComponentProps) => {
-  const { data, isPending, error } = AuthorsArticlesRule.useResolve(authorId, [authorId]);
+  const { data, isPending, error } = AuthorsArticlesRule.useResolve(authorId);
   const articleIds = useMemo(() => data?.map((preview) => preview.id) ?? [], [data]);
 
   if (isPending) {

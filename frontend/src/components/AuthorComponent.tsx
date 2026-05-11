@@ -8,7 +8,7 @@ type AuthorComponentProps = {
 };
 
 const AuthorComponentBase = ({ id }: AuthorComponentProps) => {
-  const { data, isPending, error } = AuthorRule.useResolve(id, [id]);
+  const { data, isPending, error } = AuthorRule.useResolve(id);
   const navigate = useNavigate();
   if (isPending) {
     return (

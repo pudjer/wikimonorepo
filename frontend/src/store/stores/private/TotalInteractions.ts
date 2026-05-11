@@ -12,7 +12,7 @@ export class TotalInteraction {
 }
 
 export const TotalInteractionRule = f.buildRule(
-  async (articleId: string) => {
+  async ({articleId}: { articleId: string; myId: string }) => {
     return await queryApi.private.interactionUserArticle.total.getTotal(articleId);
   },
   { 
@@ -28,29 +28,29 @@ export const TotalInteractionRule = f.buildRule(
   }
 );
 export const TotalInteractionsCollectionRule = f.buildRule(
-  async (idsSorted: string[]) => {
+  async ({idsSorted}:{idsSorted: string[], myId: string}) => {
     return await queryApi.private.interactionUserArticle.total.getTotalByIds(idsSorted);
   },
   { 
     classConstructor: Array<TotalInteraction>,
-    async update(target, data, resolve) {
+    async update(target, data, resolve, {myId}) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await TotalInteractionRule.resolveInside(resolve, interaction.articleId, interaction));
+        target.push(await TotalInteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
       }
     },
   }
 )
 export const MyInteractionsRule = f.buildRule(
-  async () => {
+  async (myId: string) => {
     return await queryApi.private.interactionUserArticle.total.getTotalAll();
   },
   { 
     classConstructor: Array<TotalInteraction>,
-    async update(target, data, resolve) {
+    async update(target, data, resolve, myId) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await TotalInteractionRule.resolveInside(resolve, interaction.articleId, interaction));
+        target.push(await TotalInteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
       }
       target.sort((a, b) => {
         if(a.lastInteraction === null) return 1;

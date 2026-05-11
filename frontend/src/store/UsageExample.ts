@@ -1,6 +1,7 @@
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import mutationApi from "../api/mutationApi";
 import { MyLearningStatsRule } from "./stores/private/MeBuild/LearningStats";
+import { MeRule } from "./stores/private/Me";
 import { ArticleRule } from "./stores/public/ArticleFull";
 import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
 import { AuthorRule } from "./stores/public/Author";
@@ -9,6 +10,7 @@ import { DAGRule } from "./stores/public/DAG";
 import { InOrderRule } from "./stores/public/InOrder";
 import { Search } from "./stores/public/SearchPreviews";
 import { RootRule } from "./stores/Root";
+import { Order, OrderingProp } from "../api/queryApi";
 
 export const use = async () => {
   const art = await ArticlePreviewRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
@@ -29,14 +31,15 @@ export const use = async () => {
     "username": "st22ring",
     "password": "striDD@@33ng"
   });
-  const root = await RootRule.resolveOutside(undefined);
+  const root = await RootRule.resolveOutside(true);
   console.log(root);
-  if (root.me){
-    const interaction = root.me.learningHistory[0]
-    const stat = (await MyLearningStatsRule.resolveOutside(undefined)).getStats(interaction)
+  if (root.myId){
+    const me = await MeRule.resolveOutside(root.myId);
+    const interaction = me.learningHistory[0]
+    const stat = (await MyLearningStatsRule.resolveOutside(root.myId)).getStats(interaction)
 
     console.log(stat?.getTransitiveScore());
-    root.me.myLearningStats.dag.nodes.forEach(async (node) => {
+    me.myLearningStats.dag.nodes.forEach(async (node) => {
       const int = node;
       if (int && (int !== interaction)) int.learnProgressStage = LearnProgressStage.Mastered;
     });
@@ -47,6 +50,6 @@ export const use = async () => {
   const search = await Search({ query: "string" });
   console.log(search);
 
-  const inOrder = await InOrderRule.resolveOutside("DESC:learners");
+  const inOrder = await InOrderRule.resolveOutside({ order: Order.ASC, orderingProp: OrderingProp.dagPoints });
   console.log(inOrder);
 }

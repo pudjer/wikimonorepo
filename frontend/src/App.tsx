@@ -3,16 +3,16 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { f } from "./lib";
-import { RootRule } from "./store";
+import { RootRule, MeRule } from "./store";
 import { HeaderComponent } from "./components";
 import { TrendingPage, ArticlePage, AuthorPage, CreateArticlePage, LearningDagPage, LoginPage } from "./pages";
 
 const ProtectedRoute = f.observer(({ children }: { children: React.ReactNode }) => {
-  const {data: root, isPending} = RootRule.useResolve(undefined);
+  const {data: root, isPending} = RootRule.useResolve(true);
   if (isPending) {
     return <Box>Loading...</Box>;
   }
-  if (!root?.me) {
+  if (!root?.myId) {
     return <Navigate to="/login" replace />;
   }
   return <>{children}</>;

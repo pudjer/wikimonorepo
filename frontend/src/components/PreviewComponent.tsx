@@ -23,7 +23,7 @@ type PreviewComponentProps = {
 };
 
 const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
-  const { data, isPending, error } = ArticlePreviewRule.useResolve(id, [id]);
+  const { data, isPending, error } = ArticlePreviewRule.useResolve(id);
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 

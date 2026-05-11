@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { f } from "../lib";
-import { MyInteractionsRule } from "../store/stores/private/TotalInteractions";
+import { MyInteractionsRule, RootRule } from "../store";
 import { PreviewListComponent } from "./PreviewListComponent";
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import { Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
@@ -10,7 +10,8 @@ type MyInteractionsComponentProps = {
 };
 
 const MyInteractionsComponentBase = ({ onSelect }: MyInteractionsComponentProps) => {
-  const { data, isPending, error } = MyInteractionsRule.useResolve(undefined, []);
+  const { data: root } = RootRule.useResolve(true);
+  const { data, isPending, error } = MyInteractionsRule.useResolve(root?.myId);
 
   const likedIds = useMemo(
     () => data?.filter((interaction) => interaction.isLiked).map((interaction) => interaction.articleId) ?? [],

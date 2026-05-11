@@ -21,20 +21,20 @@ export const AuthorPage = f.observer(() => {
     data: author,
     isPending: isAuthorPending,
     error: authorError,
-  } = AuthorRule.useResolve(id, [id]);
+  } = AuthorRule.useResolve(id);
   const {
     data: rootData,
     isPending: isRootPending,
-  } = RootRule.useResolve(undefined);
+  } = RootRule.useResolve(true);
 
   const isPending = isAuthorPending || isRootPending;
-  const isMe = !!rootData?.me?.profile?.id && rootData.me.profile.id === id;
+  const isMe = !!rootData?.myId && rootData.myId === id;
 
   const handleUsernameSubmit = async () => {
     try {
       setIsSaving(true);
       await mutationApi.private.user.update({ username: usernameEdit });
-      await RootRule.refresh(undefined);
+      await RootRule.refresh(true);
       setUsernameEdit("");
     } catch (error) {
       console.error("Failed to update username:", error);

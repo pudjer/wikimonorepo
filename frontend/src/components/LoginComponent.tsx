@@ -19,7 +19,7 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
     try {
       setLoginError("");
       await mutationApi.public.login({ username, password });
-      await RootRule.refresh(undefined);
+      await RootRule.refresh(true);
       setUsername("");
       setPassword("");
       onSuccess?.();

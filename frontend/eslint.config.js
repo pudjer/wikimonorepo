@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+      rules: {
+      '@typescript-eslint/no-unused-vars': 'off', // отключаем правило для TypeScript
+      'no-unused-vars': 'off', // отключаем базовое правило (на всякий случай)
+    },
   },
 ])

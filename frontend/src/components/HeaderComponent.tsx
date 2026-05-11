@@ -10,11 +10,11 @@ import { mutationApi } from "../api/mutationApi";
 
 const HeaderComponentBase = () => {
   const navigate = useNavigate();
-  const {data: root, error, isPending} = RootRule.useResolve(undefined);
+  const {data: root, error, isPending} = RootRule.useResolve(true);
   if (error) {
     console.error("Failed to load user data:", error);
   }
-  const isSignedIn = !!root?.me;
+  const isSignedIn = !!root?.myId;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
@@ -31,7 +31,7 @@ const HeaderComponentBase = () => {
     setLogoutPending(true);
     try {
       await mutationApi.private.session.logout();
-      await RootRule.refresh(undefined);
+      await RootRule.refresh(true);
       handleProfileMenuClose();
       // Trigger refresh of RootRule
     } catch (error) {
@@ -92,7 +92,7 @@ const HeaderComponentBase = () => {
                 open={Boolean(anchorEl)}
                 onClose={handleProfileMenuClose}
               >
-                <MenuItem onClick={() => navigate(`/author/${root?.me?.profile.id}`)}>
+                <MenuItem onClick={() => navigate(`/author/${root?.myId}`)}>
                   Profile
                 </MenuItem>
                 <MenuItem onClick={handleLogout} disabled={logoutPending}>

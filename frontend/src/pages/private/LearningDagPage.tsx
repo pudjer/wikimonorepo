@@ -2,12 +2,14 @@ import { Box, Container, Grid, Paper, Card, CardContent, Alert, Skeleton } from 
 import { useMemo } from "react";
 import { f } from "../../lib";
 import { PreviewComponent, PreviewListComponent } from "../../components";
-import { RootRule } from "../../store";
+import { RootRule, MeRule } from "../../store";
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 
 export const LearningDagPage = f.observer(() => {
-  const { data: root, isPending, error } = RootRule.useResolve(undefined);
-  const learningStats = root?.me?.myLearningStats;
+  const { data: root, isPending: isRootPending, error } = RootRule.useResolve(true);
+  const { data: me, isPending: isMePending } = MeRule.useResolve(root?.myId);
+  const isPending = isRootPending || isMePending;
+  const learningStats = me?.myLearningStats;
 
   const allStats = useMemo(() => {
     if (!learningStats) return [];

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useRef } from "react";
 import { Autorun, ClearWatchers } from "../observableProxy/autorun/autorun";
 
