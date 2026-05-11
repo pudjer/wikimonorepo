@@ -3,7 +3,7 @@ import { DAG } from "../domain/DAG/entity"
 
 export type GenericDagPresentationProps<T> = {
   dag: DAG<T>
-  nodeComponent: (props: {node: T}) => JSX.Element
+  NodeComponent: ({ node }: { node: T }) => JSX.Element
   onNodeClick?: (node: T) => void
 }
 
@@ -17,7 +17,7 @@ interface VisualizationState<T> {
 
 export const VisualizeDag = <T,>({
   dag: initialDag,
-  nodeComponent,
+  NodeComponent,
   onNodeClick
 }: GenericDagPresentationProps<T>): JSX.Element => {
   const [state, setState] = useState<VisualizationState<T>>({
@@ -112,13 +112,12 @@ export const VisualizeDag = <T,>({
             }}
           >
             {Array.from(layer).map(node => {
-              const nodeKey = String(node)
               const children = state.dag.getChildren(node)
               const hasChildren = children.size > 0
 
               return (
                 <div
-                  key={nodeKey}
+                  key={JSON.stringify(node)}
                   style={{
                     position: "relative",
                     display: "inline-block"
@@ -147,7 +146,7 @@ export const VisualizeDag = <T,>({
                       ;(e.currentTarget as HTMLElement).style.boxShadow = "none"
                     }}
                   >
-                    {nodeComponent({ node })}
+                  
                   </div>
 
                   {/* Индикатор наличия детей */}

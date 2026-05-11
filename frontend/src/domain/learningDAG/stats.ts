@@ -1,25 +1,25 @@
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity"
-import { NonNegativeIntegerVO } from "backend/src/domain/utils/valueObjects"
+import { autorun } from "../../lib"
 
 
 export type GetRelated<T extends IHasStage> = () => ReadonlySet<LearningStats<T>>
 
 declare const LearningDescendantsCountSymbol: unique symbol
-export class LearningDescendantsCount extends NonNegativeIntegerVO<typeof LearningDescendantsCountSymbol> {}
+export type LearningDescendantsCount = number & { _brand: typeof LearningDescendantsCountSymbol}
 declare const MasteredDescendantsCountSymbol: unique symbol
-export class MasteredDescendantsCount extends NonNegativeIntegerVO<typeof MasteredDescendantsCountSymbol> {}
+export type MasteredDescendantsCount = number & { _brand: typeof MasteredDescendantsCountSymbol}
 declare const MasteredAncestorsCountSymbol: unique symbol
-export class MasteredAncestorsCount extends NonNegativeIntegerVO<typeof MasteredAncestorsCountSymbol> {}
+export type MasteredAncestorsCount = number & { _brand: typeof MasteredAncestorsCountSymbol}
 declare const TransitiveMasteredAncestorsCountSymbol: unique symbol
-export class TransitiveMasteredAncestorsCount extends NonNegativeIntegerVO<typeof TransitiveMasteredAncestorsCountSymbol> {}
+export type TransitiveMasteredAncestorsCount = number & { _brand: typeof TransitiveMasteredAncestorsCountSymbol}
 export interface IHasStage {
     learnProgressStage: LearnProgressStage
 }
 export class LearningStats<T extends IHasStage>{
-    private _learningDescendantsCount: LearningDescendantsCount = new LearningDescendantsCount(0)
-    private _masteredDescendantsCount: MasteredDescendantsCount = new MasteredDescendantsCount(0)
-    private _masteredAncestorsCount: MasteredAncestorsCount = new MasteredAncestorsCount(0)
-    private _transitiveMasteredAncestorsCount: TransitiveMasteredAncestorsCount = new TransitiveMasteredAncestorsCount(0)
+    private _learningDescendantsCount: LearningDescendantsCount = 0 as LearningDescendantsCount
+    private _masteredDescendantsCount: MasteredDescendantsCount = 0 as MasteredDescendantsCount
+    private _masteredAncestorsCount: MasteredAncestorsCount = 0 as MasteredAncestorsCount
+    private _transitiveMasteredAncestorsCount: TransitiveMasteredAncestorsCount = 0 as TransitiveMasteredAncestorsCount
     private valueStage: LearnProgressStage = LearnProgressStage.Unknown
 
     constructor(
@@ -35,17 +35,17 @@ export class LearningStats<T extends IHasStage>{
     get transitiveMasteredAncestorsCount(): TransitiveMasteredAncestorsCount { return this._transitiveMasteredAncestorsCount }
 
     addMasteredAncestor(count: number): void {
-        this._masteredAncestorsCount = this._masteredAncestorsCount.add(count)
+        this._masteredAncestorsCount = (this._masteredAncestorsCount + count) as MasteredAncestorsCount
     }
     addLearningDescendant(count: number): void {
-        this._learningDescendantsCount = this._learningDescendantsCount.add(count)
+        this._learningDescendantsCount = (this._learningDescendantsCount + count) as LearningDescendantsCount
     }
     addTransitiveMasteredAncestor(count: number): void {
-        this._transitiveMasteredAncestorsCount = this._transitiveMasteredAncestorsCount.add(count)
+        this._transitiveMasteredAncestorsCount = (this._transitiveMasteredAncestorsCount + count) as TransitiveMasteredAncestorsCount
     }
     addMasteredDescendant(count: number): void {
         const previous = this.isTransitiveMastered()
-        this._masteredDescendantsCount = this._masteredDescendantsCount.add(count)
+        this._masteredDescendantsCount = (this._masteredDescendantsCount + count) as MasteredDescendantsCount
         const current = this.isTransitiveMastered()
 
         if(previous !== current){
@@ -110,17 +110,17 @@ export class LearningStats<T extends IHasStage>{
     getAncestorsMasteringDegree(): number{
         const total = this.getAncestors().size
         if (total === 0) return 1
-        return this._masteredAncestorsCount.value / total
+        return this._masteredAncestorsCount / total
     }
     getTransitiveAncestorsMasteringDegree(): number{
         const total = this.getAncestors().size
         if (total === 0) return 1
-        return this._transitiveMasteredAncestorsCount.value / total
+        return this._transitiveMasteredAncestorsCount / total
     }
     getScore(): number{
         if(this.isMastered()) return 0
         const isLearningFactor = this.isLearning() ? 1 : 0
-        return (this._learningDescendantsCount.value + isLearningFactor) * this.getAncestorsMasteringDegree()
+        return (this._learningDescendantsCount + isLearningFactor) * this.getAncestorsMasteringDegree()
     }
 
     
@@ -140,15 +140,15 @@ export class LearningStats<T extends IHasStage>{
         return this.valueStage === LearnProgressStage.Learning
     }
     isTransitiveMastered(): boolean{
-        return this._masteredDescendantsCount.value > 0 || this.isMastered()
+        return this._masteredDescendantsCount > 0 || this.isMastered()
     }
     isTransitiveLearning(): boolean{
-        return this._learningDescendantsCount.value > 0 || this.isLearning()
+        return this._learningDescendantsCount > 0 || this.isLearning()
     }
     getTransitiveScore(): number{
         if(this.isMastered()) return 0
         const isLearningFactor = this.isLearning() ? 1 : 0
-        return (this._learningDescendantsCount.value + isLearningFactor) * this.getTransitiveAncestorsMasteringDegree()
+        return (this._learningDescendantsCount + isLearningFactor) * this.getTransitiveAncestorsMasteringDegree()
     }
 
 

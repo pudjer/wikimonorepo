@@ -1,9 +1,9 @@
-import { Box, Container, Grid, Paper, Card, CardContent, Alert, Skeleton } from "@mui/material";
-import { useMemo } from "react";
+import { Box, Container, Grid, Alert, Skeleton, Stack } from "@mui/material";
 import { f } from "../../lib";
-import { PreviewComponent, PreviewListComponent } from "../../components";
-import { RootRule, MeRule } from "../../store";
-import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
+import { InteractionComponent, PreviewComponent, PreviewListComponent, VisualizeDag } from "../../components";
+import { RootRule, MeRule, TotalInteraction } from "../../store";
+import { StatComponent } from "../../components/StatComponent";
+import { LearningStats } from "../../domain/learningDAG/stats";
 
 export const LearningDagPage = f.observer(() => {
   const { data: root, isPending: isRootPending, error } = RootRule.useResolve(true);
@@ -11,20 +11,6 @@ export const LearningDagPage = f.observer(() => {
   const isPending = isRootPending || isMePending;
   const learningStats = me?.myLearningStats;
 
-  const allStats = useMemo(() => {
-    if (!learningStats) return [];
-    const stats = learningStats.getAllStats();
-    return stats.sort((a, b) => {
-      // Get transitive score if available
-      const scoreA = a.getTransitiveScore();
-      const scoreB = b.getTransitiveScore();
-      return scoreB - scoreA;
-    });
-  }, [learningStats]);
-
-  const previewIds = useMemo(() => {
-    return allStats.map(stat => stat.value.articleId);
-  }, [allStats]);
 
   if (isPending) {
     return (
@@ -46,6 +32,7 @@ export const LearningDagPage = f.observer(() => {
   if (!learningStats) {
     return <Box>No learning stats available.</Box>;
   }
+  const NodeComponent = ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats.getStats(node)} />;
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -53,65 +40,19 @@ export const LearningDagPage = f.observer(() => {
         <Box sx={{ fontSize: "1.5rem", fontWeight: "bold", mb: 3 }}>
           Learning DAG
         </Box>
-
-        <Grid container spacing={3}>
-          {allStats.map((stat) => {
-            const isMastered = stat.isMastered();
-            const isLearning = stat.isLearning();
-            const isTransitiveMastered = stat.isTransitiveMastered();
-            const isTransitiveLearning = stat.isTransitiveLearning();
-
-            let backgroundColor = "#f0f0f0"; // Unknown
-            if (isMastered) backgroundColor = "#4caf50"; // Green
-            else if (isLearning) backgroundColor = "#2196f3"; // Blue
-            else if (isTransitiveMastered) backgroundColor = "#c8e6c9"; // Light green
-            else if (isTransitiveLearning) backgroundColor = "#bbdefb"; // Light blue
-
-            return (
-              <Grid key={stat.value.articleId}>
-                <Paper
-                  sx={{
-                    p: 2,
-                    backgroundColor,
-                    borderRadius: 1,
-                    cursor: "pointer",
-                    transition: "all 0.2s",
-                    "&:hover": {
-                      boxShadow: 3,
-                      transform: "translateY(-2px)"
-                    }
-                  }}
-                >
-                  <Box sx={{ mb: 2 }}>
-                    <PreviewComponent id={stat.value.articleId} />
-                  </Box>
-                  <Card variant="outlined">
-                    <CardContent>
-                      <Box sx={{ fontSize: "0.875rem", mb: 1 }}>
-                        <strong>Transitive Score:</strong> {stat.getTransitiveScore()}
-                      </Box>
-                      <Box sx={{ fontSize: "0.875rem", mb: 1 }}>
-                        <strong>Learning Descendants:</strong> {stat.learningDescendantsCount.value}
-                      </Box>
-                      <Box sx={{ fontSize: "0.875rem" }}>
-                        <strong>Mastered Ancestors:</strong> {stat.masteredAncestorsCount.value}
-                      </Box>
-                    </CardContent>
-                  </Card>
-                </Paper>
-              </Grid>
-            );
-          })}
-        </Grid>
+        <VisualizeDag dag={learningStats.dag} NodeComponent={NodeComponent} />
       </Box>
 
       <Box sx={{ mt: 4 }}>
         <Box sx={{ fontSize: "1.2rem", fontWeight: "bold", mb: 2 }}>
           Articles by Score
         </Box>
-        {previewIds.length > 0 && <PreviewListComponent ids={previewIds} />}
+        <Stack direction="row" spacing={2}>
+          <Box sx={{display: "flex"}}>
+            {learningStats.getAllStats().toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.articleId} stat={stat} />)}
+          </Box>
+        </Stack>
       </Box>
     </Container>
   );
 });
-

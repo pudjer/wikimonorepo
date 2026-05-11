@@ -81,7 +81,7 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
   }
 
   return (
-    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 300, minHeight: 300}}>
       <Box onClick={handleSelect} sx={{ cursor: 'pointer' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
