@@ -26,7 +26,6 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   const refresh = useCallback(async () => {
     if(root?.myId) await TotalInteractionRule.refresh({articleId: id, myId: root.myId});
   }, [root?.myId, id]);
-
   const handleLikeToggle = async () => {
     if (!data) {
       return;

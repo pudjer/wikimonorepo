@@ -8,7 +8,7 @@ export const getObserverHoc = (autorun: Autorun) =>
       const oldDispose = useRef<ClearWatchers>(() => {});
       oldDispose.current();
       const [_, forceUpdate] = React.useState(Symbol());
-      const { dispose, result: component } = autorun.reaction(
+      const { dispose, result: component } = autorun.reactionOnce(
         () => Component(props),
         () => {
           oldDispose.current()

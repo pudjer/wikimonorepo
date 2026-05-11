@@ -23,17 +23,20 @@ export class Autorun{
             return func(dispose)
         }
         const wrapped = this.wrapper.wrap(disposable)
-        this.deduplicator.schedule(wrapped)
         const dispose = this.getDispose(wrapped)
+        wrapped()
         return dispose
     }
 
-    public reaction = <F extends ()=>unknown>(tracking: F, reaction: ()=>void): {dispose: ClearWatchers, result: ReturnType<F>} => {
-        const wrapped = this.wrapper.wrap(tracking, reaction)
-        const dispose = this.getDispose(reaction)
+    public reactionOnce = <F extends ()=>unknown>(tracking: F, reaction: ()=>void): {dispose: ClearWatchers, result: ReturnType<F>} => {
+        const disposable = () => {
+            dispose()
+            return reaction()
+        }
+        const wrapped = this.wrapper.wrap(tracking, disposable)
+        const dispose = this.getDispose(disposable)
         return {dispose, result: wrapped() as ReturnType<F>}
     }
-
 
     public registerObject = <T extends object>(object: T): T => {
         return ObservableProxy(object, this.onRead, this.onChange) as T

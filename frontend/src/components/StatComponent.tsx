@@ -1,8 +1,9 @@
-import { Paper, Box, Card, CardContent, Grid } from "@mui/material";
+import { Paper, Box, Card, CardContent, Grid, Button } from "@mui/material";
 import { LearningStats } from "../domain/learningDAG/stats";
 import { PreviewComponent } from "./PreviewComponent";
 import { TotalInteraction } from "../store";
 import { f } from "../lib";
+import React from "react";
 
 const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
   const isMastered = stat.isMastered();
@@ -14,7 +15,8 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
   else if (isLearning) backgroundColor = "#2196f3";   // Blue
   else if (isTransitiveMastered) backgroundColor = "#c8e6c9"; // Light green
   else if (isTransitiveLearning) backgroundColor = "#bbdefb"; // Light blue
-
+  const score = stat.getTransitiveScore()
+  console.log(score)
   return (
     <Grid
       sx={{
@@ -30,6 +32,7 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
       }}
     >
       <Box sx={{ mb: 2 }}>
+      { score  }
         <PreviewComponent id={stat.value.articleId} />
       </Box>
     </Grid>

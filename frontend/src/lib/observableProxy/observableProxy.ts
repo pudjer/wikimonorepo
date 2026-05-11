@@ -25,8 +25,12 @@ export const ObservableProxy = <T extends object>(obj: T, onRead: Callback<T>, o
       }
     }
   }
-  const addReaden = (p: ObjectsProperty<T>) => readen.add(p)
-  const addChanged = (p: ObjectsProperty<T>) => changed.add(p)
+  const addReaden = (p: ObjectsProperty<T>) => {
+    readen.add(p)
+  }
+  const addChanged = (p: ObjectsProperty<T>) => {
+    changed.add(p)
+  }
 
   
   return new Proxy(obj, {

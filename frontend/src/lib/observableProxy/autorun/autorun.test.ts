@@ -17,7 +17,7 @@ describe("reaction method", () => {
       const tracking = vi.fn(() => 42);
       const reaction = vi.fn();
       
-      const { result, dispose } = ar.reaction(tracking, reaction);
+      const { result, dispose } = ar.reactionOnce(tracking, reaction);
       
       expect(tracking).toHaveBeenCalledTimes(1);
       expect(result).toBe(42);
@@ -30,7 +30,7 @@ describe("reaction method", () => {
       const tracking = vi.fn(() => "test string");
       const reaction = vi.fn();
       
-      const { result } = ar.reaction(tracking, reaction);
+      const { result } = ar.reactionOnce(tracking, reaction);
       
       expect(result).toBe("test string");
     });
@@ -40,7 +40,7 @@ describe("reaction method", () => {
       const tracking = vi.fn(() => complexObject);
       const reaction = vi.fn();
       
-      const { result } = ar.reaction(tracking, reaction);
+      const { result } = ar.reactionOnce(tracking, reaction);
       
       expect(result).toEqual(complexObject);
     });
@@ -51,7 +51,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0, name: "test" });
       const reaction = vi.fn();
       
-      ar.reaction(
+      ar.reactionOnce(
         () => obj.count,
         reaction
       );
@@ -70,7 +70,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0, name: "test" });
       const reaction = vi.fn();
       
-      ar.reaction(
+      ar.reactionOnce(
         () => obj.count,
         reaction
       );
@@ -86,7 +86,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0, name: "test", active: true });
       const reaction = vi.fn();
       
-      ar.reaction(
+      ar.reactionOnce(
         () => {
           return { count: obj.count, active: obj.active };
         },
@@ -115,7 +115,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0 });
       const reaction = vi.fn();
       
-      const { dispose } = ar.reaction(
+      const { dispose } = ar.reactionOnce(
         () => obj.count,
         reaction
       );
@@ -142,7 +142,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0 });
       const reaction = vi.fn();
       
-      const { dispose } = ar.reaction(
+      const { dispose } = ar.reactionOnce(
         () => obj.count,
         reaction
       );
@@ -164,8 +164,8 @@ describe("reaction method", () => {
       const reaction1 = vi.fn();
       const reaction2 = vi.fn();
       
-      ar.reaction(() => obj.count, reaction1);
-      ar.reaction(() => obj.count, reaction2);
+      ar.reactionOnce(() => obj.count, reaction1);
+      ar.reactionOnce(() => obj.count, reaction2);
       
       obj.count = 1;
       
@@ -180,8 +180,8 @@ describe("reaction method", () => {
       const reaction1 = vi.fn();
       const reaction2 = vi.fn();
       
-      const { dispose: dispose1 } = ar.reaction(() => obj.count, reaction1);
-      const { dispose: dispose2 } = ar.reaction(() => obj.count, reaction2);
+      const { dispose: dispose1 } = ar.reactionOnce(() => obj.count, reaction1);
+      const { dispose: dispose2 } = ar.reactionOnce(() => obj.count, reaction2);
       
       dispose1();
       
@@ -205,7 +205,7 @@ describe("reaction method", () => {
       const reaction = vi.fn();
       
       expect(() => {
-        ar.reaction(tracking, reaction);
+        ar.reactionOnce(tracking, reaction);
       }).toThrow(error);
       
       expect(reaction).not.toHaveBeenCalled();
@@ -218,14 +218,14 @@ describe("reaction method", () => {
       const obj2 = ar.registerObject({ value: 0 });
       const reaction2 = vi.fn();
       
-      ar.reaction(
+      ar.reactionOnce(
         () => obj1.value,
         () => {
           obj2.value = obj1.value;
         }
       );
       
-      ar.reaction(() => obj2.value, reaction2);
+      ar.reactionOnce(() => obj2.value, reaction2);
       
       obj1.value = 5;
       
@@ -243,7 +243,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0 });
       const reaction = vi.fn();
       
-      ar.reaction(() => obj.count, reaction);
+      ar.reactionOnce(() => obj.count, reaction);
       
       obj.count = 1;
       obj.count = 2;
@@ -259,7 +259,7 @@ describe("reaction method", () => {
       const obj = ar.registerObject({ count: 0, name: "test" });
       const reaction = vi.fn();
       
-      ar.reaction(() => ({ count: obj.count, name: obj.name }), reaction);
+      ar.reactionOnce(() => ({ count: obj.count, name: obj.name }), reaction);
       
       obj.count = 1;
       obj.name = "changed";

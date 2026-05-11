@@ -6,8 +6,8 @@ import { StatComponent } from "../../components/StatComponent";
 import { LearningStats } from "../../domain/learningDAG/stats";
 
 export const LearningDagPage = f.observer(() => {
-  const { data: root, isPending: isRootPending, error } = RootRule.useResolve(true);
-  const { data: me, isPending: isMePending } = MeRule.useResolve(root?.myId);
+  const { data: root, isPending: isRootPending, error: rootError } = RootRule.useResolve(true);
+  const { data: me, isPending: isMePending, error } = MeRule.useResolve(root?.myId);
   const isPending = isRootPending || isMePending;
   const learningStats = me?.myLearningStats;
 
@@ -21,10 +21,10 @@ export const LearningDagPage = f.observer(() => {
     );
   }
 
-  if (error) {
+  if (rootError || error) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">{error.message || "Failed to load learning data."}</Alert>
+        <Alert severity="error">{(rootError || error)!.message || "Failed to load learning data."}</Alert>
       </Container>
     );
   }
@@ -49,7 +49,7 @@ export const LearningDagPage = f.observer(() => {
         </Box>
         <Stack direction="row" spacing={2}>
           <Box sx={{display: "flex"}}>
-            {learningStats.getAllStats().toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.articleId} stat={stat} />)}
+            {learningStats.getAllStats().toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.a} stat={stat} />)}
           </Box>
         </Stack>
       </Box>

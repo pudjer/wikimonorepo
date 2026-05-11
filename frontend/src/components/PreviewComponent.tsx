@@ -12,10 +12,8 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { InteractionComponent } from "./InteractionComponent";
 
-const InteractionComponent = lazy(
-  () => import("./InteractionComponent").then((module) => ({ default: module.InteractionComponent }))
-);
 
 type PreviewComponentProps = {
   id: string;
