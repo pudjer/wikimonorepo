@@ -1,9 +1,7 @@
 import { Box, Container, Grid, Alert, Skeleton, Stack } from "@mui/material";
 import { f } from "../../lib";
-import { InteractionComponent, PreviewComponent, PreviewListComponent, VisualizeDag } from "../../components";
 import { RootRule, MeRule, TotalInteraction } from "../../store";
 import { StatComponent } from "../../components/StatComponent";
-import { LearningStats } from "../../domain/learningDAG/stats";
 
 export const LearningDagPage = f.observer(() => {
   const { data: root, isPending: isRootPending, error: rootError } = RootRule.useResolve(true);
@@ -40,7 +38,6 @@ export const LearningDagPage = f.observer(() => {
         <Box sx={{ fontSize: "1.5rem", fontWeight: "bold", mb: 3 }}>
           Learning DAG
         </Box>
-        <VisualizeDag dag={learningStats.dag} NodeComponent={NodeComponent} />
       </Box>
 
       <Box sx={{ mt: 4 }}>
@@ -49,7 +46,7 @@ export const LearningDagPage = f.observer(() => {
         </Box>
         <Stack direction="row" spacing={2}>
           <Box sx={{display: "flex"}}>
-            {learningStats.getAllStats().toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.a} stat={stat} />)}
+            {learningStats.getAllStats().toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.articleId} stat={stat}/>)}
           </Box>
         </Stack>
       </Box>

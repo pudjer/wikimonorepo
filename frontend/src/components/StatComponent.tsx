@@ -15,8 +15,6 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
   else if (isLearning) backgroundColor = "#2196f3";   // Blue
   else if (isTransitiveMastered) backgroundColor = "#c8e6c9"; // Light green
   else if (isTransitiveLearning) backgroundColor = "#bbdefb"; // Light blue
-  const score = stat.getTransitiveScore()
-  console.log(score)
   return (
     <Grid
       sx={{
@@ -31,8 +29,8 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
         }
       }}
     >
+      {stat.getTransitiveScore()}
       <Box sx={{ mb: 2 }}>
-      { score  }
         <PreviewComponent id={stat.value.articleId} />
       </Box>
     </Grid>
