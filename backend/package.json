@@ -8,8 +8,7 @@
     "start": "node dist/main/index.js",
     "dev": "nest start --watch src/main/index.ts",
     "start:debug": "node --inspect-brk node_modules/ts-node/dist/bin.js src/main/index.ts",
-    "start:nest": "nest start",
-    "start:dev": "nest start --watch"
+    "start:nest": "nest start"
   },
   "dependencies": {
     "@elastic/elasticsearch": "^8.12.0",

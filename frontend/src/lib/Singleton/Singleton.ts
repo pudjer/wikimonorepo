@@ -2,20 +2,22 @@
 
 
 export class IdentityStore<CONC extends object, KEY> {
-	private store = new Map<KEY, WeakRef<CONC>>()
+	private store = new Map<string, WeakRef<CONC>>()
 
-	private registry = new FinalizationRegistry<KEY>((key) => {
-		if (this.get(key)) return
-		this.store.delete(key)
+	private registry = new FinalizationRegistry<string>((serializedKey) => {
+		if (this.store.get(serializedKey)?.deref()) return
+		this.store.delete(serializedKey)
 	})
 	get = (key: KEY): CONC | undefined => {
-		return this.store.get(key)?.deref() as CONC
+		const serializedKey = JSON.stringify(key)
+		return this.store.get(serializedKey)?.deref() as CONC
 	}
 	set = (key: KEY, value: CONC): void => {
 		if (this.get(key)) throw new UniqueKeyError()
 		const ref = new WeakRef(value)
-		this.store.set(key, ref)
-		this.registry.register(value, key)
+		const serializedKey = JSON.stringify(key)
+		this.store.set(serializedKey, ref)
+		this.registry.register(value, serializedKey)
 	}
 }
 
