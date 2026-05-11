@@ -6,6 +6,7 @@ import {
   Box,
   Button,
   CircularProgress,
+  MenuItem,
   Select,
   Stack,
   Typography,
@@ -18,7 +19,7 @@ type InteractionComponentProps = {
 };
 
 const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
-  const { data: root } = RootRule.useResolve(true);
+  const { data: root, isPending: rootPending, error: rootError } = RootRule.useResolve(true);
   const { data, isPending, error } = TotalInteractionRule.useResolve(root?.myId ? { articleId: id, myId: root.myId } : undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -75,6 +76,13 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
       setIsSubmitting(false);
     }
   }
+  if (root && !root.myId) {
+    return (
+      <Typography variant="body2" color="text.secondary">
+        Войдите, чтобы взаимодействовать со статьей
+      </Typography>
+    );
+  }
 
   if (isPending) {
     return (
@@ -85,7 +93,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
     );
   }
 
-  if (error || !data) {
+  if (error || rootError || !data) {
     return (
       <Typography variant="body2" color="error">
         Не удалось получить данные взаимодействий
@@ -95,16 +103,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
 
   return (
     <Stack spacing={1}>
-      <Typography variant="body2">
-        Просмотрено: {data.isViewed ? "да" : "нет"}
-      </Typography>
-      <Typography variant="body2">
-        Лайк: {data.isLiked ? "да" : "нет"}
-      </Typography>
-      <Typography variant="body2">
-        Этап обучения: {data.learnProgressStage ?? "не задан"}
-      </Typography>
-      <Stack direction="row" spacing={1} >
+      <Stack direction="row" spacing={1}>
         <Button
           variant="outlined"
           onClick={handleLikeToggle}
@@ -119,18 +118,46 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
         >
           {data.isViewed ? "Убрать просмотр" : "Отметить просмотр"}
         </Button>
+        
         <Select
           value={data.learnProgressStage}
           onChange={(e) => handleLearnProgressStageChange(e.target.value as LearnProgressStage)}
           disabled={isSubmitting}
+          size="small"
+          displayEmpty
+          sx={{color: color(data.learnProgressStage)}}
         >
-          <option value={LearnProgressStage.Unknown}>Не начат</option>
-          <option value={LearnProgressStage.Learning}>В процессе</option>
-          <option value={LearnProgressStage.Mastered}>Завершен</option>
+          <MenuItem 
+            value={LearnProgressStage.Unknown}
+            sx={{ color: color(LearnProgressStage.Unknown) }}
+          >
+            Не начат
+          </MenuItem>
+          <MenuItem 
+            value={LearnProgressStage.Learning}
+            sx={{ color: color(LearnProgressStage.Learning) }}
+          >
+            В процессе
+          </MenuItem>
+          <MenuItem 
+            value={LearnProgressStage.Mastered}
+            sx={{ color: color(LearnProgressStage.Mastered) }}
+          >
+            Завершен
+          </MenuItem>
         </Select>
       </Stack>
     </Stack>
   );
 };
-
 export const InteractionComponent = f.observer(InteractionComponentBase);
+const color = (stage: LearnProgressStage) => {
+  switch(stage) {
+    case LearnProgressStage.Unknown:
+      return 'gray';
+    case LearnProgressStage.Learning:
+      return 'blue';
+    case LearnProgressStage.Mastered:
+      return 'green';
+  }
+}

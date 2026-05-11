@@ -1,20 +1,21 @@
-import { useState } from "react";
 import { f } from "../lib";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SearchComponent } from "./SearchComponent";
 import {
   Box,
-  Button,
+  CircularProgress,
   IconButton,
+  Paper,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
+import { PreviewComponent } from "./PreviewComponent";
+import { ArticlePreviewCollectionRule } from "../store";
 
 type ArticleLinkInfo = {
   parentId: string;
   name: string;
-  parentTitle?: string;
 };
 
 type ArticleLinksComponentProps = {
@@ -32,24 +33,23 @@ const ArticleLinksComponentBase = ({
   onRemoveLink,
   onLinkNameChange,
 }: ArticleLinksComponentProps) => {
-  const [currentLinks, setCurrentLinks] = useState<ArticleLinkInfo[]>(links);
-
-
+  const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(links.map(link => link.parentId).toSorted());
+  if (isPending) {
+    return <CircularProgress />;
+  }
+  if (error) {
+    return <Typography color="error">Ошибка загрузки связанных статей</Typography>;
+  }
   const handleNameChange = (parentId: string, value: string) => {
-    const nextState = currentLinks.map((link) =>
-      link.parentId === parentId ? { ...link, name: value } : link
-    );
-    setCurrentLinks(nextState);
     onLinkNameChange?.(parentId, value);
   };
 
   const handleRemove = (parentId: string) => {
-    setCurrentLinks((prev) => prev.filter((link) => link.parentId !== parentId));
     onRemoveLink?.(parentId);
   };
 
   const handleSelect = (id: string) => {
-    if (currentLinks.some((link) => link.parentId === id)) {
+    if (links.some((link) => link.parentId === id)) {
       return;
     }
 
@@ -61,18 +61,20 @@ const ArticleLinksComponentBase = ({
       <Typography variant="h6" gutterBottom>
         Связи статьи
       </Typography>
-      {currentLinks.length === 0 ? (
+      {links.length === 0 ? (
         <Typography variant="body2" color="text.secondary" gutterBottom>
           Нет связанных статей.
         </Typography>
       ) : (
-        <Stack spacing={2}>
-          {currentLinks.map((link) => (
-            <Box key={link.parentId}>
-              <Box >
-                <Typography variant="body2" color="text.secondary">
-                  {link.parentTitle ?? link.parentId}
-                </Typography>
+        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
+          {links.map((link) => (
+            <Paper
+              key={link.parentId}
+              elevation={1}
+              sx={{ p: 2, display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 2, minWidth: '300px', flexShrink: 0 }}
+            >
+              <Box sx={{ flex: 1 }}>
+                <PreviewComponent id={link.parentId} />
                 {isEditable ? (
                   <TextField
                     label="Название связи"
@@ -85,6 +87,7 @@ const ArticleLinksComponentBase = ({
                   <Typography variant="body1">{link.name || "Без описания"}</Typography>
                 )}
               </Box>
+
               {isEditable && (
                 <IconButton
                   aria-label="Удалить связь"
@@ -94,13 +97,13 @@ const ArticleLinksComponentBase = ({
                   <DeleteIcon />
                 </IconButton>
               )}
-            </Box>
+            </Paper>
           ))}
-        </Stack>
+        </Box>
       )}
 
       {isEditable && (
-        <Box>
+        <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" gutterBottom>
             Найти статью для связи
           </Typography>
@@ -108,16 +111,6 @@ const ArticleLinksComponentBase = ({
             placeholder="Найти статью для связи"
             onSelect={handleSelect}
           />
-          <Box>
-            <Button
-              onClick={() => {
-                setCurrentLinks(links);
-              }}
-              disabled={JSON.stringify(currentLinks) === JSON.stringify(links)}
-            >
-              Сбросить изменения
-            </Button>
-          </Box>
         </Box>
       )}
     </Box>

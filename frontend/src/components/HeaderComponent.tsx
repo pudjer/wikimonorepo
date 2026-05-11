@@ -45,13 +45,6 @@ const HeaderComponentBase = () => {
     navigate(`/article/${id}`);
   };
 
-  const handleNavClick = () => {
-    if (isSignedIn) {
-      navigate("/learning-dag");
-    } else {
-      navigate("/trending");
-    }
-  };
 
   return (
     <AppBar position="sticky">
@@ -59,11 +52,18 @@ const HeaderComponentBase = () => {
         <Button
           color="inherit"
           sx={{ textTransform: "none", fontSize: "1.2rem", fontWeight: "bold" }}
-          onClick={handleNavClick}
-        >
-          {isSignedIn ? "Learning DAG" : "Trending"}
-        </Button>
-
+          onClick={() => navigate("/learning-dag")}
+        >Learning DAG</Button>
+        <Button
+          color="inherit"
+          sx={{ textTransform: "none", fontSize: "1.2rem", fontWeight: "bold" }}
+          onClick={() => navigate("/trending")}
+        >Trending</Button>
+        {isSignedIn && <Button
+          color="inherit"
+          sx={{ textTransform: "none", fontSize: "1.2rem", fontWeight: "bold" }}
+          onClick={() => navigate("/create-article")}
+        >Create Article</Button>}
         <Box sx={{ flex: 1, maxWidth: 400 }}>
           <SearchComponent
             placeholder="Search articles..."

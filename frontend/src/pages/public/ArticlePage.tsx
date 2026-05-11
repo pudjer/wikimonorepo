@@ -1,11 +1,17 @@
 import { Box, Container, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Alert, Skeleton } from "@mui/material";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { f } from "../../lib";
 import { ArticleTitleComponent, ArticleContentComponent, ArticleLinksComponent, AuthorComponent, ArticlesDagComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
 import { RootRule } from "../../store";
 import { ArticleRule } from "../../store/stores/public/ArticleFull";
+
+type ArticleLinkInfo = {
+  parentId: string;
+  name: string;
+  parentTitle?: string;
+};
 
 export const ArticlePage = f.observer(() => {
   const { id } = useParams<{ id: string }>();
@@ -14,6 +20,9 @@ export const ArticlePage = f.observer(() => {
   const [isChanged, setIsChanged] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [links, setLinks] = useState<ArticleLinkInfo[]>([]);
 
   if (!id) return <Box>Article not found</Box>;
 
@@ -27,17 +36,25 @@ export const ArticlePage = f.observer(() => {
     isPending: isRootPending,
   } = RootRule.useResolve(true);
 
+  useEffect(() => {
+    if (!article) {
+      return;
+    }
+
+    setTitle(article.title);
+    setContent(article.content);
+    setLinks(
+      article.links.map((link) => ({
+        parentId: link.parent.id,
+        name: link.name,
+        parentTitle: link.parent.title,
+      }))
+    );
+    setIsChanged(false);
+  }, [article]);
+
   const isPending = isArticlePending || isRootPending;
   const isMy = !!rootData?.myId && article?.authorId === rootData.myId;
-
-  const linksForComponent = useMemo(() => {
-    if (!article) return [];
-    return article.links.map(link => ({
-      parentId: link.parent.id,
-      name: link.name,
-      parentTitle: link.parent.title
-    }));
-  }, [article]);
 
   const handleDelete = async () => {
     try {
@@ -58,12 +75,12 @@ export const ArticlePage = f.observer(() => {
     try {
       setIsSubmitting(true);
       await mutationApi.private.articles.update(id, {
-        title: article.title,
-        content: article.content,
-        links: article.links.map(link => ({
+        title,
+        content,
+        links: links.map((link) => ({
           name: link.name,
-          parent: link.parent.id
-        }))
+          parent: link.parentId,
+        })),
       });
       await ArticleRule.refresh(id);
       setIsChanged(false);
@@ -72,6 +89,29 @@ export const ArticlePage = f.observer(() => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleAddLink = (parentId: string) => {
+    if (links.some((link) => link.parentId === parentId)) {
+      return;
+    }
+
+    setLinks((prev) => [...prev, { parentId, name: "", parentTitle: undefined }]);
+    setIsChanged(true);
+  };
+
+  const handleRemoveLink = (parentId: string) => {
+    setLinks((prev) => prev.filter((link) => link.parentId !== parentId));
+    setIsChanged(true);
+  };
+
+  const handleLinkNameChange = (parentId: string, name: string) => {
+    setLinks((prev) =>
+      prev.map((link) =>
+        link.parentId === parentId ? { ...link, name } : link
+      )
+    );
+    setIsChanged(true);
   };
 
   if (isPending) {
@@ -97,28 +137,34 @@ export const ArticlePage = f.observer(() => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <ArticleTitleComponent 
-          title={article.title} 
-          isEditable={isMy} 
-          onChange={() => setIsChanged(true)} 
-        />
-      </Box>
-
-      <Box sx={{ mb: 4 }}>
-        <ArticleContentComponent 
-          content={article.content} 
-          isEditable={isMy} 
-          onChange={() => setIsChanged(true)} 
-        />
-      </Box>
-
-      <Box sx={{ mb: 4 }}>
-        <ArticleLinksComponent 
-          links={linksForComponent}
+        <ArticleTitleComponent
+          title={title}
           isEditable={isMy}
-          onAddLink={() => setIsChanged(true)}
-          onRemoveLink={() => setIsChanged(true)}
-          onLinkNameChange={() => setIsChanged(true)}
+          onChange={(value) => {
+            setTitle(value);
+            setIsChanged(true);
+          }}
+        />
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        <ArticleContentComponent
+          content={content}
+          isEditable={isMy}
+          onChange={(value) => {
+            setContent(value);
+            setIsChanged(true);
+          }}
+        />
+      </Box>
+
+      <Box sx={{ mb: 4 }}>
+        <ArticleLinksComponent
+          links={links}
+          isEditable={isMy}
+          onAddLink={handleAddLink}
+          onRemoveLink={handleRemoveLink}
+          onLinkNameChange={handleLinkNameChange}
         />
       </Box>
 

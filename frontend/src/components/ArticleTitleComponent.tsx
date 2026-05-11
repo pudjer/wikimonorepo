@@ -1,4 +1,3 @@
-import {  useState, ChangeEvent } from "react";
 import { f } from "../lib";
 import { Box, TextField, Typography } from "@mui/material";
 
@@ -9,22 +8,13 @@ type ArticleTitleComponentProps = {
 };
 
 const ArticleTitleComponentBase = ({ title, isEditable, onChange }: ArticleTitleComponentProps) => {
-  const [value, setValue] = useState(title);
-
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const nextValue = event.target.value;
-    setValue(nextValue);
-    onChange?.(nextValue);
-  };
-
   if (isEditable) {
     return (
       <Box>
         <TextField
           label="Заголовок"
-          value={value}
-          onChange={handleChange}
+          value={title}
+          onChange={(event) => onChange?.(event.target.value)}
           fullWidth
           variant="outlined"
           margin="normal"
