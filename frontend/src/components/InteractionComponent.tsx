@@ -6,11 +6,20 @@ import {
   Box,
   Button,
   CircularProgress,
-  MenuItem,
-  Select,
+  IconButton,
   Stack,
   Typography,
+  ToggleButtonGroup,
+  ToggleButton,
+  Tooltip,
 } from "@mui/material";
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpOutlinedIcon from '@mui/icons-material/ThumbUpOutlined';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import { RootRule } from "../store";
 
@@ -26,11 +35,9 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   const refresh = useCallback(async () => {
     if(root?.myId) await TotalInteractionRule.refresh({articleId: id, myId: root.myId});
   }, [root?.myId, id]);
-  const handleLikeToggle = async () => {
-    if (!data) {
-      return;
-    }
 
+  const handleLikeToggle = async () => {
+    if (!data) return;
     setIsSubmitting(true);
     try {
       if (data.isLiked) {
@@ -45,10 +52,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   };
 
   const handleViewToggle = async () => {
-    if (!data) {
-      return;
-    }
-
+    if (!data) return;
     setIsSubmitting(true);
     try {
       if (data.isViewed) {
@@ -63,10 +67,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   };
 
   const handleLearnProgressStageChange = async (newStage: LearnProgressStage) => {
-    if (!data) {
-      return;
-    }
-
+    if (!data || newStage === data.learnProgressStage) return;
     setIsSubmitting(true);
     try {
       await mutationApi.private.interactionUserArticle.learnProgress.updateLearnProgress(id, {stage: newStage});
@@ -74,7 +75,8 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
     } finally {
       setIsSubmitting(false);
     }
-  }
+  };
+
   if (root && !root.myId) {
     return (
       <Typography variant="body2" color="text.secondary">
@@ -103,53 +105,88 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
-        <Button
-          variant="outlined"
-          onClick={handleLikeToggle}
-          disabled={isSubmitting}
-        >
-          {data.isLiked ? "Убрать лайк" : "Поставить лайк"}
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleViewToggle}
-          disabled={isSubmitting}
-        >
-          {data.isViewed ? "Убрать просмотр" : "Отметить просмотр"}
-        </Button>
-        
-        <Select
+        <Tooltip title={data.isLiked ? "Убрать лайк" : "Поставить лайк"}>
+          <IconButton
+            onClick={handleLikeToggle}
+            disabled={isSubmitting}
+            color={data.isLiked ? "primary" : "default"}
+          >
+            {data.isLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip title={data.isViewed ? "Убрать просмотр" : "Отметить просмотр"}>
+          <IconButton
+            onClick={handleViewToggle}
+            disabled={isSubmitting}
+            color={data.isViewed ? "primary" : "default"}
+          >
+            {data.isViewed ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          </IconButton>
+        </Tooltip>
+
+        <ToggleButtonGroup
           value={data.learnProgressStage}
-          onChange={(e) => handleLearnProgressStageChange(e.target.value as LearnProgressStage)}
-          disabled={isSubmitting}
+          exclusive
+          onChange={(_, newStage) => {
+            if (newStage !== null) {
+              handleLearnProgressStageChange(newStage);
+            }
+          }}
           size="small"
-          displayEmpty
-          sx={{color: color(data.learnProgressStage)}}
+          disabled={isSubmitting}
+          sx={{ ml: 1 }}
         >
-          <MenuItem 
+          <ToggleButton 
             value={LearnProgressStage.Unknown}
-            sx={{ color: color(LearnProgressStage.Unknown) }}
+            sx={{ 
+              color: color(LearnProgressStage.Unknown),
+              '&.Mui-selected': { 
+                bgcolor: `light${color(LearnProgressStage.Unknown)}`,
+                color: color(LearnProgressStage.Unknown)
+              }
+            }}
           >
-            Не начат
-          </MenuItem>
-          <MenuItem 
+            <Tooltip title="Не начат">
+              <CloseIcon fontSize="small" />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton 
             value={LearnProgressStage.Learning}
-            sx={{ color: color(LearnProgressStage.Learning) }}
+            sx={{ 
+              color: color(LearnProgressStage.Learning),
+              '&.Mui-selected': { 
+                bgcolor: `light${color(LearnProgressStage.Learning)}`,
+                color: color(LearnProgressStage.Learning)
+              }
+            }}
           >
-            В процессе
-          </MenuItem>
-          <MenuItem 
+            <Tooltip title="В процессе">
+              <MenuBookIcon fontSize="small" />
+            </Tooltip>
+          </ToggleButton>
+          <ToggleButton 
             value={LearnProgressStage.Mastered}
-            sx={{ color: color(LearnProgressStage.Mastered) }}
+            sx={{ 
+              color: color(LearnProgressStage.Mastered),
+              '&.Mui-selected': { 
+                bgcolor: `light${color(LearnProgressStage.Mastered)}`,
+                color: color(LearnProgressStage.Mastered)
+              }
+            }}
           >
-            Завершен
-          </MenuItem>
-        </Select>
+            <Tooltip title="Завершен">
+              <AutoAwesomeIcon fontSize="small" />
+            </Tooltip>
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Stack>
     </Stack>
   );
 };
+
 export const InteractionComponent = f.observer(InteractionComponentBase);
+
 const color = (stage: LearnProgressStage) => {
   switch(stage) {
     case LearnProgressStage.Unknown:

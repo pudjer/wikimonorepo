@@ -27,7 +27,10 @@ const AuthorComponentBase = ({ id }: AuthorComponentProps) => {
   }
 
   return (
-    <Button color="primary" onClick={()=>navigate(`/author/${id}`)}>
+    <Button color="primary" onClick={(e)=>{
+      navigate(`/author/${id}`)
+      e.stopPropagation();
+    }}>
       Автор: {data.username}
     </Button>
   );

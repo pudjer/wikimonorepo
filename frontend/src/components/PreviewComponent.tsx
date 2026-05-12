@@ -1,4 +1,4 @@
-import { useMemo, useState, lazy, Suspense } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { f } from "../lib";
 import { ArticlePreviewRule } from "../store/stores/public/ArticlePreview";
@@ -10,8 +10,13 @@ import {
   Chip,
   Skeleton,
   Stack,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import SchoolIcon from '@mui/icons-material/School';
+import AutoGraphIcon from '@mui/icons-material/AutoGraph';
 import { InteractionComponent } from "./InteractionComponent";
 
 
@@ -46,9 +51,10 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
     () =>
       data
         ? [
-            { label: "Просмотры", value: data.views },
-            { label: "Лайки", value: data.likes },
-            { label: "Учащихся", value: data.learners },
+            { label: "Просмотры", value: data.views, icon: <VisibilityIcon fontSize="small" /> },
+            { label: "Лайки", value: data.likes, icon: <ThumbUpIcon fontSize="small" /> },
+            { label: "Учащихся", value: data.learners, icon: <SchoolIcon fontSize="small" /> },
+            { label: "Очки графа", value: data.dagPoints, icon: <AutoGraphIcon fontSize="small" /> },
           ]
         : [],
     [data]
@@ -79,19 +85,23 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
   }
 
   return (
-    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 300, minHeight: 300}}>
+    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 330, minHeight: 200}}>
       <Box onClick={handleSelect} sx={{ cursor: 'pointer' }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
             {data.title}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
-            ID: {data.id}
-          </Typography>
           <AuthorComponent id={data.authorId} />
           <Stack direction="row" spacing={1}>
             {values.map((item) => (
-              <Chip key={item.label} label={`${item.label}: ${item.value}`} size="small" />
+              <Tooltip key={item.label} title={item.label}>
+                <Chip
+                  icon={item.icon}
+                  label={item.value}
+                  size="small"
+                  sx={{ minWidth: 64 }}
+                />
+              </Tooltip>
             ))}
           </Stack>
           {isHovered && (

@@ -18,18 +18,13 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
   return (
     <Grid
       sx={{
-        p: 2,
+        padding: 1,
         backgroundColor,
         borderRadius: 1,
         cursor: "pointer",
-        transition: "all 0.2s",
-        "&:hover": {
-          boxShadow: 3,
-          transform: "translateY(-2px)"
-        }
+        size: "fit-content",
       }}
     >
-      {stat.getTransitiveScore()}
       <Box sx={{ mb: 2 }}>
         <PreviewComponent id={stat.value.articleId} />
       </Box>

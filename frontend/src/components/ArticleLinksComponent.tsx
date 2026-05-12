@@ -79,6 +79,7 @@ const ArticleLinksComponentBase = ({
                   <TextField
                     label="Название связи"
                     value={link.name}
+                    disabled
                     onChange={(event) => handleNameChange(link.parentId, event.target.value)}
                     fullWidth
                     size="small"

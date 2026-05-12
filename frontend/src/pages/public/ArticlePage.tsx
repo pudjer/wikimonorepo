@@ -10,7 +10,6 @@ import { ArticleRule } from "../../store/stores/public/ArticleFull";
 type ArticleLinkInfo = {
   parentId: string;
   name: string;
-  parentTitle?: string;
 };
 
 export const ArticlePage = f.observer(() => {
@@ -47,7 +46,6 @@ export const ArticlePage = f.observer(() => {
       article.links.map((link) => ({
         parentId: link.parent.id,
         name: link.name,
-        parentTitle: link.parent.title,
       }))
     );
     setIsChanged(false);
@@ -96,7 +94,7 @@ export const ArticlePage = f.observer(() => {
       return;
     }
 
-    setLinks((prev) => [...prev, { parentId, name: "", parentTitle: undefined }]);
+    setLinks((prev) => [...prev, { parentId, name: "extends" }]);
     setIsChanged(true);
   };
 

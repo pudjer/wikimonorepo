@@ -8,7 +8,6 @@ import { mutationApi } from "../../api/mutationApi";
 type ArticleLinkInfo = {
   parentId: string;
   name: string;
-  parentTitle?: string;
 };
 
 export const CreateArticlePage = f.observer(() => {
@@ -20,7 +19,7 @@ export const CreateArticlePage = f.observer(() => {
 
   const handleAddLink = (parentId: string) => {
     if (!links.some(link => link.parentId === parentId)) {
-      setLinks([...links, { parentId, name: "", parentTitle: undefined }]);
+      setLinks([...links, { parentId, name: "extends" }]);
     }
   };
 

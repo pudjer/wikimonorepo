@@ -1,23 +1,35 @@
-import { Box, AppBar, Toolbar, Button, IconButton, Menu, MenuItem, CircularProgress } from "@mui/material";
+import { Box, AppBar, Toolbar, Button, IconButton, Menu, MenuItem, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { f } from "../lib";
-import { RootRule } from "../store";
+import { RootRule, TotalInteraction, MyLearningStatsRule } from "../store";
 import { SearchComponent } from "./SearchComponent";
 import { LoginComponent } from "./LoginComponent";
 import { mutationApi } from "../api/mutationApi";
+import { VisualizeDag } from "./index";
+import { StatComponent } from "./StatComponent";
+import { useMemo } from "react";
 
 const HeaderComponentBase = () => {
   const navigate = useNavigate();
   const {data: root, error, isPending} = RootRule.useResolve(true);
+  const { data: learningStats, isPending: isStatsPending, error: statsError } = MyLearningStatsRule.useResolve(root?.myId);
+  
   if (error) {
     console.error("Failed to load user data:", error);
   }
   const isSignedIn = !!root?.myId;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [learningDagOpen, setLearningDagOpen] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
+
+  const handleRefresh = async () => {
+    if(root?.myId) await MyLearningStatsRule.refresh(root.myId);
+  }
+
+  const NodeComponent = useMemo(() => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} />, [learningStats]);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -52,7 +64,11 @@ const HeaderComponentBase = () => {
         <Button
           color="inherit"
           sx={{ textTransform: "none", fontSize: "1.2rem", fontWeight: "bold" }}
-          onClick={() => navigate("/learning-dag")}
+          onClick={() => {
+            if(isSignedIn) {
+              setLearningDagOpen(true);
+            } else setLoginOpen(true);
+          }}
         >Learning DAG</Button>
         <Button
           color="inherit"
@@ -133,6 +149,48 @@ const HeaderComponentBase = () => {
           />
         </Box>
       )}
+
+      {/* Learning DAG Modal */}
+      <Dialog
+        open={learningDagOpen}
+        onClose={() => setLearningDagOpen(false)}
+        maxWidth="lg"
+        fullWidth
+        slotProps={{
+          paper: { sx: { minHeight: "80vh" } }
+        }}
+      >
+        <DialogTitle>Learning DAG</DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          {isStatsPending ? (
+            <CircularProgress />
+          ) : statsError ? (
+            <Box color="error.main">Failed to load learning data.</Box>
+          ) : learningStats ? (
+            <>
+              <Box sx={{ height: "100vh", width: "100%" }}>
+                <VisualizeDag NodeComponent={NodeComponent} dag={learningStats.dag} getKey={node=>node.articleId}/>
+              </Box>
+              <Box sx={{ mt: 2 }}>
+                <strong>Learning Path</strong>
+                <Box sx={{display: "flex", gap: 1, flexWrap: "wrap", mt: 1}}>
+                  {learningStats.getAllStats().filter(stat=>stat.getTransitiveScore()).toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore()).map((stat) => <StatComponent key={stat.value.articleId} stat={stat}/>)}
+                </Box>
+              </Box>
+            </>
+          ) : (
+            <Box>No learning stats available.</Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRefresh} variant="contained" color="primary">
+            Refresh DAG
+          </Button>
+          <Button onClick={() => setLearningDagOpen(false)} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </AppBar>
   );
 };

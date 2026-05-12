@@ -4,3 +4,7 @@ html, body, #root {
   min-height: 100vh;
 }
 
+.react-flow__edge-path {
+  stroke-width: 10px !important; /* Укажите нужную толщину */
+  stroke:lightseagreen !important;
+}
