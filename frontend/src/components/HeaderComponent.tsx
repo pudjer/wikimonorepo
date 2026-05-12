@@ -122,7 +122,8 @@ const HeaderComponentBase = () => {
         </Box>
         <Button
           color="primary"
-          sx={{ textTransform: "none", fontSize: 40, fontWeight: "bold" }}
+          variant="contained"
+          sx={{ textTransform: "none", fontSize: 33, fontWeight: "bold", borderRadius: 4, margin: 1 }}
           onClick={() => {
             if (isSignedIn) {
               setLearningDagOpen(true);

@@ -15,6 +15,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { PreviewComponent } from "./PreviewComponent";
 
 type InOrderComponentProps = {
   initialOrder?: PreviewOrder;
@@ -36,7 +37,7 @@ const orderingPropOptions: Array<{ value: PreviewOrderingProp; label: string }> 
 
 const InOrderComponentBase = ({
   initialOrder = PreviewOrder.DESC,
-  initialOrderBy = PreviewOrderingProp.learners,
+  initialOrderBy = PreviewOrderingProp.dagPoints,
 }: InOrderComponentProps) => {
   const [order, setOrder] = useState<PreviewOrder>(initialOrder);
   const [orderBy, setOrderBy] = useState<PreviewOrderingProp>(initialOrderBy);
@@ -48,10 +49,6 @@ const InOrderComponentBase = ({
     await InOrderRule.refresh(orderDto);
   }, [orderDto ]);
 
-  const articleIds = useMemo(
-    () => data?.map((preview) => preview.id) ?? [],
-    [data]
-  );
 
   const handleOrderChange = (event: SelectChangeEvent<string>) => {
     setOrder(event.target.value as PreviewOrder);
@@ -109,9 +106,13 @@ const InOrderComponentBase = ({
         <Typography variant="body2" color="error">
           Не удалось загрузить ранжированные статьи
         </Typography>
-      ) : (
-        <PreviewListComponent ids={articleIds} />
-      )}
+      ) : data ? (
+        data.map(p=><PreviewComponent id={p.id} key={p.id}/>)
+      ): 
+        <Typography variant="body2" color="error">
+          Не удалось загрузить ранжированные статьи
+        </Typography>
+      }
     </Stack>
   );
 };
