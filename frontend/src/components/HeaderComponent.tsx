@@ -44,7 +44,8 @@ const HeaderComponentBase = () => {
 
   const NodeComponent = useMemo(
     () => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} />,
-    [learningStats]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [learningStats, learningStats?.dag.nodes]
   );
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
