@@ -2,7 +2,7 @@
 import { JSX, useMemo, useState } from "react"
 import { DAG } from "../domain/DAG/entity"
 import { Box, Stack } from "@mui/material"
-import { Handle, NodeTypes, Position, ReactFlow } from '@xyflow/react';
+import { applyNodeChanges, Handle, NodeTypes, Position, ReactFlow } from '@xyflow/react';
 import { layoutDAG } from "./layoutDAG";
 export type GenericDagPresentationProps<T extends Record<string, any>> = {
   dag: DAG<T>
@@ -16,37 +16,49 @@ export const VisualizeDag = <T extends Record<string, any>>({
   NodeComponent,
   getKey,
 }: GenericDagPresentationProps<T>) => {
-  // Compute layout only when `dag` changes
   const { nodes, edges } = useMemo(
     () => layoutDAG(dag, getKey),
-    [dag, getKey]
+    [dag, NodeComponent]
   );
 
-  // React Flow requires a mapping of node types → components
+  const [nodesState, setNodesState] = useState(nodes);
 
-// Inside VisualizeDag, update the nodeTypes definition:
+  // Синхронизируем состояние при изменении dag
+  useMemo(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-render
+    setNodesState(nodes);
+  }, [nodes]);
+
   const nodeTypes = useMemo(
     () => ({
       custom: ({ data }: { data: T }) => (
         <div>
-          {/* Invisible handles for automatic connection */}
           <Handle type="target" position={Position.Top} id="t" />
           <NodeComponent node={data} />
           <Handle type="source" position={Position.Bottom} id="s" />
         </div>
       ),
     }),
-    [NodeComponent]
+    []
   );
 
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <ReactFlow
-        nodes={nodes}
+        nodes={nodesState}
         edges={edges}
         nodeTypes={nodeTypes}
+        onNodesChange={(changes) => {
+          // Разрешаем изменения позиций
+          setNodesState((nds) => applyNodeChanges(changes, nds));
+        }}
         fitView
         attributionPosition="bottom-right"
+        // Явно указываем, что перетаскивание разрешено
+        nodesDraggable={true}
+        // Можно добавить другие настройки
+        nodesConnectable={true}
+        elementsSelectable={true}
       />
     </div>
   );

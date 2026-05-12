@@ -119,7 +119,7 @@ export class DAG<Node> implements IDAG<Node> {
     }
     
     private setAncestors() {
-        const layers = this.layersFromLastGeneration
+        const layers = this.layersFromLastGeneration.reverse()
         for(const layer of layers){
             for(const articleId of layer){
                 const parents = this.getParents(articleId);
@@ -133,7 +133,7 @@ export class DAG<Node> implements IDAG<Node> {
         }
     }
     private setDescendants() {
-        const layersReversed = this.layersFromLastGeneration.reverse()
+        const layersReversed = this.layersFromLastGeneration
         for(const layer of layersReversed){
             for(const articleId of layer){
                 const children = this.getChildren(articleId);

@@ -82,7 +82,7 @@ export function layoutDAG<T extends Record<string, unknown>>(
         id: `${source}->${target}`,
         source,
         target,
-        type: 'default'
+        type: 'straight'
       });
     }
   }

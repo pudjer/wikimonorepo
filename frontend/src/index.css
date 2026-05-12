@@ -49,3 +49,7 @@ body {
   stroke-width: 10px !important;
   stroke: lightseagreen !important;
 }
+
+.react-flow__pane {
+  background: rgba(7, 55, 109, 0.173);
+}

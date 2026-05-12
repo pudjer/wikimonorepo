@@ -7,6 +7,7 @@ import { f } from "./lib";
 import { RootRule, MeRule } from "./store";
 import { HeaderComponent } from "./components";
 import { TrendingPage, ArticlePage, AuthorPage, CreateArticlePage } from "./pages";
+import { seedMathDAG } from "./scripts/seedMathDag";
 
 const ProtectedRoute = f.observer(({ children }: { children: React.ReactNode }) => {
   const { t } = useTranslation();

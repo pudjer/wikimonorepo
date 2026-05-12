@@ -39,7 +39,7 @@ const HeaderComponentBase = () => {
 
   const NodeComponent = useMemo(
     () => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} />,
-    [learningStats]
+    [learningStats?.dag.nodes]
   );
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -137,27 +137,11 @@ const HeaderComponentBase = () => {
         </Box>
       </Toolbar>
 
-      {loginOpen && !isSignedIn && (
-        <Box
-          sx={{
-            position: "fixed",
-            inset: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.55)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 1300,
-            p: 2,
-          }}
-          onClick={() => setLoginOpen(false)}
-        >
-          <Box onClick={(event) => event.stopPropagation()}>
-            <LoginComponent onCancel={() => setLoginOpen(false)} />
-          </Box>
-        </Box>
-      )}
+      <Dialog open={loginOpen} onClose={() => setLoginOpen(false)} maxWidth="xs" fullWidth>
+            <LoginComponent onCancel={() => setLoginOpen(false)} onSuccess={() => setLoginOpen(false)}/>
+      </Dialog>
 
-      <Dialog open={learningDagOpen} onClose={() => setLearningDagOpen(false)} maxWidth="xl" fullWidth slotProps={{ paper: { sx: { minHeight: "80vh" } } }}>
+      <Dialog open={learningDagOpen} keepMounted onClose={() => setLearningDagOpen(false)} maxWidth="xl" fullWidth slotProps={{ paper: { sx: { minHeight: "80vh" } } }}>
         <DialogTitle>{t("learningDag.title")}</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {isStatsPending ? (
@@ -174,7 +158,7 @@ const HeaderComponentBase = () => {
                 <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
                   {learningStats
                     .getAllStats()
-                    .filter((stat) => stat.getTransitiveScore())
+                    .filter((stat) => !stat.isTransitiveMastered())
                     .toSorted((a, b) => b.getTransitiveScore() - a.getTransitiveScore())
                     .map((stat) => (
                       <StatComponent key={stat.value.articleId} stat={stat} />

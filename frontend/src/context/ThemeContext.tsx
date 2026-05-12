@@ -29,6 +29,7 @@ export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
   useEffect(() => {
     const storedMode = localStorage.getItem(STORAGE_KEY);
     if (storedMode === "light" || storedMode === "dark") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setMode(storedMode);
     }
   }, []);

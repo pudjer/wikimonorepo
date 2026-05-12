@@ -3,6 +3,7 @@ import { f } from "../lib";
 import { AuthorsArticlesRule } from "../store/stores/public/AuthorsArticles";
 import { PreviewListComponent } from "./PreviewListComponent";
 import { CircularProgress, Stack, Typography } from "@mui/material";
+import { ArticlesDagComponent } from "./ArticlesDagComponent";
 
 type AuthorArticlesComponentProps = {
   authorId: string;
@@ -42,6 +43,7 @@ const AuthorArticlesComponentBase = ({ authorId, onSelect }: AuthorArticlesCompo
     <Stack spacing={2}>
       <Typography variant="h6">Статьи автора</Typography>
       <PreviewListComponent ids={articleIds} onSelect={onSelect} />
+      <ArticlesDagComponent ids={articleIds}/>
     </Stack>
   );
 };

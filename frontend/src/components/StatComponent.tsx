@@ -11,10 +11,10 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
   const isTransitiveMastered = stat.isTransitiveMastered();
   const isTransitiveLearning = stat.isTransitiveLearning();
   let backgroundColor = "#f0f0f0"; // Unknown
-  if (isMastered) backgroundColor = "#4caf50"; // Green
-  else if (isLearning) backgroundColor = "#2196f3";   // Blue
-  else if (isTransitiveMastered) backgroundColor = "#c8e6c9"; // Light green
-  else if (isTransitiveLearning) backgroundColor = "#bbdefb"; // Light blue
+  if (isMastered) backgroundColor = "#00ff08"; // Green
+  else if (isLearning) backgroundColor = "#008cff";   // Blue
+  else if (isTransitiveMastered) backgroundColor = "#63ff6876"; // Light green
+  else if (isTransitiveLearning) backgroundColor = "#5eb7ff76"; // Light blue
   return (
     <Grid
       sx={{
