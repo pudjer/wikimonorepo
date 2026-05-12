@@ -136,6 +136,11 @@ export const ArticlePage = f.observer(() => {
 
   return (
     <Container sx={{ py: 4 }}>
+
+      <Box sx={{ mb: 4 }}>
+        <AuthorComponent id={article.authorId} />
+      </Box>
+
       <Box sx={{ mb: 4 }}>
         <ArticleTitleComponent
           title={title}
@@ -166,10 +171,6 @@ export const ArticlePage = f.observer(() => {
           onRemoveLink={handleRemoveLink}
           onLinkNameChange={handleLinkNameChange}
         />
-      </Box>
-
-      <Box sx={{ mb: 4 }}>
-        <AuthorComponent id={article.authorId} />
       </Box>
 
       {isMy && (

@@ -13,6 +13,7 @@ import { LoginComponent } from "./LoginComponent";
 import { mutationApi } from "../api/mutationApi";
 import { VisualizeDag } from "./index";
 import { StatComponent } from "./StatComponent";
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
 const HeaderComponentBase = () => {
   const navigate = useNavigate();
@@ -104,19 +105,6 @@ const HeaderComponentBase = () => {
           <Button
             color="inherit"
             sx={{ textTransform: "none", fontSize: "1rem", fontWeight: "bold" }}
-            onClick={() => {
-              if (isSignedIn) {
-                setLearningDagOpen(true);
-              } else {
-                setLoginOpen(true);
-              }
-            }}
-          >
-            {t("header.learningDag")}
-          </Button>
-          <Button
-            color="inherit"
-            sx={{ textTransform: "none", fontSize: "1rem", fontWeight: "bold" }}
             onClick={() => navigate("/trending")}
           >
             {t("header.trending")}
@@ -131,7 +119,20 @@ const HeaderComponentBase = () => {
             </Button>
           )}
         </Box>
-
+        <Button
+          color="primary"
+          sx={{ textTransform: "none", fontSize: 40, fontWeight: "bold" }}
+          onClick={() => {
+            if (isSignedIn) {
+              setLearningDagOpen(true);
+            } else {
+              setLoginOpen(true);
+            }
+          }}
+        >
+          {t("header.learningDag")}
+          <AccountTreeIcon sx={{width: 40, height: 40, stroke: "gold"}}/>
+        </Button>
         <Box sx={{ flex: 1, maxWidth: 420, minWidth: 200, width: "100%" }}>
           <SearchComponent placeholder={t("header.searchPlaceholder")} onSelect={handleSearchSelect} />
         </Box>
