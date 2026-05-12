@@ -10,7 +10,7 @@ export function SerializeKey(obj: unknown)
 
 
 
-export class IdentityStore<CONC extends object, KEY> {
+export class RWeakMap<KEY, CONC extends object> {
 	private store = new Map<string, WeakRef<CONC>>()
 
 	private registry = new FinalizationRegistry<string>((serializedKey) => {

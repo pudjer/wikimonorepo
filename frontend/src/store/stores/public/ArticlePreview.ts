@@ -2,7 +2,7 @@ import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
 
-export class ArticlePreview extends ArticleBase{
+export class Preview extends ArticleBase{
   views: number;
   likes: number;
   learners: number;
@@ -10,22 +10,22 @@ export class ArticlePreview extends ArticleBase{
   dagPoints: number;
 }
 
-export const ArticlePreviewRule = f.buildRule(
+export const PreviewRule = f.buildRule(
   async (id: string) => await queryApi.public.articlePreview.getById(id),
-  { classConstructor: ArticlePreview }
+  { classConstructor: Preview }
 )
 
-export const ArticlePreviewCollectionRule = f.buildRule(
+export const PreviewListRule = f.buildRule(
   async (sortedIds: string[]) => {
     const res = await queryApi.public.articlePreview.getByIds({ ids: sortedIds });
     return res.previews;
   },
   { 
-    classConstructor: Array<ArticlePreview>,
+    classConstructor: Array<Preview>,
     update: async (target, data, resolve) => {
       target.length = 0;
       for (const preview of data) {
-        target.push(await ArticlePreviewRule.resolveInside(resolve, preview.id, preview));
+        target.push(await PreviewRule.resolveInside(resolve, preview.id, preview));
       }
     },
   }

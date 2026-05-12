@@ -1,12 +1,26 @@
 import { NodeRelations } from "backend/src/domain/articleDAG/entity";
 import queryApi from "../../../api/queryApi";
 import { DAG } from "../../../domain/DAG/entity";
-import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
+import { Preview, PreviewListRule, PreviewRule } from "./ArticlePreview";
 import { UniqueCollection } from "backend/src/domain/utils/collections";
 import { Link } from "backend/src/domain/common/entity";
 import { f } from "../../../lib";
 
-export class PreviewDAG extends DAG<ArticlePreview> {}
+export class DAGLink{
+  constructor(
+    public child: Preview,
+    public name: string,
+    public parent: Preview
+  ){}
+
+}
+
+export class PreviewDAG{
+  constructor(
+    public nodes: Preview[],
+    public links: DAGLink[]
+  ){}
+}
 
 export const DAGRule = f.buildRule(
   async (sortedIds: string[]) => {
@@ -15,20 +29,11 @@ export const DAGRule = f.buildRule(
   { 
     classConstructor: PreviewDAG,
     update: async (target, data, resolve) => { 
-      const previews = await ArticlePreviewCollectionRule.resolveInside(resolve, data.nodes.toSorted());
-      const previewsSet = new Set(previews);
-      const previewsMap = new Map(previews.map(p => [p.id, p]));
-      const links: NodeRelations<ArticlePreview, string> = new UniqueCollection(
-        data.links.map(
-          l => new Link(
-            previewsMap.get(l.child)!, 
-            l.name, 
-            previewsMap.get(l.parent)!
-          )
-        )
-      );
-      const builded = new PreviewDAG(previewsSet, links);
-      Object.assign(target, builded);
+      const ids = data.nodes.toSorted()
+      const nodes = await PreviewListRule.resolveInside(resolve, ids)
+      const nodesMap = new Map(nodes.map(n=>[n.id, n]))
+      const links = data.links.map(l=>new DAGLink(nodesMap.get(l.child)!, l.name, nodesMap.get(l.parent)!))
+      Object.assign(target, new PreviewDAG(nodes, links))
     }
   }
 )

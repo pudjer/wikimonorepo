@@ -28,9 +28,9 @@ export class RuleBuilder {
       : async (target: T, data: D) => { Object.assign(target, data); };
 
     return {
-      fetch,
-      update,
-      allocate
+      fetchData: fetch,
+      buildDonor: update,
+      allocateContainerObject: allocate
     };
   }
 }

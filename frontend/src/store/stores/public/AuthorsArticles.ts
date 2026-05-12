@@ -1,6 +1,6 @@
 import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
-import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
+import { Preview, PreviewListRule } from "./ArticlePreview";
 
 
 
@@ -8,10 +8,10 @@ import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
 export const AuthorsArticlesRule = f.buildRule(
   async (id: string) => await queryApi.public.articles.getByAuthorId(id),
   { 
-    classConstructor: Array<ArticlePreview>, 
+    classConstructor: Array<Preview>, 
     update: async (target, data, resolve) => { 
       target.length = 0
-      const previews = await ArticlePreviewCollectionRule.resolveInside(resolve, data.ids.toSorted());
+      const previews = await PreviewListRule.resolveInside(resolve, data.ids);
       target.push(...previews)
     } 
   }

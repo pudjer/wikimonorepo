@@ -1,26 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JSX, useMemo, useState } from "react"
+import React, { JSX, useMemo, useState } from "react"
 import { DAG } from "../domain/DAG/entity"
 import { Box, Stack } from "@mui/material"
 import { applyNodeChanges, Handle, NodeTypes, Position, ReactFlow } from '@xyflow/react';
 import { layoutDAG } from "./layoutDAG";
-export type GenericDagPresentationProps<T extends Record<string, any>> = {
+import { f } from "../lib";
+export type GenericDagPresentationProps<T extends Record<string, unknown>> = {
   dag: DAG<T>
   getKey: (node: T) => string
-  NodeComponent: ({ node }: { node: T }) => JSX.Element
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  ComponentFactory: (node: T) => React.FC<{}>
 }
 
 
-export const VisualizeDag = <T extends Record<string, any>>({
+const VisualizeDagBase = <T extends Record<string, any>>({
   dag,
-  NodeComponent,
+  ComponentFactory,
   getKey,
 }: GenericDagPresentationProps<T>) => {
   const { nodes, edges } = useMemo(
     () => layoutDAG(dag, getKey),
-    [dag, NodeComponent]
+    [dag, getKey]
   );
-
+  console.log("render")
   const [nodesState, setNodesState] = useState(nodes);
 
   // Синхронизируем состояние при изменении dag
@@ -34,12 +36,12 @@ export const VisualizeDag = <T extends Record<string, any>>({
       custom: ({ data }: { data: T }) => (
         <div>
           <Handle type="target" position={Position.Top} id="t" />
-          <NodeComponent node={data} />
+          {React.createElement(ComponentFactory(data))}
           <Handle type="source" position={Position.Bottom} id="s" />
         </div>
       ),
     }),
-    []
+    [ComponentFactory]
   );
 
   return (
@@ -56,10 +58,9 @@ export const VisualizeDag = <T extends Record<string, any>>({
         attributionPosition="bottom-right"
         // Явно указываем, что перетаскивание разрешено
         nodesDraggable={true}
-        // Можно добавить другие настройки
-        nodesConnectable={true}
-        elementsSelectable={true}
       />
     </div>
   );
 };
+
+export const VisualizeDag = f.observer(VisualizeDagBase)

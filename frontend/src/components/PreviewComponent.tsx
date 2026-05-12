@@ -2,7 +2,7 @@ import { useMemo, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { f } from "../lib";
-import { ArticlePreviewRule } from "../store/stores/public/ArticlePreview";
+import { PreviewRule } from "../store/stores/public/ArticlePreview";
 import {
   Box,
   Card,
@@ -29,7 +29,7 @@ type PreviewComponentProps = {
 
 const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
   const { t } = useTranslation();
-  const { data, isPending, error } = ArticlePreviewRule.useResolve(id);
+  const { data, isPending, error } = PreviewRule.useResolve(id);
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
 

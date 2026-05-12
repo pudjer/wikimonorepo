@@ -13,26 +13,26 @@ type MyKey = string;
 
 // Simple rule without dependencies
 const simpleRule: BuildRule<MyObject, string, MyKey> = {
-  allocate(key) {
+  allocateContainerObject(key) {
     return { id: key };
   },
-  async fetch(key) {
+  async fetchData(key) {
     return `data-for-${key}`;
   },
-  async update(target, data) {
+  async buildDonor(target, data) {
     target.data = data;
   },
 };
 
 // Rules that depend on each other (cycle test)
 const ruleB: BuildRule<MyObject, string, string> = {
-  allocate(key) {
+  allocateContainerObject(key) {
     return { id: key };
   },
-  async fetch(key) {
+  async fetchData(key) {
     return `data-for-${key}`;
   },
-  async update(target, data, resolve) {
+  async buildDonor(target, data, resolve) {
     target.data = data;
     // B depends on A
     target.other = await resolve('a', ruleA);
@@ -40,13 +40,13 @@ const ruleB: BuildRule<MyObject, string, string> = {
 };
 
 const ruleA: BuildRule<MyObject, string, string> = {
-  allocate(key) {
+  allocateContainerObject(key) {
     return { id: key };
   },
-  async fetch(key) {
+  async fetchData(key) {
     return `data-for-${key}`;
   },
-  async update(target, data, resolve) {
+  async buildDonor(target, data, resolve) {
     target.data = data;
     // A depends on B
     target.other = await resolve('b', ruleB);

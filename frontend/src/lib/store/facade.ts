@@ -1,7 +1,7 @@
 import { Autorun } from "../observableProxy/autorun/autorun";
 import { getObserverHoc } from "../reactObserver/observer";
 import { Resolver, ResolverFn } from "../Singleton/Resolver";
-import { SerializeKey } from "../Singleton/Singleton";
+import { SerializeKey } from "../Singleton/RWeakMap";
 import { Options, RuleBuilder } from "./RuleBuilder";
 import { AsyncState, useAsync } from "./useAsync";
 

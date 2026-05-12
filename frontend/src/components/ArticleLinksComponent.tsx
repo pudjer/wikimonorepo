@@ -12,7 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { PreviewComponent } from "./PreviewComponent";
-import { ArticlePreviewCollectionRule } from "../store";
+import { PreviewListRule } from "../store";
 
 type ArticleLinkInfo = {
   parentId: string;
@@ -35,7 +35,7 @@ const ArticleLinksComponentBase = ({
   onLinkNameChange,
 }: ArticleLinksComponentProps) => {
   const { t } = useTranslation();
-  const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(links.map(link => link.parentId).toSorted());
+  const { data, isPending, error } = PreviewListRule.useResolve(links.map(link => link.parentId).toSorted());
   if (isPending) {
     return <CircularProgress />;
   }

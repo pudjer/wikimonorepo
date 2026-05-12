@@ -5,33 +5,15 @@ import queryApi from "../../../../api/queryApi";
 import { DAG } from "../../../../domain/DAG/entity";
 import { StatsBuilder } from "../../../../domain/learningDAG/statsDag";
 import { autorun, f } from "../../../../lib";
-import {  TotalInteraction, TotalInteractionsCollectionRule } from "../TotalInteractions";
+import {  Interaction, InteractionListRule } from "../TotalInteractions";
 import { MyLearningHistoryRule } from "./MyLearningHystory";
 
 
-export class MyLearningStats extends StatsBuilder<TotalInteraction> { }
-
-export const MyLearningStatsRule = f.buildRule(
-  async (myId: string) => { },
-  {
-    classConstructor: MyLearningStats,
-    update: async (target, data, resolve, myId: string) => {
-      const dag = await MyLearningDAGRule.resolveInside(resolve, myId);
-      const res = new MyLearningStats(dag);
-      for (const stat of res.getAllStats()) {
-        autorun.autorun(() => stat.init());
-      }
-      Object.assign(target, res);
-    }
-  }
-);
 
 
 
 
-
-
-export class LearningDAG extends DAG<TotalInteraction> { }
+export class LearningDAG extends DAG<Interaction> { }
 
 export const MyLearningDAGRule = f.buildRule(
   async (myId: string) => { },
@@ -43,11 +25,11 @@ export const MyLearningDAGRule = f.buildRule(
 
       const { links, nodes } = await queryApi.public.articleDAG.getDAG(learningArticleIds);
 
-      const allNodes = await TotalInteractionsCollectionRule.resolveInside(resolve, {idsSorted: nodes.toSorted(), myId});
+      const allNodes = await InteractionListRule.resolveInside(resolve, {idsSorted: nodes.toSorted(), myId});
 
       const interactionMap = new Map(allNodes.map(p => [p.articleId, p]));
 
-      const dagLinks: NodeRelations<TotalInteraction, string> = new UniqueCollection(
+      const dagLinks: NodeRelations<Interaction, string> = new UniqueCollection(
         links.map(
           l => new Link(
             interactionMap.get(l.child)!,

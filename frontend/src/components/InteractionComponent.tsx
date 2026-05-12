@@ -1,7 +1,7 @@
 ﻿import { useCallback, useState } from "react";
 import { f } from "../lib";
 import mutationApi from "../api/mutationApi";
-import { TotalInteractionRule } from "../store/stores/private/TotalInteractions";
+import { InteractionRule } from "../store/stores/private/TotalInteractions";
 import {
   Box,
   CircularProgress,
@@ -30,12 +30,12 @@ type InteractionComponentProps = {
 const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   const { t } = useTranslation();
   const { data: root, isPending: rootPending, error: rootError } = RootRule.useResolve(true);
-  const { data, isPending, error } = TotalInteractionRule.useResolve(root?.myId ? { articleId: id, myId: root.myId } : undefined);
+  const { data, isPending, error } = InteractionRule.useResolve(root?.myId ? { articleId: id, myId: root.myId } : undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
     if (root?.myId) {
-      await TotalInteractionRule.refresh({ articleId: id, myId: root.myId });
+      await InteractionRule.refresh({ articleId: id, myId: root.myId });
     }
   }, [root?.myId, id]);
 

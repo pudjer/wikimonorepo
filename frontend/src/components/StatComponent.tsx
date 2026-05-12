@@ -1,12 +1,12 @@
 import { Paper, Box, Card, CardContent, Grid, Button, Typography } from "@mui/material";
 import { LearningStats } from "../domain/learningDAG/stats";
 import { PreviewComponent } from "./PreviewComponent";
-import { TotalInteraction } from "../store";
+import { Interaction } from "../store";
 import { f } from "../lib";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const StatComponentBase = ({stat, onSelect}: {stat: LearningStats<TotalInteraction>, onSelect?: (id: string)=>void}) => {
+const StatComponentBase = ({stat, onSelect}: {stat: LearningStats<Interaction>, onSelect?: (id: string)=>void}) => {
   const { t } = useTranslation()
   const isMastered = stat.isMastered();
   const isLearning = stat.isLearning();
@@ -40,4 +40,4 @@ const StatComponentBase = ({stat, onSelect}: {stat: LearningStats<TotalInteracti
   );
 }
 
-export const StatComponent = f.observer(StatComponentBase);
+export const StatComponent = StatComponentBase;

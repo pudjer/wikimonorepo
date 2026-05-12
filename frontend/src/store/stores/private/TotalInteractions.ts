@@ -2,7 +2,7 @@ import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/le
 import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 
-export class TotalInteraction {
+export class Interaction {
       userId: string;
       articleId: string;
       isViewed: boolean;
@@ -11,12 +11,12 @@ export class TotalInteraction {
       lastInteraction: Date | null;
 }
 
-export const TotalInteractionRule = f.buildRule(
+export const InteractionRule = f.buildRule(
   async ({articleId}: { articleId: string; myId: string }) => {
     return await queryApi.private.interactionUserArticle.total.getTotal(articleId);
   },
   { 
-    classConstructor: TotalInteraction, 
+    classConstructor: Interaction, 
     async update(target, data) {
       target.userId = data.userId;
       target.articleId = data.articleId;
@@ -27,16 +27,16 @@ export const TotalInteractionRule = f.buildRule(
     },
   }
 );
-export const TotalInteractionsCollectionRule = f.buildRule(
+export const InteractionListRule = f.buildRule(
   async ({idsSorted}:{idsSorted: string[], myId: string}) => {
     return await queryApi.private.interactionUserArticle.total.getTotalByIds(idsSorted);
   },
   { 
-    classConstructor: Array<TotalInteraction>,
+    classConstructor: Array<Interaction>,
     async update(target, data, resolve, {myId}) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await TotalInteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
+        target.push(await InteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
       }
     },
   }
@@ -46,11 +46,11 @@ export const MyInteractionsRule = f.buildRule(
     return await queryApi.private.interactionUserArticle.total.getTotalAll();
   },
   { 
-    classConstructor: Array<TotalInteraction>,
+    classConstructor: Array<Interaction>,
     async update(target, data, resolve, myId) {
       target.length = 0;
       for (const interaction of data) {
-        target.push(await TotalInteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
+        target.push(await InteractionRule.resolveInside(resolve, {articleId: interaction.articleId, myId}, interaction));
       }
       target.sort((a, b) => {
         if(a.lastInteraction === null) return 1;

@@ -3,7 +3,7 @@ import mutationApi from "../api/mutationApi";
 import { MyLearningStatsRule } from "./stores/private/MeBuild/LearningStats";
 import { MeRule } from "./stores/private/Me";
 import { ArticleRule } from "./stores/public/ArticleFull";
-import { ArticlePreviewRule } from "./stores/public/ArticlePreview";
+import { PreviewRule } from "./stores/public/ArticlePreview";
 import { AuthorRule } from "./stores/public/Author";
 import { AuthorsArticlesRule } from "./stores/public/AuthorsArticles";
 import { DAGRule } from "./stores/public/DAG";
@@ -13,7 +13,7 @@ import { RootRule } from "./stores/Root";
 import { Order, OrderingProp } from "../api/queryApi";
 
 export const use = async () => {
-  const art = await ArticlePreviewRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
+  const art = await PreviewRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(art);
   const artFull = await ArticleRule.resolveOutside("72d2ad66-794e-4666-b40f-793496ae5adb");
   console.log(artFull);

@@ -1,33 +1,73 @@
 import { Hydrate, Hydrator } from "./Hydrator";
-import { IdentityStore } from "./Singleton";
+import { RWeakMap } from "./RWeakMap";
 
-// ========== Типы (без изменений) ==========
 
-export type BuildRule<T extends object, D, KEY> = {
-  allocate(key: KEY): T;
-  fetch(key: KEY): Promise<D>;
-  update(
-    target: T,
+type BuildProps<D, KEY> = {
+  data: D,
+  key: KEY,
+  resolveContainer: Resolve
+}
+
+export interface BuildRule<T extends object, D, KEY>{
+  allocateContainerObject(key: KEY): T;
+  fetchData(key: KEY): Promise<D>;
+  buildDonor(
     data: D,
-    innerResolve: ResolverFn,
+    resolveContainer: Resolve,
     key: KEY,
-  ): Promise<void>;
+  ): T;
+  update(container: T, buildedDonor: T): void
 };
 
 
-export type ResolverFn = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>, data?: D) => Promise<T>;
+class RuleWrapper<T extends object, D, KEY>{
+  private store = new RWeakMap<KEY, T>()
+  constructor(
+    private readonly rule: BuildRule<T, D, KEY>,
+    private readonly resolve: Resolve
+  ){}
+
+  buildUpdate(key: KEY, data: D): T {
+    const container = this.getContainer(key)
+    const donor = this.rule.buildDonor(data, this.resolve, key)
+    this.rule.update(container, donor)
+    return container
+  }
+
+
+  fetchBuildUpdate(key: KEY): { T, }
+
+  getContainer(key: KEY): T {
+    const ready = this.store.get(key)
+    if(ready) return ready
+
+    const container = this.rule.allocateContainerObject(key)
+    this.store.set(key, container)
+    return container
+  }
+}
+
+
+export type Resolve = <T extends object, D, KEY>(
+  key: KEY,
+  rule: BuildRule<T, D, KEY>,
+  data?: D
+) => undefined extends D ? (T | undefined) : T;
+
+
+export type ClientFn = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>, data?: D) => Promise<T>;
 
 
 
 
-export type PerRuleIdentity<T extends object, D, KEY> = WeakMap<BuildRule<T, D, KEY>, IdentityStore<T, KEY>>;
+export type PerRuleIdentity<T extends object, D, KEY> = WeakMap<BuildRule<T, D, KEY>, RWeakMap<T, KEY>>;
 
 export class Resolver {
 
   private readonly perRuleIdentity: PerRuleIdentity<object, unknown, unknown> = new WeakMap();
   private readonly hydrator: Hydrator = new Hydrator();
 
-  resolveOutside: ResolverFn = async (key, rule, data?) => {
+  resolveOutside: ClientFn = async (key, rule, data?) => {
     // Каждый внешний вызов получает СВОЙ hydrator unit
     const hydrate = this.hydrator.getHydratorUnit();
     const context = new ResolveContext(hydrate, this.perRuleIdentity, this.invalidate);
@@ -38,7 +78,7 @@ export class Resolver {
     this.hydrator.invalidate(target);
   }
 
-  refresh: ResolverFn = async (key, rule, data?) => {
+  refresh: ClientFn = async (key, rule, data?) => {
     const hydrate = this.hydrator.getHydratorUnit();
     const context = new ResolveContext(hydrate, this.perRuleIdentity, this.invalidate);
     return context.refresh(key, rule, data);
@@ -59,8 +99,8 @@ class ResolveContext {
     const target = this.getOrAllocate<T, D, KEY>(key, rule);
 
     await this.hydrate(target, key, async (t: typeof target, k: typeof key) => {
-      const d = data || (await rule.fetch(k));
-      await rule.update(
+      const d = data || (await rule.fetchData(k));
+      await rule.buildDonor(
         t,
         d,
         this.resolve,
@@ -78,8 +118,8 @@ class ResolveContext {
       this.alreadyInvalidated.add(target);
     }
     await this.hydrate(target, key, async (t: typeof target, k: typeof key) => {
-      const d = data || (await rule.fetch(k));
-      await rule.update(
+      const d = data || (await rule.fetchData(k));
+      await rule.buildDonor(
         t,
         d,
         this.refresh,
@@ -92,12 +132,12 @@ class ResolveContext {
   private getOrAllocate = <T extends object, D, KEY>(key: KEY, rule: BuildRule<T, D, KEY>): T => {
     let identity = this.perRuleIdentity.get(rule);
     if(!identity) {
-      identity = new IdentityStore<T, KEY>();
+      identity = new RWeakMap<T, KEY>();
       this.perRuleIdentity.set(rule, identity);
     }
     let target = identity.get(key);
     if(!target) {
-      target = rule.allocate(key);
+      target = rule.allocateContainerObject(key);
       identity.set(key, target);
     }
     return target;

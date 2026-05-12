@@ -1,6 +1,6 @@
 import { f } from "../lib";
 import { useTranslation } from "react-i18next";
-import { ArticlePreviewCollectionRule } from "../store/stores/public/ArticlePreview";
+import { PreviewListRule } from "../store/stores/public/ArticlePreview";
 import { PreviewComponent } from "./PreviewComponent";
 import { Box, Skeleton, Stack, Typography } from "@mui/material";
 
@@ -16,7 +16,7 @@ const PreviewListComponentBase = ({
   horizontal = false 
 }: PreviewListComponentProps) => {
   const { t } = useTranslation();
-  const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(ids);
+  const { data, isPending, error } = PreviewListRule.useResolve(ids);
 
   if (isPending) {
     return (

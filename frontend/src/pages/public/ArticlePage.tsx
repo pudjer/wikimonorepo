@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { f } from "../../lib";
 import { ArticleTitleComponent, ArticleContentComponent, ArticleLinksComponent, AuthorComponent, ArticlesDagComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
-import { RootRule, TotalInteractionRule } from "../../store";
+import { RootRule, InteractionRule } from "../../store";
 import { ArticleRule } from "../../store/stores/public/ArticleFull";
 
 type ArticleLinkInfo = {
@@ -56,7 +56,7 @@ export const ArticlePage = f.observer(() => {
     const view = async () =>{
       if(!rootData?.myId) return
       await mutationApi.private.interactionUserArticle.views.view(id)
-      await TotalInteractionRule.refresh({articleId: id, myId: rootData.myId})
+      await InteractionRule.refresh({articleId: id, myId: rootData.myId})
     }
     view()
   }, [id, rootData?.myId])

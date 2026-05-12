@@ -1,9 +1,10 @@
 import { f } from "../lib";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Typography } from "@mui/material";
-import { DAGRule } from "../store";
+import { Preview, DAGRule } from "../store";
 import { VisualizeDag } from "./GenericDagPresentation";
 import { PreviewComponent } from "./PreviewComponent";
+import { useCallback } from "react";
 
 type ArticlesDagComponentProps = {
   ids: string[];
@@ -12,7 +13,8 @@ type ArticlesDagComponentProps = {
 const ArticlesDagComponentBase = ({ ids }: ArticlesDagComponentProps) => {
   const { t } = useTranslation();
   const { data, isPending, error } = DAGRule.useResolve(ids);
-
+  const getKey = useCallback((node: Preview)=>node.id, [])
+  const factory = useCallback((node: Preview)=>()=><PreviewComponent id={node.id} key={node.id}/>, [])
   return <Box sx={{ width: "100%", height: "80vh", overflow: "auto" }}>
       {isPending ? (
         <Box>
@@ -24,7 +26,7 @@ const ArticlesDagComponentBase = ({ ids }: ArticlesDagComponentProps) => {
           {t('articlesDag.failedLoad')}
         </Typography>
       ) : data && (
-        <VisualizeDag dag={data} NodeComponent={({node}) => <PreviewComponent id={node.id}/>} getKey={node=>node.id} />
+        <VisualizeDag dag={data} ComponentFactory={factory} getKey={getKey} />
       )}
     </Box>
 };

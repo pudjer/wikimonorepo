@@ -1,11 +1,11 @@
 import queryApi from "../../../api/queryApi";
 import { f } from "../../../lib";
 import { ArticleBase } from "./ArticleBase";
-import { ArticlePreview, ArticlePreviewCollectionRule } from "./ArticlePreview";
+import { Preview, PreviewListRule } from "./ArticlePreview";
 
 export class ArticleLink {
   name: string;
-  parent: ArticlePreview;
+  parent: Preview;
 }
 
 
@@ -26,7 +26,7 @@ export const ArticleRule = f.buildRule(
       article.id = data.id;
       article.title = data.title;
       article.content = data.content;
-      const parents = await ArticlePreviewCollectionRule.resolveOutside(data.links.map(link => link.parent).toSorted());
+      const parents = await PreviewListRule.resolveOutside(data.links.map(link => link.parent).toSorted());
       const parentsMap = new Map(parents.map(parent => [parent.id, parent]));
       article.links = data.links.map(link => ({
         name: link.name,
