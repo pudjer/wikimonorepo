@@ -70,12 +70,10 @@ export type {
 
 import type {
   UserOutputDtoPublic,
-  UserRegisterInputDtoPublic,
 } from "backend/src/presentation/user/public/DTO";
 
 export type {
   UserOutputDtoPublic,
-  UserRegisterInputDtoPublic,
 }
 
 import type { RegisterOutputDto } from "backend/src/presentation/user/DTO";
@@ -84,24 +82,18 @@ export type { RegisterOutputDto }
 
 import type {
   UserOutputDtoPrivate,
-  UpdateInputDtoPrivate,
 } from "backend/src/presentation/user/private/DTO";
 
 export type {
   UserOutputDtoPrivate,
-  UpdateInputDtoPrivate,
 }
 
 import type {
   UserOutputDtoAdmin,
-  UserUpdateInputDtoAdmin,
-  UserRegisterInputDtoAdmin,
 } from "backend/src/presentation/user/admin/DTO";
 
 export type {
   UserOutputDtoAdmin,
-  UserUpdateInputDtoAdmin,
-  UserRegisterInputDtoAdmin,
 }
 
 import type { SessionDto } from "backend/src/presentation/session/DTO";

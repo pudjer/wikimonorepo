@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { f } from "../../lib";
 import { ArticleTitleComponent, ArticleContentComponent, ArticleLinksComponent, AuthorComponent, ArticlesDagComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
-import { RootRule } from "../../store";
+import { RootRule, TotalInteractionRule } from "../../store";
 import { ArticleRule } from "../../store/stores/public/ArticleFull";
 
 type ArticleLinkInfo = {
@@ -41,7 +41,6 @@ export const ArticlePage = f.observer(() => {
     if (!article) {
       return;
     }
-
     setTitle(article.title);
     setContent(article.content);
     setLinks(
@@ -52,6 +51,15 @@ export const ArticlePage = f.observer(() => {
     );
     setIsChanged(false);
   }, [article]);
+
+  useEffect(() => {
+    const view = async () =>{
+      if(!rootData?.myId) return
+      await mutationApi.private.interactionUserArticle.views.view(id)
+      await TotalInteractionRule.refresh({articleId: id, myId: rootData.myId})
+    }
+    view()
+  }, [id, rootData?.myId])
 
   const isPending = isArticlePending || isRootPending;
   const isMy = !!rootData?.myId && article?.authorId === rootData.myId;

@@ -18,10 +18,10 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import { RootRule } from "../store";
 import { useTranslation } from "react-i18next";
+import CheckIcon from '@mui/icons-material/Check'
 
 type InteractionComponentProps = {
   id: string;
@@ -113,7 +113,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
         </IconButton>
 
         <IconButton onClick={handleViewToggle} disabled={isSubmitting} color={data.isViewed ? "primary" : "default"}>
-          {data.isViewed ? <VisibilityIcon /> : <VisibilityOffIcon />}
+          {data.isViewed ? <VisibilityOffIcon /> : <VisibilityIcon />}
         </IconButton>
 
         <ToggleButtonGroup
@@ -162,7 +162,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
               },
             }}
           >
-            <AutoAwesomeIcon fontSize="small" />
+            <CheckIcon fontSize="small" />
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>

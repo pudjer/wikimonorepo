@@ -56,6 +56,8 @@ export type {
 };
 
 import type { SessionDto, LoginDto } from "backend/src/presentation/session/DTO";
+import { RegisterOutputDto, UserOutputDtoPublic } from "./queryApi";
+import { UserRegisterInputDtoPublic } from "backend/src/presentation/user/public/DTO";
 export type { SessionDto, LoginDto };
 
 export class MutationApiClient {
@@ -174,8 +176,8 @@ export class MutationApiClient {
     login: (dto: LoginDto): Promise<SessionDto> =>
       this.post<SessionDto>("/login", dto),
     user: {
-      register: (dto: UserRegisterInputDtoAdmin): Promise<UserOutputDtoAdmin> =>
-        this.post<UserOutputDtoAdmin>("/admin/user", dto),
+      register: (dto: UserRegisterInputDtoPublic): Promise<UserOutputDtoPublic> =>
+        this.post<RegisterOutputDto>("/public/user", dto),
     },
   }
 }

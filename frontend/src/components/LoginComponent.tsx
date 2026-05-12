@@ -1,8 +1,9 @@
 ﻿import React, { useState } from "react";
-import { Box, Button, TextField, Typography, Paper, Input } from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, FormControlLabel, Switch } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { mutationApi } from "../api/mutationApi";
 import { RootRule } from "../store";
+import { RoleName } from "backend/src/domain/user/roles";
 
 interface LoginComponentProps {
   onSuccess?: () => void;
@@ -13,21 +14,30 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
   const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegister, setIsRegister] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [loginPending, setLoginPending] = useState(false);
 
-  const handleLogin = async () => {
+  const handleSubmit = async () => {
     setLoginPending(true);
     try {
       setLoginError("");
+
+      if (isRegister) {
+        await mutationApi.public.user.register({
+          username,
+          password,
+        });
+      }
+
       await mutationApi.public.login({ username, password });
       await RootRule.refresh(true);
       setUsername("");
       setPassword("");
       onSuccess?.();
     } catch (error) {
-      setLoginError(t("login.failedMessage"));
-      console.error("Failed to login:", error);
+      setLoginError(isRegister ? t("login.registerFailedMessage") : t("login.failedMessage"));
+      console.error("Failed to submit login/register:", error);
     } finally {
       setLoginPending(false);
     }
@@ -46,8 +56,19 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
       }}
     >
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
-        {t("login.title")}
+        {isRegister ? t("login.titleRegister") : t("login.title")}
       </Typography>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={isRegister}
+            onChange={(event) => setIsRegister(event.target.checked)}
+            color="primary"
+          />
+        }
+        label={isRegister ? t("login.switchToLogin") : t("login.switchToRegister")}
+        sx={{ mb: 2 }}
+      />
       <Box sx={{ mb: 2, display: "grid", gap: 2 }}>
         <TextField
           label={t("login.username")}
@@ -55,9 +76,7 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
           fullWidth
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          slotProps={
-            {input: { disableUnderline: true }}
-          }
+          slotProps={{ input: { disableUnderline: true } }}
           sx={{ backgroundColor: "action.hover", borderRadius: 2 }}
         />
         <TextField
@@ -67,9 +86,7 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          slotProps={
-            {input: { disableUnderline: true }}
-          }
+          slotProps={{ input: { disableUnderline: true } }}
           sx={{ backgroundColor: "action.hover", borderRadius: 2 }}
         />
       </Box>
@@ -79,8 +96,19 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
         </Typography>
       )}
       <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-        <Button variant="contained" onClick={handleLogin} fullWidth disabled={loginPending}>
-          {loginPending ? t("login.loggingIn") : t("login.login")}
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          fullWidth
+          disabled={loginPending || !username || !password}
+        >
+          {loginPending
+            ? isRegister
+              ? t("login.registering")
+              : t("login.loggingIn")
+            : isRegister
+            ? t("login.register")
+            : t("login.login")}
         </Button>
         <Button variant="outlined" onClick={onCancel} fullWidth>
           {t("login.cancel")}

@@ -1,6 +1,7 @@
 import { Autorun } from "../observableProxy/autorun/autorun";
 import { getObserverHoc } from "../reactObserver/observer";
 import { Resolver, ResolverFn } from "../Singleton/Resolver";
+import { SerializeKey } from "../Singleton/Singleton";
 import { Options, RuleBuilder } from "./RuleBuilder";
 import { AsyncState, useAsync } from "./useAsync";
 
@@ -31,7 +32,7 @@ export class Facade {
       refresh: async (key: KEY, data?: D) => await this.resolver.refresh<T, D, KEY>(key, rule, data),
       useResolve: (key: KEY | undefined) => {
         const asyncFunction = key ? () => this.resolver.resolveOutside<T, D, KEY>(key, rule) : () => new Promise<T>(() => {});
-        return useAsync(asyncFunction, [JSON.stringify(key)]);
+        return useAsync(asyncFunction, [SerializeKey(key)]);
       },
       resolveInside: async (resolve: ResolverFn, key: KEY, data?: D) => {
         return await resolve<T, D, KEY>(key, rule, data);

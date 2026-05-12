@@ -15,8 +15,10 @@ import {
 } from "@mui/material";
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import SchoolIcon from '@mui/icons-material/School';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CheckIcon from '@mui/icons-material/Check'
+
 import { InteractionComponent } from "./InteractionComponent";
 
 
@@ -44,9 +46,6 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
     setIsHovered(true);
   };
 
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
 
   const values = useMemo(
     () =>
@@ -55,7 +54,8 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
             { label: t('preview.dagPoints'), value: data.dagPoints, icon: <AccountTreeIcon sx={{width: 40, height: 30, stroke: "gold"}}/> },
             { label: t('preview.views'), value: data.views, icon: <VisibilityIcon/> },
             { label: t('preview.likes'), value: data.likes, icon: <ThumbUpIcon/> },
-            { label: t('preview.learners'), value: data.learners, icon: <SchoolIcon/> },
+            { label: t('preview.learners'), value: data.learners, icon: <MenuBookIcon/> },
+            { label: t('preview.masters'), value: data.masters, icon: <CheckIcon/>}
           ]
         : [],
     [data, t]
@@ -86,21 +86,21 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
   }
 
   return (
-    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 330, minHeight: 100}}>
+    <Card onMouseEnter={handleMouseEnter} sx={{ minWidth: 330, minHeight: 170}}>
       <Box onClick={handleSelect} sx={{ cursor: 'pointer' }}>
         <CardContent>
           <Stack direction="column" spacing={2}>
             <Typography variant="h6">
               {data.title}
             </Typography>
-            <Stack direction="row" spacing={1}>
+            <Stack direction={"row"} sx={{width: 200, flexWrap: "wrap"}}>
               {values.map((item) => (
                 <Chip
                   key={item.label}
                   icon={item.icon}
                   label={item.value}
                   size="small"
-                  sx={{ minWidth: 64 }}
+                  sx={{ margin: "3px" }}
                 />
               ))}
             </Stack>

@@ -200,7 +200,7 @@ const HeaderComponentBase = () => {
               </Box>
               <Box sx={{ mt: 2 }}>
                 <Box component="strong">{t("learningDag.pathTitle")}</Box>
-                <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
+                <Box sx={{ display: "flex", gap: 1, flexWrap: "nowrap", mt: 1, overflowX: "auto"}}>
                   {learningStats
                     .getAllStats()
                     .filter((stat) => !stat.isTransitiveMastered())

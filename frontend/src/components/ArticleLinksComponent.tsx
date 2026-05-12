@@ -68,7 +68,7 @@ const ArticleLinksComponentBase = ({
           {t('articleLinks.noLinks')}
         </Typography>
       ) : (
-        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
+        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1, flexWrap: "nowrap" }}>
           {links.map((link) => (
             <Paper
               key={link.parentId}

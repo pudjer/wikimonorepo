@@ -14,12 +14,18 @@
   },
   "login": {
     "title": "Login",
+    "titleRegister": "Register",
     "username": "Username",
     "password": "Password",
     "login": "Login",
+    "register": "Register",
+    "switchToRegister": "Switch to registration",
+    "switchToLogin": "Switch to login",
     "cancel": "Cancel",
     "loggingIn": "Logging in...",
-    "failedMessage": "Failed to login. Please check your credentials."
+    "registering": "Registering...",
+    "failedMessage": "Failed to login. Please check your credentials.",
+    "registerFailedMessage": "Failed to register. Please check your data."
   },
   "common": {
     "loading": "Loading...",
@@ -108,5 +114,9 @@
   "articlesDag": {
     "loading": "Loading graph...",
     "failedLoad": "Failed to load graph"
+  },
+  "stats": {
+    "learned": "learned",
+    "requiredFor": "required for"
   }
 }

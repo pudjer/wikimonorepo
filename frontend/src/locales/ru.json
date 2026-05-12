@@ -14,12 +14,18 @@
   },
   "login": {
     "title": "Вход",
+    "titleRegister": "Регистрация",
     "username": "Имя пользователя",
     "password": "Пароль",
     "login": "Войти",
+    "register": "Зарегистрироваться",
+    "switchToRegister": "Переключиться на регистрацию",
+    "switchToLogin": "Переключиться на вход",
     "cancel": "Отмена",
     "loggingIn": "Выполняется вход...",
-    "failedMessage": "Не удалось войти. Проверьте логин и пароль."
+    "registering": "Регистрация...",
+    "failedMessage": "Не удалось войти. Проверьте логин и пароль.",
+    "registerFailedMessage": "Не удалось зарегистрироваться. Проверьте данные."
   },
   "common": {
     "loading": "Загрузка...",
@@ -108,5 +114,9 @@
   "articlesDag": {
     "loading": "Загрузка графа...",
     "failedLoad": "Не удалось загрузить граф"
+  },
+  "stats": {
+    "learned": "выучено",
+    "requiredFor": "нужно для"
   }
 }
