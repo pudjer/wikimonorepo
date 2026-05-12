@@ -6,7 +6,7 @@ import { f } from "../lib";
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
+const StatComponentBase = ({stat, onSelect}: {stat: LearningStats<TotalInteraction>, onSelect?: (id: string)=>void}) => {
   const { t } = useTranslation()
   const isMastered = stat.isMastered();
   const isLearning = stat.isLearning();
@@ -29,7 +29,7 @@ const StatComponentBase = ({stat}: {stat: LearningStats<TotalInteraction>}) => {
       }}
     >
       <Box sx={{ mb: 2 }}>
-        <PreviewComponent id={stat.value.articleId} />
+        <PreviewComponent onSelect={onSelect} id={stat.value.articleId} />
       </Box>
       <Typography sx={{color: "black"}}>
         {stat.isTransitiveMastered() ? 100 : stat.getTransitiveAncestorsMasteringDegree() * 99}% {t("stats.learned")}

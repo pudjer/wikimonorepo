@@ -9,8 +9,9 @@
     "searchPlaceholder": "Search articles...",
     "loggingOut": "Logging out...",
     "language": "Language",
-    "languageRu": "Russian",
-    "languageEn": "English"
+    "languageRu": "Русский",
+    "languageEn": "English",
+    "emptyDag": "There are nothing("
   },
   "login": {
     "title": "Login",
@@ -97,7 +98,19 @@
   },
   "articleContent": {
     "content": "Content",
-    "noContent": "Content is missing"
+    "noContent": "Content is missing",
+    "toolbarBold": "Bold",
+    "toolbarItalic": "Italic",
+    "toolbarStrike": "Strikethrough",
+    "toolbarHeading1": "Heading 1",
+    "toolbarHeading2": "Heading 2",
+    "toolbarBulletList": "Bulleted list",
+    "toolbarOrderedList": "Numbered list",
+    "toolbarBlockquote": "Block quote",
+    "toolbarLink": "Insert link",
+    "toolbarImage": "Insert image",
+    "enterLinkUrl": "Enter a link URL",
+    "enterImageUrl": "Enter an image URL"
   },
   "articleLinks": {
     "failedLoad": "Error loading related articles",

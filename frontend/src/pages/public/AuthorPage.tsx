@@ -1,8 +1,8 @@
-import { Box, Container, TextField, Button, Alert, Skeleton } from "@mui/material";
+import { Box, Container, TextField, Button, Alert, Skeleton, Typography } from "@mui/material";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { f } from "../../lib";
-import { ArticlesDagComponent, AuthorArticlesComponent, MyInteractionsComponent, VisualizeDag } from "../../components";
+import { ArticlesDagComponent, AuthorArticlesComponent, MyInteractionsComponent } from "../../components";
 import { AuthorRule } from "../../store/stores/public/Author";
 import { RootRule } from "../../store";
 import { mutationApi } from "../../api/mutationApi";
@@ -83,9 +83,9 @@ export const AuthorPage = f.observer(() => {
   return (
     <Container sx={{ py: 4 }}>
       <Box sx={{ mb: 4, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
-        <Box sx={{ fontSize: "1.5rem", fontWeight: "bold", mb: 2 }}>
+        <Typography variant="h1">
           {author.username}
-        </Box>
+        </Typography>
 
         {isMe && (
           <>

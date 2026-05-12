@@ -108,13 +108,17 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
-        <IconButton onClick={handleLikeToggle} disabled={isSubmitting} color={data.isLiked ? "primary" : "default"}>
-          {data.isLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-        </IconButton>
+        <Tooltip title={t("interaction.like")}>
+          <IconButton onClick={handleLikeToggle} disabled={isSubmitting} color={data.isLiked ? "primary" : "default"}>
+            {data.isLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+          </IconButton>
+        </Tooltip>
 
-        <IconButton onClick={handleViewToggle} disabled={isSubmitting} color={data.isViewed ? "primary" : "default"}>
-          {data.isViewed ? <VisibilityOffIcon /> : <VisibilityIcon />}
-        </IconButton>
+        <Tooltip title={t("interaction.view")}>
+          <IconButton onClick={handleViewToggle} disabled={isSubmitting} color={data.isViewed ? "primary" : "default"}>
+            {data.isViewed ? <VisibilityOffIcon /> : <VisibilityIcon />}
+          </IconButton>
+        </Tooltip>
 
         <ToggleButtonGroup
           value={data.learnProgressStage}
@@ -128,42 +132,48 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
           disabled={isSubmitting}
           sx={{ ml: 1 }}
         >
-          <ToggleButton
-            value={LearnProgressStage.Unknown}
-            sx={{
-              color: color(LearnProgressStage.Unknown),
-              '&.Mui-selected': {
-                bgcolor: 'rgba(128, 128, 128, 0.16)',
+          <Tooltip title={t("interaction.notStarted")}>
+            <ToggleButton
+              value={LearnProgressStage.Unknown}
+              sx={{
                 color: color(LearnProgressStage.Unknown),
-              },
-            }}
-          >
-            <CloseIcon fontSize="small" />
-          </ToggleButton>
-          <ToggleButton
-            value={LearnProgressStage.Learning}
-            sx={{
-              color: color(LearnProgressStage.Learning),
-              '&.Mui-selected': {
-                bgcolor: 'rgba(88, 166, 255, 0.16)',
+                '&.Mui-selected': {
+                  bgcolor: 'rgba(128, 128, 128, 0.16)',
+                  color: color(LearnProgressStage.Unknown),
+                },
+              }}
+            >
+              <CloseIcon fontSize="small" />
+            </ToggleButton>
+          </Tooltip>
+          <Tooltip title={t("interaction.inProgress")}>
+            <ToggleButton
+              value={LearnProgressStage.Learning}
+              sx={{
                 color: color(LearnProgressStage.Learning),
-              },
-            }}
-          >
-            <MenuBookIcon fontSize="small" />
-          </ToggleButton>
-          <ToggleButton
-            value={LearnProgressStage.Mastered}
-            sx={{
-              color: color(LearnProgressStage.Mastered),
-              '&.Mui-selected': {
-                bgcolor: 'rgba(63, 185, 80, 0.16)',
+                '&.Mui-selected': {
+                  bgcolor: 'rgba(88, 166, 255, 0.16)',
+                  color: color(LearnProgressStage.Learning),
+                },
+              }}
+            >
+              <MenuBookIcon fontSize="small" />
+            </ToggleButton>
+          </Tooltip>
+          <Tooltip title={t("interaction.completed")}>
+            <ToggleButton
+              value={LearnProgressStage.Mastered}
+              sx={{
                 color: color(LearnProgressStage.Mastered),
-              },
-            }}
-          >
-            <CheckIcon fontSize="small" />
-          </ToggleButton>
+                '&.Mui-selected': {
+                  bgcolor: 'rgba(63, 185, 80, 0.16)',
+                  color: color(LearnProgressStage.Mastered),
+                },
+              }}
+            >
+              <CheckIcon fontSize="small" />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
       </Stack>
     </Stack>

@@ -10,7 +10,8 @@
     "loggingOut": "Выход...",
     "language": "Язык",
     "languageRu": "Русский",
-    "languageEn": "Английский"
+    "languageEn": "English",
+    "emptyDag": "Здесь ничего нет("
   },
   "login": {
     "title": "Вход",
@@ -97,7 +98,19 @@
   },
   "articleContent": {
     "content": "Содержимое",
-    "noContent": "Контент отсутствует"
+    "noContent": "Контент отсутствует",
+    "toolbarBold": "Жирный",
+    "toolbarItalic": "Курсив",
+    "toolbarStrike": "Зачеркнутый",
+    "toolbarHeading1": "Заголовок 1",
+    "toolbarHeading2": "Заголовок 2",
+    "toolbarBulletList": "Маркированный список",
+    "toolbarOrderedList": "Нумерованный список",
+    "toolbarBlockquote": "Цитата",
+    "toolbarLink": "Вставить ссылку",
+    "toolbarImage": "Вставить изображение",
+    "enterLinkUrl": "Введите URL ссылки",
+    "enterImageUrl": "Введите URL изображения"
   },
   "articleLinks": {
     "failedLoad": "Ошибка загрузки связанных статей",

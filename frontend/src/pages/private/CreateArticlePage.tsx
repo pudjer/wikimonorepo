@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { f } from "../../lib";
-import { ArticleLinksComponent } from "../../components";
+import { ArticleContentComponent, ArticleLinksComponent, ArticleTitleComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
 
 type ArticleLinkInfo = {
@@ -59,25 +59,18 @@ export const CreateArticlePage = f.observer(() => {
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
-        <TextField
-          label={t("createArticle.titleLabel")}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          variant="outlined"
-          fullWidth
-          sx={{ mb: 2 }}
+        <ArticleTitleComponent
+          title={title}
+          onChange={setTitle}
+          isEditable
         />
       </Box>
 
       <Box sx={{ mb: 4 }}>
-        <TextField
-          label={t("createArticle.contentLabel")}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={10}
+        <ArticleContentComponent
+          content={content}
+          onChange={setContent}
+          isEditable
         />
       </Box>
 

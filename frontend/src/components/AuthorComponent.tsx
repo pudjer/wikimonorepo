@@ -31,7 +31,7 @@ const AuthorComponentBase = ({ id }: AuthorComponentProps) => {
       navigate(`/author/${id}`)
       e.stopPropagation();
     }}>
-      {data.username}
+      @{data.username}
     </Button>
   );
 };
