@@ -1,4 +1,5 @@
 import { f } from "../lib";
+import { useTranslation } from "react-i18next";
 import { ArticlePreviewCollectionRule } from "../store/stores/public/ArticlePreview";
 import { PreviewComponent } from "./PreviewComponent";
 import { Box, Skeleton, Stack, Typography } from "@mui/material";
@@ -14,6 +15,7 @@ const PreviewListComponentBase = ({
   onSelect, 
   horizontal = false 
 }: PreviewListComponentProps) => {
+  const { t } = useTranslation();
   const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(ids);
 
   if (isPending) {
@@ -46,7 +48,7 @@ const PreviewListComponentBase = ({
   if (error) {
     return (
       <Typography variant="body2" color="error">
-        Не удалось загрузить список превью
+        {t('previewList.failedLoad')}
       </Typography>
     );
   }
@@ -54,7 +56,7 @@ const PreviewListComponentBase = ({
   if (!data || data.length === 0) {
     return (
       <Typography variant="body2" color="text.secondary">
-        Нет статей для отображения
+        {t('previewList.noArticles')}
       </Typography>
     );
   }

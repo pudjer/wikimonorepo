@@ -1,6 +1,7 @@
 import { Box, Container, Button, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Alert, Skeleton } from "@mui/material";
 import { useState, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { f } from "../../lib";
 import { ArticleTitleComponent, ArticleContentComponent, ArticleLinksComponent, AuthorComponent, ArticlesDagComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
@@ -15,6 +16,7 @@ type ArticleLinkInfo = {
 export const ArticlePage = f.observer(() => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,7 +25,7 @@ export const ArticlePage = f.observer(() => {
   const [content, setContent] = useState("");
   const [links, setLinks] = useState<ArticleLinkInfo[]>([]);
 
-  if (!id) return <Box>Article not found</Box>;
+  if (!id) return <Box>{t("article.notFound")}</Box>;
 
   const {
     data: article,
@@ -125,15 +127,15 @@ export const ArticlePage = f.observer(() => {
   if (articleError) {
     return (
       <Container maxWidth="md" sx={{ py: 4 }}>
-        <Alert severity="error">{articleError.message || "Failed to load article."}</Alert>
+        <Alert severity="error">{articleError.message || t("article.failedLoadArticle")}</Alert>
       </Container>
     );
   }
 
-  if (!article) return <Box>Article not found</Box>;
+  if (!article) return <Box>{t("article.notFound")}</Box>;
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
+    <Container sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <ArticleTitleComponent
           title={title}
@@ -170,10 +172,6 @@ export const ArticlePage = f.observer(() => {
         <AuthorComponent id={article.authorId} />
       </Box>
 
-      <Box sx={{ mb: 4 }}>
-        <ArticlesDagComponent ids={[article.id]} />
-      </Box>
-
       {isMy && (
         <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
           {isChanged && (
@@ -183,7 +181,7 @@ export const ArticlePage = f.observer(() => {
               onClick={handleSubmit}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Saving..." : "Save Changes"}
+              {isSubmitting ? t("article.saving") : t("article.saveChanges")}
             </Button>
           )}
           <Button
@@ -191,31 +189,35 @@ export const ArticlePage = f.observer(() => {
             color="error"
             onClick={() => setIsDeleteDialogOpen(true)}
           >
-            Delete Article
+            {t("article.deleteArticle")}
           </Button>
         </Box>
       )}
 
+      <Box sx={{ mb: 4 }}>
+        <ArticlesDagComponent ids={[article.id]} />
+      </Box>
+      
       <Dialog
         open={isDeleteDialogOpen}
         onClose={() => setIsDeleteDialogOpen(false)}
       >
-        <DialogTitle>Delete Article</DialogTitle>
+        <DialogTitle>{t("article.deleteConfirmTitle")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to delete this article? This action cannot be undone.
+            {t("article.deleteConfirmMessage")}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setIsDeleteDialogOpen(false)}>
-            Cancel
+            {t("article.cancel")}
           </Button>
           <Button
             onClick={handleDelete}
             color="error"
             disabled={isDeleting}
           >
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? t("article.deleting") : t("article.delete")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,33 +1,32 @@
 import { f } from "../lib";
-import { Box, Card, CardContent, Typography } from "@mui/material";
-import { PreviewListComponent } from "./PreviewListComponent";
+import { useTranslation } from "react-i18next";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { DAGRule } from "../store";
+import { VisualizeDag } from "./GenericDagPresentation";
+import { PreviewComponent } from "./PreviewComponent";
 
 type ArticlesDagComponentProps = {
   ids: string[];
 };
 
 const ArticlesDagComponentBase = ({ ids }: ArticlesDagComponentProps) => {
-  return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Заготовка графа статей
+  const { t } = useTranslation();
+  const { data, isPending, error } = DAGRule.useResolve(ids);
+
+  return <Box sx={{ width: "100%", height: "80vh", overflow: "auto" }}>
+      {isPending ? (
+        <Box>
+          <CircularProgress size={20} />
+          <Typography>{t('articlesDag.loading')}</Typography>
+        </Box>
+      ) : error ? (
+        <Typography variant="body2" color="error">
+          {t('articlesDag.failedLoad')}
         </Typography>
-        <Typography variant="body2" color="text.secondary" gutterBottom>
-          Визуализация графа реализуется позже. Сейчас отображается список связанных статей.
-        </Typography>
-        {ids.length > 0 ? (
-          <Box>
-            <PreviewListComponent ids={ids} />
-          </Box>
-        ) : (
-          <Typography variant="body2" color="text.secondary">
-            Нет идентификаторов для отображения в графе.
-          </Typography>
-        )}
-      </CardContent>
-    </Card>
-  );
+      ) : data && (
+        <VisualizeDag dag={data} NodeComponent={({node}) => <PreviewComponent id={node.id}/>} getKey={node=>node.id} />
+      )}
+    </Box>
 };
 
 export const ArticlesDagComponent = f.observer(ArticlesDagComponentBase);

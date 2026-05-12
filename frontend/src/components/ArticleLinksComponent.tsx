@@ -1,4 +1,5 @@
 import { f } from "../lib";
+import { useTranslation } from "react-i18next";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { SearchComponent } from "./SearchComponent";
 import {
@@ -33,12 +34,13 @@ const ArticleLinksComponentBase = ({
   onRemoveLink,
   onLinkNameChange,
 }: ArticleLinksComponentProps) => {
+  const { t } = useTranslation();
   const { data, isPending, error } = ArticlePreviewCollectionRule.useResolve(links.map(link => link.parentId).toSorted());
   if (isPending) {
     return <CircularProgress />;
   }
   if (error) {
-    return <Typography color="error">Ошибка загрузки связанных статей</Typography>;
+    return <Typography color="error">{t('articleLinks.failedLoad')}</Typography>;
   }
   const handleNameChange = (parentId: string, value: string) => {
     onLinkNameChange?.(parentId, value);
@@ -59,11 +61,11 @@ const ArticleLinksComponentBase = ({
   return (
     <Box>
       <Typography variant="h6" gutterBottom>
-        Связи статьи
+        {t('articleLinks.title')}
       </Typography>
       {links.length === 0 ? (
         <Typography variant="body2" color="text.secondary" gutterBottom>
-          Нет связанных статей.
+          {t('articleLinks.noLinks')}
         </Typography>
       ) : (
         <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 1 }}>
@@ -77,7 +79,7 @@ const ArticleLinksComponentBase = ({
                 <PreviewComponent id={link.parentId} />
                 {isEditable ? (
                   <TextField
-                    label="Название связи"
+                    label={t('articleLinks.linkName')}
                     value={link.name}
                     disabled
                     onChange={(event) => handleNameChange(link.parentId, event.target.value)}
@@ -85,13 +87,13 @@ const ArticleLinksComponentBase = ({
                     size="small"
                   />
                 ) : (
-                  <Typography variant="body1">{link.name || "Без описания"}</Typography>
+                  <Typography variant="body1">{link.name || t('articleLinks.noDescription')}</Typography>
                 )}
               </Box>
 
               {isEditable && (
                 <IconButton
-                  aria-label="Удалить связь"
+                  aria-label={t('articleLinks.deleteLink')}
                   onClick={() => handleRemove(link.parentId)}
                   size="large"
                 >
@@ -106,10 +108,10 @@ const ArticleLinksComponentBase = ({
       {isEditable && (
         <Box sx={{ mt: 2 }}>
           <Typography variant="subtitle2" gutterBottom>
-            Найти статью для связи
+            {t('articleLinks.findArticle')}
           </Typography>
           <SearchComponent
-            placeholder="Найти статью для связи"
+            placeholder={t('articleLinks.findArticle')}
             onSelect={handleSelect}
           />
         </Box>

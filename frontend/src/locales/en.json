@@ -1,0 +1,109 @@
+﻿{
+  "header": {
+    "learningDag": "Learning DAG",
+    "trending": "Trending",
+    "createArticle": "Create Article",
+    "profile": "Profile",
+    "logout": "Logout",
+    "login": "Login",
+    "searchPlaceholder": "Search articles...",
+    "loggingOut": "Logging out..."
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "password": "Password",
+    "login": "Login",
+    "cancel": "Cancel",
+    "loggingIn": "Logging in...",
+    "failedMessage": "Failed to login. Please check your credentials."
+  },
+  "common": {
+    "loading": "Loading...",
+    "errorLoadingUser": "Error loading user",
+    "noData": "No data",
+    "refresh": "Refresh",
+    "close": "Close"
+  },
+  "learningDag": {
+    "title": "Learning DAG",
+    "pathTitle": "Learning Path",
+    "loadingData": "Loading learning data...",
+    "failedLoad": "Failed to load learning data.",
+    "noStats": "No learning data available.",
+    "refresh": "Refresh graph",
+    "close": "Close"
+  },
+  "interaction": {
+    "signInToInteract": "Sign in to interact with article",
+    "loading": "Loading interactions...",
+    "failedLoad": "Failed to load interaction data",
+    "unlike": "Remove like",
+    "like": "Add like",
+    "unview": "Remove view",
+    "view": "Mark as viewed",
+    "notStarted": "Not started",
+    "inProgress": "In progress",
+    "completed": "Completed"
+  },
+  "article": {
+    "notFound": "Article not found",
+    "title": "Article Title",
+    "content": "Article Content",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "deleteArticle": "Delete Article",
+    "delete": "Delete",
+    "deleting": "Deleting...",
+    "cancel": "Cancel",
+    "deleteConfirmTitle": "Delete Article",
+    "deleteConfirmMessage": "Are you sure you want to delete this article? This action cannot be undone.",
+    "failedLoadArticle": "Failed to load article."
+  },
+  "createArticle": {
+    "pageTitle": "Create Article",
+    "titleLabel": "Article Title",
+    "contentLabel": "Article Content",
+    "createButton": "Create Article",
+    "cancelButton": "Cancel",
+    "creating": "Creating..."
+  },
+  "preview": {
+    "views": "Views",
+    "likes": "Likes",
+    "learners": "Learners",
+    "dagPoints": "Graph Points",
+    "failedLoad": "Failed to load article preview",
+    "loadingInteractions": "Loading interaction information..."
+  },
+  "search": {
+    "placeholder": "Search articles...",
+    "failedSearch": "Failed to perform search",
+    "enterQuery": "Enter a query to search",
+    "noResults": "Nothing found"
+  },
+  "previewList": {
+    "failedLoad": "Failed to load preview list",
+    "noArticles": "No articles to display"
+  },
+  "articleContent": {
+    "content": "Content",
+    "noContent": "Content is missing"
+  },
+  "articleLinks": {
+    "failedLoad": "Error loading related articles",
+    "title": "Article Links",
+    "noLinks": "No related articles.",
+    "linkName": "Link Name",
+    "noDescription": "No description",
+    "deleteLink": "Delete link",
+    "findArticle": "Find article to link"
+  },
+  "app": {
+    "loading": "Loading..."
+  },
+  "articlesDag": {
+    "loading": "Loading graph...",
+    "failedLoad": "Failed to load graph"
+  }
+}

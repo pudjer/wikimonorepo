@@ -1,4 +1,5 @@
 import { f } from "../lib";
+import { useTranslation } from "react-i18next";
 import { Box, TextField, Typography } from "@mui/material";
 
 type ArticleContentComponentProps = {
@@ -8,11 +9,12 @@ type ArticleContentComponentProps = {
 };
 
 const ArticleContentComponentBase = ({ content, isEditable, onChange }: ArticleContentComponentProps) => {
+  const { t } = useTranslation();
   if (isEditable) {
     return (
       <Box>
         <TextField
-          label="Содержимое"
+          label={t('articleContent.content')}
           value={content}
           onChange={(event) => onChange?.(event.target.value)}
           fullWidth
@@ -28,7 +30,7 @@ const ArticleContentComponentBase = ({ content, isEditable, onChange }: ArticleC
   return (
     <Box>
       <Typography variant="body1">
-        {content || "Контент отсутствует"}
+        {content || t('articleContent.noContent')}
       </Typography>
     </Box>
   );

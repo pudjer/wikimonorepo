@@ -46,7 +46,7 @@ export const VisualizeDag = <T extends Record<string, any>>({
         edges={edges}
         nodeTypes={nodeTypes}
         fitView
-        attributionPosition="bottom-left"
+        attributionPosition="bottom-right"
       />
     </div>
   );

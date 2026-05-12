@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Box, Button } from "@mui/material";
+﻿import React, { useState } from "react";
+import { Box, Button, TextField, Typography, Paper, Input } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { mutationApi } from "../api/mutationApi";
 import { RootRule } from "../store";
 
@@ -9,6 +10,7 @@ interface LoginComponentProps {
 }
 
 export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCancel }) => {
+  const { t } = useTranslation();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
@@ -23,9 +25,8 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
       setUsername("");
       setPassword("");
       onSuccess?.();
-      // Trigger refresh of RootRule
     } catch (error) {
-      setLoginError("Failed to login. Please check your credentials.");
+      setLoginError(t("login.failedMessage"));
       console.error("Failed to login:", error);
     } finally {
       setLoginPending(false);
@@ -33,69 +34,58 @@ export const LoginComponent: React.FC<LoginComponentProps> = ({ onSuccess, onCan
   };
 
   return (
-    <Box
+    <Paper
+      elevation={8}
       sx={{
-        backgroundColor: "white",
+        backgroundColor: "background.paper",
         padding: 3,
-        borderRadius: 1,
-        minWidth: 300,
-        boxShadow: 3,
+        borderRadius: 3,
+        minWidth: 320,
+        maxWidth: 420,
+        width: "100%",
       }}
     >
-      <Box sx={{ mb: 2, fontSize: "1.2rem", fontWeight: "bold" }}>
-        Login
-      </Box>
-      <Box sx={{ mb: 2 }}>
-        <input
-          type="text"
-          placeholder="Username"
+      <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
+        {t("login.title")}
+      </Typography>
+      <Box sx={{ mb: 2, display: "grid", gap: 2 }}>
+        <TextField
+          label={t("login.username")}
+          variant="filled"
+          fullWidth
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            marginBottom: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            boxSizing: "border-box",
-          }}
+          slotProps={
+            {input: { disableUnderline: true }}
+          }
+          sx={{ backgroundColor: "action.hover", borderRadius: 2 }}
         />
-        <input
+        <TextField
+          label={t("login.password")}
+          variant="filled"
           type="password"
-          placeholder="Password"
+          fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          style={{
-            width: "100%",
-            padding: "8px",
-            border: "1px solid #ccc",
-            borderRadius: "4px",
-            boxSizing: "border-box",
-          }}
+          slotProps={
+            {input: { disableUnderline: true }}
+          }
+          sx={{ backgroundColor: "action.hover", borderRadius: 2 }}
         />
       </Box>
       {loginError && (
-        <Box sx={{ color: "red", mb: 2, fontSize: "0.9rem" }}>
+        <Typography color="error" sx={{ mb: 2, fontSize: "0.95rem" }}>
           {loginError}
-        </Box>
+        </Typography>
       )}
-      <Box sx={{ display: "flex", gap: 1 }}>
-        <Button
-          variant="contained"
-          onClick={handleLogin}
-          fullWidth
-          disabled={loginPending}
-        >
-          {loginPending ? "Logging in..." : "Login"}
+      <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+        <Button variant="contained" onClick={handleLogin} fullWidth disabled={loginPending}>
+          {loginPending ? t("login.loggingIn") : t("login.login")}
         </Button>
-        <Button
-          variant="outlined"
-          onClick={onCancel}
-          fullWidth
-        >
-          Cancel
+        <Button variant="outlined" onClick={onCancel} fullWidth>
+          {t("login.cancel")}
         </Button>
       </Box>
-    </Box>
+    </Paper>
   );
 };

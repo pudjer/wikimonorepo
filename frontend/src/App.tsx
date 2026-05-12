@@ -1,16 +1,18 @@
 
 
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { f } from "./lib";
 import { RootRule, MeRule } from "./store";
 import { HeaderComponent } from "./components";
-import { TrendingPage, ArticlePage, AuthorPage, CreateArticlePage, LearningDagPage, LoginPage } from "./pages";
+import { TrendingPage, ArticlePage, AuthorPage, CreateArticlePage } from "./pages";
 
 const ProtectedRoute = f.observer(({ children }: { children: React.ReactNode }) => {
-  const {data: root, isPending} = RootRule.useResolve(true);
+  const { t } = useTranslation();
+  const { data: root, isPending } = RootRule.useResolve(true);
   if (isPending) {
-    return <Box>Loading...</Box>;
+    return <Box>{t('app.loading')}</Box>;
   }
   if (!root?.myId) {
     return <Navigate to="/login" replace />;
@@ -20,7 +22,7 @@ const ProtectedRoute = f.observer(({ children }: { children: React.ReactNode }) 
 
 export const App = f.observer(() => {
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", backgroundColor: "background.default", color: "text.primary" }}>
       <HeaderComponent />
       <Box sx={{ flex: 1, overflow: "auto" }}>
         <Routes>
@@ -28,7 +30,6 @@ export const App = f.observer(() => {
           <Route path="/trending" element={<TrendingPage />} />
           <Route path="/article/:id" element={<ArticlePage />} />
           <Route path="/author/:id" element={<AuthorPage />} />
-          <Route path="/login" element={<LoginPage />} />
 
           {/* Protected Routes */}
           <Route
@@ -36,14 +37,6 @@ export const App = f.observer(() => {
             element={
               <ProtectedRoute>
                 <CreateArticlePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/learning-dag"
-            element={
-              <ProtectedRoute>
-                <LearningDagPage />
               </ProtectedRoute>
             }
           />

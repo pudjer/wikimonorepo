@@ -143,17 +143,11 @@ export const AuthorPage = f.observer(() => {
       </Box>
 
       <Box sx={{ mb: 4 }}>
-        <Box sx={{ fontSize: "1.2rem", fontWeight: "bold", mb: 2 }}>
-          Articles
-        </Box>
         <AuthorArticlesComponent authorId={id} />
       </Box>
 
       {isMe && (
         <Box>
-          <Box sx={{ fontSize: "1.2rem", fontWeight: "bold", mb: 2 }}>
-            My Interactions
-          </Box>
           <MyInteractionsComponent />
         </Box>
       )}

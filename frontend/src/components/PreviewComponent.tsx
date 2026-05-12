@@ -1,8 +1,8 @@
 import { useMemo, useState, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { f } from "../lib";
 import { ArticlePreviewRule } from "../store/stores/public/ArticlePreview";
-import { AuthorComponent } from "./AuthorComponent";
 import {
   Box,
   Card,
@@ -16,7 +16,7 @@ import {
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import SchoolIcon from '@mui/icons-material/School';
-import AutoGraphIcon from '@mui/icons-material/AutoGraph';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import { InteractionComponent } from "./InteractionComponent";
 
 
@@ -26,6 +26,7 @@ type PreviewComponentProps = {
 };
 
 const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
+  const { t } = useTranslation();
   const { data, isPending, error } = ArticlePreviewRule.useResolve(id);
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
@@ -51,13 +52,13 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
     () =>
       data
         ? [
-            { label: "Просмотры", value: data.views, icon: <VisibilityIcon fontSize="small" /> },
-            { label: "Лайки", value: data.likes, icon: <ThumbUpIcon fontSize="small" /> },
-            { label: "Учащихся", value: data.learners, icon: <SchoolIcon fontSize="small" /> },
-            { label: "Очки графа", value: data.dagPoints, icon: <AutoGraphIcon fontSize="small" /> },
+            { label: t('preview.dagPoints'), value: data.dagPoints, icon: <AccountTreeIcon sx={{width: 40, height: 30, stroke: "gold"}}/> },
+            { label: t('preview.views'), value: data.views, icon: <VisibilityIcon/> },
+            { label: t('preview.likes'), value: data.likes, icon: <ThumbUpIcon/> },
+            { label: t('preview.learners'), value: data.learners, icon: <SchoolIcon/> },
           ]
         : [],
-    [data]
+    [data, t]
   );
 
   if (isPending) {
@@ -78,45 +79,45 @@ const PreviewComponentBase = ({ id, onSelect }: PreviewComponentProps) => {
     return (
       <Box>
         <Typography variant="body2" color="error">
-          Не удалось загрузить превью статьи
+          {t('preview.failedLoad')}
         </Typography>
       </Box>
     );
   }
 
   return (
-    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 330, minHeight: 200}}>
+    <Card onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} sx={{ minWidth: 330, minHeight: 100}}>
       <Box onClick={handleSelect} sx={{ cursor: 'pointer' }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            {data.title}
-          </Typography>
-          <AuthorComponent id={data.authorId} />
-          <Stack direction="row" spacing={1}>
-            {values.map((item) => (
-              <Tooltip key={item.label} title={item.label}>
+          <Stack direction="column" spacing={2}>
+            <Typography variant="h6">
+              {data.title}
+            </Typography>
+            <Stack direction="row" spacing={1}>
+              {values.map((item) => (
                 <Chip
+                  key={item.label}
                   icon={item.icon}
                   label={item.value}
                   size="small"
                   sx={{ minWidth: 64 }}
                 />
-              </Tooltip>
-            ))}
+              ))}
+            </Stack>
+            {isHovered && (
+              <Box onClick={(e) => e.stopPropagation()}> {/* Останавливаем всплытие */}
+                <Suspense
+                  fallback={
+                    <Typography variant="body2" color="text.secondary">
+                      {t('preview.loadingInteractions')}
+                    </Typography>
+                  }
+                >
+                  <InteractionComponent id={id} />
+                </Suspense>
+              </Box>
+            )}
           </Stack>
-          {isHovered && (
-            <Box onClick={(e) => e.stopPropagation()}> {/* Останавливаем всплытие */}
-              <Suspense
-                fallback={
-                  <Typography variant="body2" color="text.secondary">
-                    Загружается информация о взаимодействиях...
-                  </Typography>
-                }
-              >
-                <InteractionComponent id={id} />
-              </Suspense>
-            </Box>
-          )}
         </CardContent>
       </Box>
     </Card>

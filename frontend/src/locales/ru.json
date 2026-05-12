@@ -1,0 +1,109 @@
+﻿{
+  "header": {
+    "learningDag": "Граф обучения",
+    "trending": "Тренды",
+    "createArticle": "Создать статью",
+    "profile": "Профиль",
+    "logout": "Выйти",
+    "login": "Войти",
+    "searchPlaceholder": "Поиск статей...",
+    "loggingOut": "Выход..."
+  },
+  "login": {
+    "title": "Вход",
+    "username": "Имя пользователя",
+    "password": "Пароль",
+    "login": "Войти",
+    "cancel": "Отмена",
+    "loggingIn": "Выполняется вход...",
+    "failedMessage": "Не удалось войти. Проверьте логин и пароль."
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "errorLoadingUser": "Ошибка загрузки пользователя",
+    "noData": "Нет данных",
+    "refresh": "Обновить",
+    "close": "Закрыть"
+  },
+  "learningDag": {
+    "title": "Граф обучения",
+    "pathTitle": "Путь обучения",
+    "loadingData": "Загрузка данных обучения...",
+    "failedLoad": "Не удалось загрузить данные обучения.",
+    "noStats": "Нет данных обучения.",
+    "refresh": "Обновить граф",
+    "close": "Закрыть"
+  },
+  "interaction": {
+    "signInToInteract": "Войдите, чтобы взаимодействовать со статьей",
+    "loading": "Загрузка взаимодействий...",
+    "failedLoad": "Не удалось получить данные взаимодействий",
+    "unlike": "Убрать лайк",
+    "like": "Поставить лайк",
+    "unview": "Убрать просмотр",
+    "view": "Отметить просмотр",
+    "notStarted": "Не начат",
+    "inProgress": "В процессе",
+    "completed": "Завершён"
+  },
+  "article": {
+    "notFound": "Статья не найдена",
+    "title": "Заголовок статьи",
+    "content": "Содержание",
+    "saveChanges": "Сохранить изменения",
+    "saving": "Сохранение...",
+    "deleteArticle": "Удалить статью",
+    "delete": "Удалить",
+    "deleting": "Удаление...",
+    "cancel": "Отмена",
+    "deleteConfirmTitle": "Удалить статью?",
+    "deleteConfirmMessage": "Вы уверены? Это действие нельзя отменить.",
+    "failedLoadArticle": "Не удалось загрузить статью."
+  },
+  "createArticle": {
+    "pageTitle": "Создание статьи",
+    "titleLabel": "Заголовок статьи",
+    "contentLabel": "Содержание статьи",
+    "createButton": "Создать статью",
+    "cancelButton": "Отмена",
+    "creating": "Создание..."
+  },
+  "preview": {
+    "views": "Просмотры",
+    "likes": "Лайки",
+    "learners": "Учащихся",
+    "dagPoints": "Очки графа",
+    "failedLoad": "Не удалось загрузить превью статьи",
+    "loadingInteractions": "Загружается информация о взаимодействиях..."
+  },
+  "search": {
+    "placeholder": "Поиск статей...",
+    "failedSearch": "Не удалось выполнить поиск",
+    "enterQuery": "Введите запрос для поиска",
+    "noResults": "Ничего не найдено"
+  },
+  "previewList": {
+    "failedLoad": "Не удалось загрузить список превью",
+    "noArticles": "Нет статей для отображения"
+  },
+  "articleContent": {
+    "content": "Содержимое",
+    "noContent": "Контент отсутствует"
+  },
+  "articleLinks": {
+    "failedLoad": "Ошибка загрузки связанных статей",
+    "title": "Связи статьи",
+    "noLinks": "Нет связанных статей.",
+    "linkName": "Название связи",
+    "noDescription": "Без описания",
+    "deleteLink": "Удалить связь",
+    "findArticle": "Найти статью для связи"
+  },
+  "app": {
+    "loading": "Загрузка..."
+  },
+  "articlesDag": {
+    "loading": "Загрузка графа...",
+    "failedLoad": "Не удалось загрузить граф"
+  }
+}

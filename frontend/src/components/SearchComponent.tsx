@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useMemo, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { f } from "../lib";
 import { Search } from "../store/stores/public/SearchPreviews";
 import {
@@ -26,11 +27,12 @@ type SearchComponentProps = {
 
 const SearchComponentBase = ({
   initialQuery = "",
-  placeholder = "Поиск статей...",
+  placeholder,
   onSelect,
   authorIds,
   articleIds,
 }: SearchComponentProps) => {
+  const { t } = useTranslation();
   const [query, setQuery] = useState(initialQuery);
   const [results, setResults] = useState<ArticleSearchResultDto[] | null>(null);
   const [isPending, setIsPending] = useState(false);
@@ -73,7 +75,7 @@ const SearchComponentBase = ({
         if (!mounted) {
           return;
         }
-        setError("Не удалось выполнить поиск");
+        setError(t('search.failedSearch'));
         setResults([]);
       } finally {
         if (!mounted) {
@@ -124,7 +126,7 @@ const SearchComponentBase = ({
               setIsDropdownOpen(true);
             }
           }}
-          placeholder={placeholder}
+          placeholder={placeholder || t('search.placeholder')}
           fullWidth
           slotProps={{
             input: {
@@ -154,7 +156,7 @@ const SearchComponentBase = ({
           >
             {!queryPayload.query ? (
               <Typography variant="body2" color="text.secondary">
-                Введите запрос для поиска
+                {t('search.enterQuery')}
               </Typography>
             ) : error ? (
               <Typography variant="body2" color="error">
@@ -170,7 +172,7 @@ const SearchComponentBase = ({
               </Stack>
             ) : results && results.length === 0 ? (
               <Typography variant="body2" color="text.secondary">
-                Ничего не найдено
+                {t('search.noResults')}
               </Typography>
             ) : results && (
               <PreviewListComponent ids={results!.map((result) => result.id)} onSelect={handleSelect}/>

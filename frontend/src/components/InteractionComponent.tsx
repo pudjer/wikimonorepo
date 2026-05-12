@@ -1,10 +1,9 @@
-import { useCallback, useState } from "react";
+﻿import { useCallback, useState } from "react";
 import { f } from "../lib";
 import mutationApi from "../api/mutationApi";
 import { TotalInteractionRule } from "../store/stores/private/TotalInteractions";
 import {
   Box,
-  Button,
   CircularProgress,
   IconButton,
   Stack,
@@ -22,18 +21,22 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import { LearnProgressStage } from "backend/src/domain/interactionUserArticle/learnProgress/entity";
 import { RootRule } from "../store";
+import { useTranslation } from "react-i18next";
 
 type InteractionComponentProps = {
   id: string;
 };
 
 const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
+  const { t } = useTranslation();
   const { data: root, isPending: rootPending, error: rootError } = RootRule.useResolve(true);
   const { data, isPending, error } = TotalInteractionRule.useResolve(root?.myId ? { articleId: id, myId: root.myId } : undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const refresh = useCallback(async () => {
-    if(root?.myId) await TotalInteractionRule.refresh({articleId: id, myId: root.myId});
+    if (root?.myId) {
+      await TotalInteractionRule.refresh({ articleId: id, myId: root.myId });
+    }
   }, [root?.myId, id]);
 
   const handleLikeToggle = async () => {
@@ -70,7 +73,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
     if (!data || newStage === data.learnProgressStage) return;
     setIsSubmitting(true);
     try {
-      await mutationApi.private.interactionUserArticle.learnProgress.updateLearnProgress(id, {stage: newStage});
+      await mutationApi.private.interactionUserArticle.learnProgress.updateLearnProgress(id, { stage: newStage });
       await refresh();
     } finally {
       setIsSubmitting(false);
@@ -80,16 +83,16 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   if (root && !root.myId) {
     return (
       <Typography variant="body2" color="text.secondary">
-        Войдите, чтобы взаимодействовать со статьей
+        {t("interaction.signInToInteract")}
       </Typography>
     );
   }
 
   if (isPending) {
     return (
-      <Box>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <CircularProgress size={18} />
-        <Typography variant="body2">Загрузка взаимодействий...</Typography>
+        <Typography variant="body2">{t("interaction.loading")}</Typography>
       </Box>
     );
   }
@@ -97,7 +100,7 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   if (error || rootError || !data) {
     return (
       <Typography variant="body2" color="error">
-        Не удалось получить данные взаимодействий
+        {t("interaction.failedLoad")}
       </Typography>
     );
   }
@@ -105,25 +108,13 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
   return (
     <Stack spacing={1}>
       <Stack direction="row" spacing={1}>
-        <Tooltip title={data.isLiked ? "Убрать лайк" : "Поставить лайк"}>
-          <IconButton
-            onClick={handleLikeToggle}
-            disabled={isSubmitting}
-            color={data.isLiked ? "primary" : "default"}
-          >
-            {data.isLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
-          </IconButton>
-        </Tooltip>
+        <IconButton onClick={handleLikeToggle} disabled={isSubmitting} color={data.isLiked ? "primary" : "default"}>
+          {data.isLiked ? <ThumbUpIcon /> : <ThumbUpOutlinedIcon />}
+        </IconButton>
 
-        <Tooltip title={data.isViewed ? "Убрать просмотр" : "Отметить просмотр"}>
-          <IconButton
-            onClick={handleViewToggle}
-            disabled={isSubmitting}
-            color={data.isViewed ? "primary" : "default"}
-          >
-            {data.isViewed ? <VisibilityIcon /> : <VisibilityOffIcon />}
-          </IconButton>
-        </Tooltip>
+        <IconButton onClick={handleViewToggle} disabled={isSubmitting} color={data.isViewed ? "primary" : "default"}>
+          {data.isViewed ? <VisibilityIcon /> : <VisibilityOffIcon />}
+        </IconButton>
 
         <ToggleButtonGroup
           value={data.learnProgressStage}
@@ -137,47 +128,41 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
           disabled={isSubmitting}
           sx={{ ml: 1 }}
         >
-          <ToggleButton 
+          <ToggleButton
             value={LearnProgressStage.Unknown}
-            sx={{ 
+            sx={{
               color: color(LearnProgressStage.Unknown),
-              '&.Mui-selected': { 
-                bgcolor: `light${color(LearnProgressStage.Unknown)}`,
-                color: color(LearnProgressStage.Unknown)
-              }
+              '&.Mui-selected': {
+                bgcolor: 'rgba(128, 128, 128, 0.16)',
+                color: color(LearnProgressStage.Unknown),
+              },
             }}
           >
-            <Tooltip title="Не начат">
-              <CloseIcon fontSize="small" />
-            </Tooltip>
+            <CloseIcon fontSize="small" />
           </ToggleButton>
-          <ToggleButton 
+          <ToggleButton
             value={LearnProgressStage.Learning}
-            sx={{ 
+            sx={{
               color: color(LearnProgressStage.Learning),
-              '&.Mui-selected': { 
-                bgcolor: `light${color(LearnProgressStage.Learning)}`,
-                color: color(LearnProgressStage.Learning)
-              }
+              '&.Mui-selected': {
+                bgcolor: 'rgba(88, 166, 255, 0.16)',
+                color: color(LearnProgressStage.Learning),
+              },
             }}
           >
-            <Tooltip title="В процессе">
-              <MenuBookIcon fontSize="small" />
-            </Tooltip>
+            <MenuBookIcon fontSize="small" />
           </ToggleButton>
-          <ToggleButton 
+          <ToggleButton
             value={LearnProgressStage.Mastered}
-            sx={{ 
+            sx={{
               color: color(LearnProgressStage.Mastered),
-              '&.Mui-selected': { 
-                bgcolor: `light${color(LearnProgressStage.Mastered)}`,
-                color: color(LearnProgressStage.Mastered)
-              }
+              '&.Mui-selected': {
+                bgcolor: 'rgba(63, 185, 80, 0.16)',
+                color: color(LearnProgressStage.Mastered),
+              },
             }}
           >
-            <Tooltip title="Завершен">
-              <AutoAwesomeIcon fontSize="small" />
-            </Tooltip>
+            <AutoAwesomeIcon fontSize="small" />
           </ToggleButton>
         </ToggleButtonGroup>
       </Stack>
@@ -188,12 +173,12 @@ const InteractionComponentBase = ({ id }: InteractionComponentProps) => {
 export const InteractionComponent = f.observer(InteractionComponentBase);
 
 const color = (stage: LearnProgressStage) => {
-  switch(stage) {
+  switch (stage) {
     case LearnProgressStage.Unknown:
-      return 'gray';
+      return "gray";
     case LearnProgressStage.Learning:
-      return 'blue';
+      return "#58a6ff";
     case LearnProgressStage.Mastered:
-      return 'green';
+      return "#3fb950";
   }
-}
+};

@@ -1,6 +1,7 @@
 import { Box, Container, Button, TextField, CircularProgress } from "@mui/material";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { f } from "../../lib";
 import { ArticleLinksComponent } from "../../components";
 import { mutationApi } from "../../api/mutationApi";
@@ -12,6 +13,7 @@ type ArticleLinkInfo = {
 
 export const CreateArticlePage = f.observer(() => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [links, setLinks] = useState<ArticleLinkInfo[]>([]);
@@ -58,7 +60,7 @@ export const CreateArticlePage = f.observer(() => {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Box sx={{ mb: 4 }}>
         <TextField
-          label="Article Title"
+          label={t("createArticle.titleLabel")}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           variant="outlined"
@@ -69,7 +71,7 @@ export const CreateArticlePage = f.observer(() => {
 
       <Box sx={{ mb: 4 }}>
         <TextField
-          label="Article Content"
+          label={t("createArticle.contentLabel")}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           variant="outlined"
@@ -96,14 +98,14 @@ export const CreateArticlePage = f.observer(() => {
           onClick={handleSubmit}
           disabled={isSubmitting || !isValid}
         >
-          {isSubmitting ? <CircularProgress size={24} /> : "Create Article"}
+          {isSubmitting ? <CircularProgress size={24} /> : t("createArticle.createButton")}
         </Button>
         <Button
           variant="outlined"
           onClick={() => navigate("/trending")}
           disabled={isSubmitting}
         >
-          Cancel
+          {t("createArticle.cancelButton")}
         </Button>
       </Box>
     </Container>
