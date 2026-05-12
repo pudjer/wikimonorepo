@@ -7,7 +7,10 @@
     "logout": "Выйти",
     "login": "Войти",
     "searchPlaceholder": "Поиск статей...",
-    "loggingOut": "Выход..."
+    "loggingOut": "Выход...",
+    "language": "Язык",
+    "languageRu": "Русский",
+    "languageEn": "Английский"
   },
   "login": {
     "title": "Вход",

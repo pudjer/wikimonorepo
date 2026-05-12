@@ -1,22 +1,22 @@
 import { Box, AppBar, Toolbar, Button, IconButton, Menu, MenuItem, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { useTranslation } from "react-i18next";
 import { f } from "../lib";
+import { useThemeMode } from "../context/ThemeContext";
 import { RootRule, TotalInteraction, MyLearningStatsRule } from "../store";
 import { SearchComponent } from "./SearchComponent";
 import { LoginComponent } from "./LoginComponent";
 import { mutationApi } from "../api/mutationApi";
 import { VisualizeDag } from "./index";
 import { StatComponent } from "./StatComponent";
-import { useThemeMode } from "../context/ThemeContext";
 
 const HeaderComponentBase = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { mode, toggleColorMode } = useThemeMode();
   const { data: root, error, isPending } = RootRule.useResolve(true);
   const { data: learningStats, isPending: isStatsPending, error: statsError } = MyLearningStatsRule.useResolve(root?.myId);
@@ -27,6 +27,7 @@ const HeaderComponentBase = () => {
 
   const isSignedIn = !!root?.myId;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [languageAnchorEl, setLanguageAnchorEl] = useState<null | HTMLElement>(null);
   const [loginOpen, setLoginOpen] = useState(false);
   const [learningDagOpen, setLearningDagOpen] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
@@ -37,9 +38,12 @@ const HeaderComponentBase = () => {
     }
   };
 
+  const language = i18n.language === "en" ? "en" : "ru"
+
+
   const NodeComponent = useMemo(
     () => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} />,
-    [learningStats?.dag.nodes]
+    [learningStats]
   );
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -60,6 +64,32 @@ const HeaderComponentBase = () => {
       console.error("Failed to logout:", error);
     } finally {
       setLogoutPending(false);
+    }
+  };
+
+  const handleToggleColorMode = async () => {
+    const nextMode = mode === "dark" ? "light" : "dark";
+    toggleColorMode();
+    localStorage.setItem("wikimonorepo-ui-theme", nextMode);
+    if (root) {
+      await RootRule.refresh(true);
+    }
+  };
+
+  const handleLanguageMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setLanguageAnchorEl(event.currentTarget);
+  };
+
+  const handleLanguageMenuClose = () => {
+    setLanguageAnchorEl(null);
+  };
+
+  const handleLanguageChange = async (selectedLanguage: "ru" | "en") => {
+    handleLanguageMenuClose();
+    localStorage.setItem("wikimonorepo-ui-language", selectedLanguage);
+    await i18n.changeLanguage(selectedLanguage);
+    if (root) {
+      await RootRule.refresh(true);
     }
   };
 
@@ -107,7 +137,19 @@ const HeaderComponentBase = () => {
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <IconButton color="inherit" onClick={toggleColorMode} size="large">
+          <Button color="inherit" sx={{ textTransform: "none", minWidth: 48 }} onClick={handleLanguageMenuOpen}>
+            {language.toUpperCase()}
+          </Button>
+          <Menu anchorEl={languageAnchorEl} open={Boolean(languageAnchorEl)} onClose={handleLanguageMenuClose}>
+            <MenuItem selected={language === "ru"} onClick={() => handleLanguageChange("ru")}>
+              {t("header.languageRu")}
+            </MenuItem>
+            <MenuItem selected={language === "en"} onClick={() => handleLanguageChange("en")}>
+              {t("header.languageEn")}
+            </MenuItem>
+          </Menu>
+
+          <IconButton color="inherit" onClick={handleToggleColorMode} size="large">
             {mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
           </IconButton>
 

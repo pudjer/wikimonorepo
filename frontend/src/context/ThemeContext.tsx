@@ -8,11 +8,13 @@ type ThemeMode = "light" | "dark";
 type ThemeModeContextValue = {
   mode: ThemeMode;
   toggleColorMode: () => void;
+  setMode: (mode: ThemeMode) => void;
 };
 
 const ThemeModeContext = createContext<ThemeModeContextValue>({
   mode: "dark",
   toggleColorMode: () => {},
+  setMode: () => {},
 });
 
 export const useThemeMode = () => useContext(ThemeModeContext);
@@ -24,15 +26,13 @@ interface ThemeModeProviderProps {
 const STORAGE_KEY = "wikimonorepo-ui-theme";
 
 export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
-  const [mode, setMode] = useState<ThemeMode>("dark");
-
-  useEffect(() => {
-    const storedMode = localStorage.getItem(STORAGE_KEY);
-    if (storedMode === "light" || storedMode === "dark") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setMode(storedMode);
+  const [mode, setMode] = useState<ThemeMode>(() => {
+    if (typeof window === "undefined") {
+      return "dark";
     }
-  }, []);
+    const storedMode = localStorage.getItem(STORAGE_KEY);
+    return storedMode === "light" || storedMode === "dark" ? storedMode : "dark";
+  });
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, mode);
@@ -45,7 +45,7 @@ export const ThemeModeProvider = ({ children }: ThemeModeProviderProps) => {
   const theme = useMemo(() => getTheme(mode), [mode]);
 
   return (
-    <ThemeModeContext.Provider value={{ mode, toggleColorMode }}>
+    <ThemeModeContext.Provider value={{ mode, toggleColorMode, setMode }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
