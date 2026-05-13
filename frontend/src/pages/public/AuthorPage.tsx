@@ -6,6 +6,7 @@ import { ArticlesDagComponent, AuthorArticlesComponent, MyInteractionsComponent 
 import { AuthorRule } from "../../store/stores/public/Author";
 import { RootRule } from "../../store";
 import { mutationApi } from "../../api/mutationApi";
+import { RoleName } from "backend/src/domain/user/roles";
 
 export const AuthorPage = f.observer(() => {
   const { id } = useParams<{ id: string }>();
@@ -14,7 +15,7 @@ export const AuthorPage = f.observer(() => {
   const [newPassword, setNewPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-
+  const [role, setRole] = useState<RoleName>(RoleName.Base);
   if (!id) return <Box>Author not found</Box>;
 
   const {
@@ -26,14 +27,19 @@ export const AuthorPage = f.observer(() => {
     data: rootData,
     isPending: isRootPending,
   } = RootRule.useResolve(true);
-
+  
   const isPending = isAuthorPending || isRootPending;
   const isMe = !!rootData?.myId && rootData.myId === id;
-
+  const isAdmin = !!rootData?.isAdmin
+  const editable = isMe || isAdmin;
   const handleUsernameSubmit = async () => {
     try {
       setIsSaving(true);
-      await mutationApi.private.user.update({ username: usernameEdit });
+      if(isAdmin){
+        await mutationApi.private.admin.user.update(id, {username: usernameEdit})
+      }else{
+        await mutationApi.private.user.update({ username: usernameEdit });
+      }
       await RootRule.refresh(true);
       setUsernameEdit("");
     } catch (error) {
@@ -46,12 +52,16 @@ export const AuthorPage = f.observer(() => {
   const handlePasswordSubmit = async () => {
     try {
       setIsSaving(true);
-      setPasswordError("");
+      setPasswordError(""); 
       if (!passwordEdit || !newPassword) {
         setPasswordError("Please fill in both fields");
         return;
       }
-      await mutationApi.private.user.update({ password: newPassword });
+      if(isAdmin){
+        await mutationApi.private.admin.user.update(id, {password: newPassword})
+      }else{
+        await mutationApi.private.user.update({ password: newPassword });
+      }
       setPasswordEdit("");
       setNewPassword("");
     } catch (error) {
@@ -80,6 +90,17 @@ export const AuthorPage = f.observer(() => {
 
   if (!author) return <Box>Author not found</Box>;
 
+  const handleRoleSubmit = async () => {
+    try {
+      setIsSaving(true);
+      await mutationApi.private.admin.user.update(id, {role: role})
+      await RootRule.refresh(true);
+    } catch (error) {
+      console.error("Failed to update Role:", error);
+    } finally {
+      setIsSaving(false);
+    }
+  }
   return (
     <Container sx={{ py: 4 }}>
       <Box sx={{ mb: 4, p: 2, border: "1px solid #ccc", borderRadius: 1 }}>
@@ -87,8 +108,27 @@ export const AuthorPage = f.observer(() => {
           {author.username}
         </Typography>
 
-        {isMe && (
+        {editable && (
           <>
+            {isAdmin && (
+              <Box sx={{ mb: 3 }}>
+                <Typography >Is Admin</Typography>
+                <TextField
+                  sx={{width: 40, height: 40}}
+                  value={role === RoleName.Admin ? true : false}
+                  onChange={(e) => setRole(e.target.value ? RoleName.Admin : RoleName.Base)}
+                  variant="outlined"
+                  type="checkbox"
+                />
+                <Button
+                  variant="contained"
+                  onClick={handleRoleSubmit}
+                  disabled={isSaving}
+                >
+                  Update Role
+                </Button>
+              </Box>
+            )}
             <Box sx={{ mb: 3 }}>
               <TextField
                 label="New Username"

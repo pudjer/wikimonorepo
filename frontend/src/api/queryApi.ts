@@ -162,8 +162,11 @@ export class QueryApiClient {
       this.post<SearchArticlesResultDto>("/public/search/articles", dto),
 
     user: {
-      get: (userId: string): Promise<UserOutputDtoPublic> =>
-        this.get<UserOutputDtoPublic>(`/public/user/${userId}`),
+      getById: (userId: string): Promise<UserOutputDtoPublic> =>
+        this.get<UserOutputDtoPublic>(`/public/user/id/${userId}`),
+      getByUsername: (userName: string): Promise<UserOutputDtoPublic> =>
+        this.get<UserOutputDtoPublic>(`/public/user/username/${userName}`),
+
     },
   };
 

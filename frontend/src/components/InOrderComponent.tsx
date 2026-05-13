@@ -32,7 +32,7 @@ const orderingPropOptions: Array<{ value: PreviewOrderingProp; label: string }> 
   { value: PreviewOrderingProp.likes, label: "Лайки" },
   { value: PreviewOrderingProp.learners, label: "Учащихся" },
   { value: PreviewOrderingProp.masters, label: "Мастеров" },
-  { value: PreviewOrderingProp.dagPoints, label: "Очки DAG" },
+  { value: PreviewOrderingProp.dagPoints, label: "Очки влияния" },
 ];
 
 const InOrderComponentBase = ({

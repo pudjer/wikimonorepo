@@ -56,9 +56,6 @@ export const VisualizeDag = <T extends Record<string, any>>({
         attributionPosition="bottom-right"
         // Явно указываем, что перетаскивание разрешено
         nodesDraggable={true}
-        // Можно добавить другие настройки
-        nodesConnectable={true}
-        elementsSelectable={true}
       />
     </div>
   );

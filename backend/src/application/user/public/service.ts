@@ -13,6 +13,7 @@ export interface IUserServicePublic {
     register(input: RegisterUserInputPublic): Promise<UserOutputPublic>;
     get(id: UserId): Promise<UserOutputPublic>;
     login(username: Username, password: Password): Promise<UserId>
+    findByUsername(username: Username): Promise<UserOutputPublic>
 }
 
 @Injectable()
@@ -42,5 +43,12 @@ export class UserServicePublic implements IUserServicePublic {
         const user = await this.userRepository.findByUserName(username)
         await user.assertPasswordIsValid(password)
         return user.id
+    }
+    async findByUsername(username: Username): Promise<UserOutputPublic> {
+        const user = await this.userRepository.findByUserName(username)
+        return {
+            id: user.id,
+            username: user.username
+        }
     }
 }

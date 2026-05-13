@@ -62,12 +62,17 @@ export const ArticlePage = f.observer(() => {
   }, [id, rootData?.myId])
 
   const isPending = isArticlePending || isRootPending;
-  const isMy = !!rootData?.myId && article?.authorId === rootData.myId;
+  const isAdmin = !!rootData?.isAdmin;
+  const isEditable = !!rootData?.myId && (article?.authorId === rootData.myId || isAdmin);
 
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      await mutationApi.private.articles.delete(id);
+      if (isAdmin) {
+        await mutationApi.private.admin.articles.delete(id);
+      } else {
+        await mutationApi.private.articles.delete(id);
+      }
       setIsDeleteDialogOpen(false);
       navigate("/trending");
     } catch (error) {
@@ -82,14 +87,25 @@ export const ArticlePage = f.observer(() => {
 
     try {
       setIsSubmitting(true);
-      await mutationApi.private.articles.update(id, {
-        title,
-        content,
-        links: links.map((link) => ({
-          name: link.name,
-          parent: link.parentId,
-        })),
-      });
+      if (isAdmin) {
+        await mutationApi.private.admin.articles.update(id, {
+          title,
+          content,
+          links: links.map((link) => ({
+            name: link.name,
+            parent: link.parentId,
+          })),
+        });
+      } else {
+        await mutationApi.private.articles.update(id, {
+          title,
+          content,
+          links: links.map((link) => ({
+            name: link.name,
+            parent: link.parentId,
+          })),
+        });
+      }
       await ArticleRule.refresh(id);
       setIsChanged(false);
     } catch (error) {
@@ -152,7 +168,7 @@ export const ArticlePage = f.observer(() => {
       <Box sx={{ mb: 4 }}>
         <ArticleTitleComponent
           title={title}
-          isEditable={isMy}
+          isEditable={isEditable}
           onChange={(value) => {
             setTitle(value);
             setIsChanged(true);
@@ -163,7 +179,7 @@ export const ArticlePage = f.observer(() => {
       <Box sx={{ mb: 4 }}>
         <ArticleContentComponent
           content={content}
-          isEditable={isMy}
+          isEditable={isEditable}
           onChange={(value) => {
             setContent(value);
             setIsChanged(true);
@@ -174,14 +190,14 @@ export const ArticlePage = f.observer(() => {
       <Box sx={{ mb: 4 }}>
         <ArticleLinksComponent
           links={links}
-          isEditable={isMy}
+          isEditable={isEditable}
           onAddLink={handleAddLink}
           onRemoveLink={handleRemoveLink}
           onLinkNameChange={handleLinkNameChange}
         />
       </Box>
 
-      {isMy && (
+      {isEditable && (
         <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
           {isChanged && (
             <Button

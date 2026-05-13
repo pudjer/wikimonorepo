@@ -1,6 +1,6 @@
-import { Box, AppBar, Toolbar, Button, IconButton, Menu, MenuItem, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, AppBar, Toolbar, Button, IconButton, Menu, MenuItem, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
@@ -11,6 +11,7 @@ import { RootRule, TotalInteraction, MyLearningStatsRule } from "../store";
 import { SearchComponent } from "./SearchComponent";
 import { LoginComponent } from "./LoginComponent";
 import { mutationApi } from "../api/mutationApi";
+import { queryApi } from "../api/queryApi";
 import { VisualizeDag } from "./index";
 import { StatComponent } from "./StatComponent";
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -30,8 +31,15 @@ const HeaderComponentBase = () => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [languageAnchorEl, setLanguageAnchorEl] = useState<null | HTMLElement>(null);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [findUserOpen, setFindUserOpen] = useState(false);
+  const [findUsername, setFindUsername] = useState("");
+  const [findError, setFindError] = useState<string | null>(null);
+  const [findPending, setFindPending] = useState(false);
   const [learningDagOpen, setLearningDagOpen] = useState(false);
   const [logoutPending, setLogoutPending] = useState(false);
+
+
+  const isAdmin = !!root?.isAdmin
 
   const handleRefresh = async () => {
     if (root?.myId) {
@@ -43,7 +51,7 @@ const HeaderComponentBase = () => {
 
 
   const NodeComponent = useMemo(
-    () => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} />,
+    () => ({ node }: { node: TotalInteraction }) => <StatComponent stat={learningStats!.getStats(node)} onSelect={(id)=>{setLearningDagOpen(false); navigate(`/article/${id}`)}} />,
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [learningStats, learningStats?.dag.nodes]
   );
@@ -66,6 +74,28 @@ const HeaderComponentBase = () => {
       console.error("Failed to logout:", error);
     } finally {
       setLogoutPending(false);
+    }
+  };
+
+  const handleFindUser = async () => {
+    if (!findUsername.trim()) {
+      return;
+    }
+
+    setFindPending(true);
+    setFindError(null);
+
+    try {
+      const user = await queryApi.public.user.getByUsername(findUsername.trim());
+      setFindUserOpen(false);
+      setFindUsername("");
+      navigate(`/author/${user.id}`);
+      handleProfileMenuClose();
+    } catch (error) {
+      console.error("Failed to find user:", error);
+      setFindError("Пользователь не найден");
+    } finally {
+      setFindPending(false);
     }
   };
 
@@ -169,6 +199,7 @@ const HeaderComponentBase = () => {
               </IconButton>
               <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleProfileMenuClose}>
                 <MenuItem onClick={() => navigate(`/author/${root?.myId}`)}>{t("header.profile")}</MenuItem>
+                {isAdmin && <MenuItem onClick={() => { handleProfileMenuClose(); setFindUserOpen(true); }}>Найти пользователя</MenuItem>}
                 <MenuItem onClick={handleLogout} disabled={logoutPending}>
                   {logoutPending ? t("header.loggingOut") : t("header.logout")}
                 </MenuItem>
@@ -186,7 +217,43 @@ const HeaderComponentBase = () => {
             <LoginComponent onCancel={() => setLoginOpen(false)} onSuccess={() => setLoginOpen(false)}/>
       </Dialog>
 
-      <Dialog open={learningDagOpen} keepMounted onClose={() => setLearningDagOpen(false)} maxWidth="xl" fullWidth slotProps={{ paper: { sx: { minHeight: "80vh" } } }}>
+      <Dialog open={findUserOpen} onClose={() => { setFindUserOpen(false); setFindUsername(""); setFindError(null); }} maxWidth="xs" fullWidth>
+        <DialogTitle>Найти пользователя</DialogTitle>
+        <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+          <TextField
+            autoFocus
+            label="Имя пользователя"
+            value={findUsername}
+            onChange={(e) => setFindUsername(e.target.value)}
+            fullWidth
+            disabled={findPending}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                handleFindUser();
+              }
+            }}
+          />
+          {findError && <Box color="error.main">{findError}</Box>}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setFindUserOpen(false);
+              setFindUsername("");
+              setFindError(null);
+            }}
+            color="primary"
+          >
+            Отмена
+          </Button>
+          <Button onClick={handleFindUser} disabled={findPending || !findUsername.trim()} variant="contained" color="primary">
+            {findPending ? <CircularProgress size={20} color="inherit" /> : "Найти"}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={learningDagOpen} sx={learningDagOpen ? {}: {display: "none"}} keepMounted onClose={() => setLearningDagOpen(false)} maxWidth="xl" fullWidth slotProps={{ paper: { sx: { minHeight: "80vh" } } }}>
         <DialogTitle>{t("learningDag.title")}</DialogTitle>
         <DialogContent sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           {isStatsPending ? (

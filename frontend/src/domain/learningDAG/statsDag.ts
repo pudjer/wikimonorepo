@@ -10,10 +10,26 @@ export class StatsBuilder<T extends IHasStage> {
         public readonly dag: DAG<T>
     ){
         for(const node of dag.nodes){
+            let ancestors: Set<LearningStats<T>> | undefined
+            let descendants:Set< LearningStats<T>> | undefined
             const stats = autorun.registerObject(new LearningStats(
                 node, 
-                (): ReadonlySet<LearningStats<T>> => new Set(this.dag.getAncestors(node).values().map(ancestor => this.getStats(ancestor))), 
-                (): ReadonlySet<LearningStats<T>> => new Set(this.dag.getDescendants(node).values().map(descendant => this.getStats(descendant)))
+                (): ReadonlySet<LearningStats<T>> => {
+                    if(ancestors){
+                        return ancestors
+                    }else{
+                        ancestors = new Set(this.dag.getAncestors(node).values().map(ancestor => this.getStats(ancestor)))
+                        return ancestors
+                    }
+                }, 
+                (): ReadonlySet<LearningStats<T>> => {
+                    if(descendants){
+                        return descendants
+                    }else{
+                        descendants = new Set(this.dag.getDescendants(node).values().map(descendant => this.getStats(descendant)))
+                        return descendants
+                    }
+                }
             ));
             this.statsMap.set(node, stats)
         }

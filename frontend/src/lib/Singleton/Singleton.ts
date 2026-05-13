@@ -19,7 +19,7 @@ export class IdentityStore<CONC extends object, KEY> {
 	})
 	get = (key: KEY): CONC | undefined => {
 		const serializedKey = SerializeKey(key)
-		return this.store.get(serializedKey)?.deref() as CONC
+		return this.store.get(serializedKey)?.deref()
 	}
 	set = (key: KEY, value: CONC): void => {
 		if (this.get(key)) throw new UniqueKeyError()

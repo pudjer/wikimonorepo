@@ -16,7 +16,7 @@ const ProtectedRoute = f.observer(({ children }: { children: React.ReactNode }) 
     return <Box>{t('app.loading')}</Box>;
   }
   if (!root?.myId) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/trending" replace />;
   }
   return <>{children}</>;
 });
@@ -41,7 +41,6 @@ export const App = f.observer(() => {
               </ProtectedRoute>
             }
           />
-
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/trending" replace />} />
         </Routes>

@@ -7,6 +7,6 @@ export class Author {
 }
 
 export const AuthorRule = f.buildRule(
-  async (id: string) => await queryApi.public.user.get(id),
+  async (id: string) => await queryApi.public.user.getById(id),
   { classConstructor: Author }
 )

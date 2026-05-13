@@ -30,7 +30,7 @@ export class UserControllerPublic {
     @ApiNotFoundResponse({ description: 'User not found (e.g., UserNotFoundError)' })
     @ApiResponse({ status: 200, type: UserOutputDtoPublic })
     @ApiParam({ name: 'userId', description: 'User ID' })
-    @Get(":userId")
+    @Get("id/:userId")
     async get(
         @Param("userId") userIdRaw: string,
     ): Promise<UserOutputDtoPublic> {
@@ -56,4 +56,18 @@ export class UserControllerPublic {
             password,
         });
     }
+
+    @ApiOperation({ summary: 'Get user profile' })
+    @ApiBadRequestResponse({ description: 'Invalid input (e.g., BadUsernameError)' })
+    @ApiNotFoundResponse({ description: 'User not found (e.g., UserNotFoundError)' })
+    @ApiResponse({ status: 200, type: UserOutputDtoPublic })
+    @ApiParam({ name: 'username', description: 'Username' })
+    @Get("username/:username")
+    async findByUsername(
+        @Param("username") usernameRaw: string,
+    ): Promise<UserOutputDtoPublic> {
+        const username = await this.usernameValidator.validate(usernameRaw);
+        return this.userService.findByUsername(username);
+    }
+
 }
